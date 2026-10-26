@@ -597,7 +597,7 @@
             >Submit report</button>
         </form>
 
-        <div data-report-success hidden class="text-center py-4 space-y-3">
+        <div data-report-success class="hidden text-center py-4 space-y-3">
             <p class="font-pixel text-sm font-bold text-emerald-600 uppercase">Report sent!</p>
             <p class="text-sm font-semibold text-[#2D231E]">Thank you! Your report has been submitted.</p>
             <button
