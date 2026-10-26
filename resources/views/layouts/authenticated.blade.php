@@ -439,8 +439,8 @@
                     </span>
                 @elseif (($gamer['in_progress_tasks'] ?? 0) > 0)
                     <span class="absolute -top-1 -right-1 w-[12px] h-[12px] rounded-full bg-amber-400 border-2 border-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,0.9)]" title="A daily task is in progress" aria-label="A daily task is in progress"></span>
-                @elseif ($unreadNotifications > 0)
-                    <span data-unread-badge class="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 rounded-full bg-rose-500 border-2 border-[#2D231E] text-white font-pixel text-[8px] font-bold flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(45,35,30,0.9)]" title="{{ $unreadNotifications }} unread in your inbox" aria-label="{{ $unreadNotifications }} unread in your inbox">
+                @else
+                    <span data-student-unread class="{{ $unreadNotifications > 0 ? '' : 'hidden' }} absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 rounded-full bg-rose-500 border-2 border-[#2D231E] text-white font-pixel text-[8px] font-bold flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(45,35,30,0.9)]" title="{{ $unreadNotifications }} unread in your inbox" aria-label="{{ $unreadNotifications }} unread in your inbox">
                         {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
                     </span>
                 @endif
