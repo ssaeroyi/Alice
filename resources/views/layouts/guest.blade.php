@@ -38,9 +38,7 @@
         (function () {
             try {
                 var stored = localStorage.getItem('alice-dark-mode');
-                var dark = stored === null
-                    ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
-                    : stored === '1';
+                var dark = stored === '1';
                 if (dark) document.documentElement.classList.add('dark');
             } catch (_) {}
         })();

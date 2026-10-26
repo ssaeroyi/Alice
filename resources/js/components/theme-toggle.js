@@ -40,17 +40,14 @@ function apply(dark, persist = true) {
     });
 }
 
-// Set the initial state before first paint. Prefers an explicit stored choice
-// and only falls back to the OS scheme when nothing has been chosen yet.
+// Set the initial state before first paint. Light by default; only a stored
+// explicit dark choice turns dark on.
 export function initTheme() {
     let dark = false;
     try {
-        const stored = localStorage.getItem(DARK_KEY);
-        dark = stored === null
-            ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
-            : stored === '1';
+        dark = localStorage.getItem(DARK_KEY) === '1';
     } catch (_) {
-        dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        dark = false;
     }
     apply(dark, false);
 }
