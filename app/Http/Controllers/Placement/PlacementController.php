@@ -36,7 +36,7 @@ class PlacementController extends Controller
     public function showStep1(Request $request): View|RedirectResponse
     {
         if ($request->user()->is_setup_complete) {
-            return redirect()->route('hub')->with('toast', [
+            return redirect()->route('library')->with('toast', [
                 'message' => 'You already finished the quick check.',
             ]);
         }
@@ -77,7 +77,7 @@ class PlacementController extends Controller
     public function showIntro(Request $request): View|RedirectResponse
     {
         if ($request->user()->is_setup_complete) {
-            return redirect()->route('hub');
+            return redirect()->route('library');
         }
 
         if ($request->user()->grade_level === null) {
@@ -92,7 +92,7 @@ class PlacementController extends Controller
     public function showStep2(Request $request): View|RedirectResponse
     {
         if ($request->user()->is_setup_complete) {
-            return redirect()->route('hub');
+            return redirect()->route('library');
         }
 
         $attempt = $this->attempt();
@@ -129,7 +129,7 @@ class PlacementController extends Controller
     public function showStep3(Request $request): View|RedirectResponse
     {
         if ($request->user()->is_setup_complete) {
-            return redirect()->route('hub');
+            return redirect()->route('library');
         }
 
         $attempt = $this->attempt();
@@ -170,7 +170,7 @@ class PlacementController extends Controller
     public function showStep4(Request $request): View|RedirectResponse
     {
         if ($request->user()->is_setup_complete) {
-            return redirect()->route('hub');
+            return redirect()->route('library');
         }
 
         $attempt = $this->attempt();
@@ -373,7 +373,7 @@ class PlacementController extends Controller
     private function guardStoredStep(Request $request, PlacementAttempt $attempt, PlacementStep $step): ?RedirectResponse
     {
         if ($request->user()->is_setup_complete) {
-            return redirect()->route('hub')->with('toast', [
+            return redirect()->route('library')->with('toast', [
                 'message' => 'You already finished the quick check.',
             ]);
         }

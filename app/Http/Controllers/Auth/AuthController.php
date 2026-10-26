@@ -95,7 +95,7 @@ class AuthController extends Controller
             Role::Admin => route('admin.dashboard'),
             Role::Teacher => route('teacher.dashboard'),
             default => $request->user()->is_setup_complete
-                ? route('hub')
+                ? route('library')
                 : route('placement.step1'),
         };
 
@@ -173,7 +173,7 @@ class AuthController extends Controller
             Role::Admin => route('admin.dashboard'),
             Role::Teacher => route('teacher.dashboard'),
             default => $pending->is_setup_complete
-                ? route('hub')
+                ? route('library')
                 : route('placement.step1'),
         };
 

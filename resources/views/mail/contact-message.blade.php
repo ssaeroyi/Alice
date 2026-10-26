@@ -24,7 +24,7 @@
                                         <p style="margin:0 0 8px; font-size:12px; font-weight:bold; color:#8C7B70; text-transform:uppercase;">From</p>
                                         <p style="margin:0 0 16px; font-size:13px; font-weight:bold; color:#2D231E;">{{ $name }} &lt;{{ $email }}&gt;</p>
                                         <p style="margin:0 0 8px; font-size:12px; font-weight:bold; color:#8C7B70; text-transform:uppercase;">Message</p>
-                                        <p style="margin:0; font-size:14px; line-height:22px; color:#2D231E; white-space:pre-line;">{{ $message }}</p>
+                                        <p style="margin:0; font-size:14px; line-height:22px; color:#2D231E; white-space:pre-line;">{{ $body }}</p>
                                     </td>
                                 </tr>
                             </table>

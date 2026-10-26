@@ -26,7 +26,7 @@ class RedirectAuthenticatedHome
             Role::Admin => route('admin.dashboard'),
             Role::Teacher => route('teacher.dashboard'),
             default => $user->is_setup_complete
-                ? route('hub')
+                ? route('library')
                 : route('placement.step1'),
         };
 
