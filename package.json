@@ -1,0 +1,37 @@
+{
+    "$schema": "https://www.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "test:browser": "playwright test"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.64.1",
+        "@tailwindcss/vite": "^4.3.3",
+        "laravel-vite-plugin": "^3.1",
+        "tailwindcss": "^4.3.3",
+        "vite": "^8.0.0"
+    },
+    "dependencies": {
+        "@coreui/icons": "^3.1.0",
+        "animejs": "^4.5.0",
+        "canvas-confetti": "^1.9.4",
+        "chart.js": "^4.5.1",
+        "flatpickr": "^4.6.13",
+        "harper.js": "^2.10.0",
+        "howler": "^2.2.4",
+        "vosk-browser": "^0.0.8"
+    },
+    "name": "alice-ver2",
+    "version": "1.0.0",
+    "description": "<p align=\"center\"><a href=\"https://laravel.com\" target=\"_blank\"><img src=\"https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg\" width=\"400\" alt=\"Laravel Logo\"></a></p>",
+    "main": "vite.config.js",
+    "directories": {
+        "test": "tests"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}

@@ -1,0 +1,26 @@
+/* ===================== B4 redo: reader preferences ===================== */
+
+/* ---- fonts ---- */
+.font-reading-default { font-family: 'Quicksand', ui-rounded, 'Segoe UI', sans-serif; }
+.font-reading-lexend { font-family: 'Lexend', sans-serif; }
+.font-reading-atkinson { font-family: 'Atkinson Hyperlegible', sans-serif; }
+.font-reading-opendyslexic { font-family: 'OpenDyslexic', sans-serif; }
+.font-reading-literata { font-family: 'Literata', serif; }
+.font-reading-patrick { font-family: 'Patrick Hand', cursive; }
+
+/* ---- sentence highlight (narration tracking) ---- */
+.sentence-active {
+    background-color: rgb(251 191 36 / 0.35);
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+}
+
+/* ---- side arrows ---- */
+[data-side-arrow] {
+    transition: all 0.15s ease;
+}
+
+[data-side-arrow]:hover:not([class*="pointer-events-none"]) {
+    background-color: var(--c-page);
+}
+

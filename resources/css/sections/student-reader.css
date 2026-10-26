@@ -1,0 +1,87 @@
+/* Student reader (STUDENT_PAGES_PLAN 4.3): calm cream-paper pane inside
+   the console chrome. Quicksand always for story text; tappable words
+   underline softly so the affordance is discoverable but quiet. */
+.reader-paper {
+    font-family: 'Quicksand', ui-rounded, 'Segoe UI', sans-serif;
+    color: var(--c-ink);
+    scrollbar-width: none;
+}
+
+.reader-paper::-webkit-scrollbar {
+    display: none;
+}
+
+.reader-paper p {
+    max-width: 75ch;
+    text-align: justify;
+    hyphens: auto;
+    line-height: 1.7;
+    text-indent: 1.5em;
+}
+
+.reader-paper p + p {
+    margin-top: 1.4em;
+}
+/* Every ~300-word page is wrapped in a section div, which breaks the sibling
+   selector above: re-apply the same gap to the first paragraph of each page
+   after the first, unless the page continues an oversized paragraph. */
+.reader-paper [data-narr-section] + [data-narr-section]:not(.is-continuation) > p:first-child {
+    margin-top: 1.4em;
+}
+
+.tap-word {
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background-color 0.15s ease;
+}
+
+.tap-word:hover,
+.tap-word:focus-visible {
+    background-color: rgb(252 211 77 / 0.55);
+    outline: none;
+}
+
+/* Long-press is the dictionary gesture on touch devices; don't let the
+   platform text-selection UI fight it. */
+@media (hover: none) {
+
+    .reader-paper,
+    .reader-paper .tap-word {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+    }
+}
+
+/* Reading mascot (Alice): a decorative sprite companion. She is position:
+   fixed, so she is taken out of flow and NEVER affects the layout of the
+   reader shell, the card, or the control bar. pointer-events:none keeps
+   every control tappable underneath her. Frames are stepped by
+   game/mascot.js; pixelated keeps the art crisp at any size.
+
+   Desktop-only (>=1280px, where the centered max-w-3xl card leaves a real
+   margin): one fixed slot in the left margin OUTSIDE the card. The slot
+   anchor never moves — translate(-50%,-50%) centers whatever skin box
+   (--mw/--mh) on it — so switching skins can't shift her position.
+   Hidden entirely on smaller screens. */
+#reader-mascot {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: calc(50% - 384px - 130px); /* card edge (50%-384) - half slot (260px) */
+    transform: translate(-50%, -50%);
+    /* Per-skin box (--mw/--mh, desktop basis); --mscale = global size knob. */
+    --mscale: 1;
+    width: calc(var(--mw, 200px) * var(--mscale));
+    height: calc(var(--mh, 200px) * var(--mscale));
+    z-index: 5;
+    pointer-events: none;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+@media (min-width: 1280px) {
+    #reader-mascot { display: block; }
+}
+

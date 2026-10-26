@@ -1,0 +1,101 @@
+/* ====================== ALICE skeleton loading states ======================
+   Minimal, no-new-lib loading visuals for async surfaces. A skeleton is just a
+   warm rounded block with a slow shimmer sweep; it carries exact min-h matching
+   the real content so layout never jumps (no CLS). Two rules keep it polite:
+     1. prefers-reduced-motion → static pulse (no sweep, no loop over time).
+     2. Skeletons are aria-hidden; the hosting region owns role="status"/sr-only
+        copy so screen readers get exactly one announcement.
+   JS contract (resources/js/components/skeleton.js): a skeleton may appear only
+   after a short debounce and MUST be cleared on every settle (success/abort/
+   catch). A stuck skeleton is a bug. */
+@keyframes alice-shimmer {
+    from { background-position: 200% 0; }
+    to   { background-position: -200% 0; }
+}
+
+.alice-skeleton {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    background-color: #eadfce;
+    background-image: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.55) 50%, transparent 70%);
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    animation: alice-shimmer 1.4s linear infinite;
+    will-change: background-position;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .alice-skeleton {
+        animation: none;
+        background-image: none;
+    }
+}
+
+/* Whole-region busy treatment for in-place refreshes that keep their DOM
+   (hub stats, teacher shelf pager): dim + block interaction without losing
+   on-screen content. Used alongside aria-busy. */
+.alice-busy {
+    opacity: 0.55;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+/* ====================== ALICE tour spotlight ring ======================
+   Pulsing glow behind the tour's ringed target. The ring is positioned by
+   tour.js; this only animates the soft halo (billboarded, cheap). Reduced
+   motion gets a static glow. */
+.alice-tour-ring {
+    animation: alice-tour-ring-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes alice-tour-ring-pulse {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.4); }
+    50%      { box-shadow: 0 0 0 11px rgba(251, 191, 36, 0.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .alice-tour-ring {
+        animation: none;
+        box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.4);
+    }
+}
+
+/* "Tap to continue" tell on the tour dialogue box: a pixel arrow that hops a
+   few pixels on a fixed step (2 frame). Hidden while Alice is typing; shown
+   while her line holds. Reduced motion gets a static arrow. */
+.alice-tour-arrow {
+    animation: alice-arrow-bounce 1.1s steps(2, jump-none) infinite;
+}
+
+@keyframes alice-arrow-bounce {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .alice-tour-arrow {
+        animation: none;
+    }
+}
+
+/* ====================== Nav help pulse (new users) ======================
+   Same tell as game-setup's HOW TO PLAY button: a soft amber ring + small
+   hop, 6 loops, drawn on the student navbar's ? (How ALICE Works) button
+   for a new registrant's first 7 days so they notice where help lives.
+   Class is applied conditionally in layouts/authenticated.blade.php. */
+.alice-nav-help-pulse {
+    animation: alice-nav-help-pulse 0.9s ease-in-out 6;
+}
+
+@keyframes alice-nav-help-pulse {
+    0%, 100% { box-shadow: 3px 3px 0 0 rgba(45, 35, 30, 1); transform: translateY(0); }
+    50%      { box-shadow: 0 0 0 5px rgba(251, 191, 36, 0.5), 3px 3px 0 0 rgba(45, 35, 30, 1); transform: translateY(-2px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .alice-nav-help-pulse {
+        animation: none;
+    }
+}
+

@@ -1,0 +1,41 @@
+# Alice narration toolchain - pinned runtime dependencies (TTS_AND_DICTIONARY.md
+# §3.4 / §3.9). "Known-good" set: this exact combination produced the shipped
+# story + tour audio on the authoring machine (Windows/Laragon).
+#
+# Install:
+#   python -m pip install -r tools/narration/requirements.txt
+#
+# Upgrade workflow (dev machine only, §3.9):
+#   1. python tools/narration/toolkit.py --self-test          # before (must pass)
+#   2. python -m pip install --dry-run --upgrade -r tools/narration/requirements.txt
+#   3. python -m pip install --upgrade -r tools/narration/requirements.txt
+#   4. python tools/narration/toolkit.py --self-test          # after (must pass)
+#   5. python tools/narration/toolkit.py --lock               # re-snapshot known-good
+#
+# Explicit runtime set (direct imports in generate_narration.py + toolkit.py).
+# kokoro/misaki are pinned hard: upstream caps resolution below Python 3.13, so
+# they must be installed --no-deps with every real requirement listed here.
+kokoro==0.7.16
+misaki==0.7.4
+torch==2.13.0+cu126
+numpy==2.5.2
+lameenc==1.8.4
+soundfile==0.14.0
+loguru==0.7.3
+huggingface-hub==1.28.0
+addict==2.4.0
+regex==2026.7.19
+num2words==0.5.14
+espeakng-loader==0.2.4
+phonemizer-fork==3.3.2
+nltk==3.10.3
+jamo==0.4.1
+cn2an==0.5.24
+jieba==0.42.1
+ordered-set==4.1.0
+pypinyin==0.55.0
+scipy==1.18.1
+transformers==5.15.1
+spacy==3.8.15
+typing_extensions==4.16.0
+pyparsing==3.3.2

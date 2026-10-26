@@ -1,0 +1,143 @@
+/* ------------------------------ SKINS tab ------------------------------- */
+.journal-skins {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 12px 14px;
+    gap: 11px;
+}
+.skins-head { display: flex; justify-content: center; }
+.skins-sections {
+    display: inline-flex;
+    border: 2px solid #2D231E;
+    border-radius: 9px;
+    overflow: hidden;
+    background: #ECE3D0;
+    box-shadow: 2px 2px 0 0 rgba(45, 35, 30, 1);
+}
+.skins-section {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    padding: 7px 20px;
+    background: transparent;
+    color: #8C7B70;
+    cursor: pointer;
+    transition: background 120ms ease, color 120ms ease;
+}
+.skins-section + .skins-section { border-left: 2px solid #2D231E; }
+.skins-section:not(.is-active):hover { background: #DCCFAD; color: #2D231E; }
+.skins-section.is-active { background: #F59E0B; color: #2D231E; font-weight: 700; }
+.skins-grid {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+    align-content: start;
+    padding: 4px;
+    scrollbar-width: none;
+}
+.skins-grid::-webkit-scrollbar { display: none; }
+/* Shop page: the grid sits in normal page flow, so it reflows by width
+   instead of the reader's fixed 5 columns. */
+.shop-wardrobe .skins-grid { overflow: visible; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 640px) { .shop-wardrobe .skins-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .shop-wardrobe .skins-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.skin-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    padding: 12px 8px 9px;
+    background: #FFFDF7;
+    border: 2px solid #2D231E;
+    border-radius: 10px;
+    box-shadow: 3px 3px 0 0 rgba(45, 35, 30, 1);
+    cursor: pointer;
+    transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.skin-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 5px 5px 0 0 rgba(45, 35, 30, 1);
+}
+.skin-card:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 0 rgba(45, 35, 30, 1); }
+/* Equipped = green border + minimal green corner dot (green = yes). */
+.skin-card.is-equipped {
+    background: #ECFDF5;
+    border-color: #059669;
+    box-shadow: 3px 3px 0 0 rgba(5, 150, 105, 1);
+}
+.skin-card.is-equipped::after {
+    content: '';
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 9px;
+    height: 9px;
+    background: #059669;
+    border: 2px solid #2D231E;
+    border-radius: 50%;
+}
+.skin-card.is-locked .skin-card-art { opacity: 0.45; filter: grayscale(1); transition: opacity 120ms ease; }
+/* Locked art brightens a little on hover (still grayscale = still for sale). */
+.skin-card.is-locked:hover .skin-card-art { opacity: 0.6; }
+/* Owned art bounces a touch on hover so it feels alive. */
+.skin-card:not(.is-locked) .skin-card-art { transition: transform 120ms ease; }
+.skin-card:not(.is-locked):hover .skin-card-art { transform: scale(1.06); }
+/* Static close-up (thumb.png, art fills the sheet): fixed slot, centered. */
+.skin-card-art {
+    display: block;
+    width: 100%;
+    height: 84px;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: contain;
+    image-rendering: pixelated;
+}
+/* Background cards: landscape scene fills the slot (thumb is 16:9). */
+.skin-card-art--bg {
+    background-size: cover;
+    background-position: center;
+    border: 2px solid #2D231E;
+    border-radius: 6px;
+}
+.skin-card-name {
+    font-size: 7px;
+    letter-spacing: 0.05em;
+    color: #2D231E;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* Locked marker: tiny corner padlock (dimmed art does the rest). */
+.skin-card-lock {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 12px;
+    height: 12px;
+    color: #8C7B70;
+}
+.skin-card-lock svg { width: 100%; height: 100%; display: block; }
+/* Price chip (only when the skin has a price). */
+.skin-card-state {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 6px;
+    line-height: 1;
+    padding: 3px 5px;
+    background: #2D231E;
+    color: #FAF6EE;
+    border-radius: 5px;
+}
+.skin-card-state svg { width: 8px; height: 8px; display: block; }
+

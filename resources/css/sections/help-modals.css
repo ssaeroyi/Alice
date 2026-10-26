@@ -1,0 +1,79 @@
+/* ====================== Help modal pager dots ======================
+   Page indicators in the HOW ALICE WORKS modal (driven by
+   components/help-pager.js). Inactive dots are small warm gray; the
+   active dot grows and turns amber with an ink ring. Plain CSS (not a
+   Tailwind utility) so it is never purged. */
+.help-pager-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 9999px;
+    background: #E6DCCF;
+    border: 1.5px solid #2D231E;
+    padding: 0;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.help-pager-dot.is-active {
+    background: #FBBF24; /* amber-400 */
+    transform: scale(1.25);
+}
+
+.help-pager-dot:focus-visible {
+    outline: 2px solid #FBBF24;
+    outline-offset: 2px;
+}
+
+/* ====================== Journal "HOW TO FINISH?" help modal ==============
+   Same pixel look as the HOW ALICE WORKS modal (it reuses .help-pager-dot
+   for the ACTIONS pager) plus a sidebar tab rail. The journal overlay sits
+   at z-index 55/56 (restart confirm 62, skin preview 60), so this modal
+   needs to clear them all: the id rule beats the component's z-50 utility.
+   Plain CSS (not Tailwind utilities) so none of it is purged. */
+#journal-help-modal {
+    z-index: 70;
+}
+
+.jh-tab {
+    width: auto;
+    min-height: 36px;
+    padding: 7px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-align: left;
+    color: #2D231E;
+    background: #FAF6EE;
+    border: 2px solid #2D231E;
+    border-radius: 10px;
+    box-shadow: 2px 2px 0 0 rgba(45, 35, 30, 1);
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background-color 0.15s ease;
+}
+
+/* From the sidebar breakpoint up the rail is a fixed column, so the tabs
+   fill it edge to edge. Below that they sit in a horizontal scroller and
+   must size to their own label instead (a 100% width inside the scroller
+   is what clipped the corners). */
+@media (min-width: 640px) {
+    .jh-tab {
+        width: 100%;
+    }
+}
+
+.jh-tab.is-active {
+    background: #FBBF24;
+}
+
+.jh-tab:active {
+    transform: translate(1px, 1px);
+    box-shadow: none;
+}
+
+.jh-tab:focus-visible {
+    outline: 2px solid #FBBF24;
+    outline-offset: 2px;
+}
+

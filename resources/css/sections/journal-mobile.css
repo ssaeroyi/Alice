@@ -1,0 +1,28 @@
+/* mobile: stack the book pages, tighten the arena */
+@media (max-width: 640px) {
+    #journal-panel .journal-frame { max-height: 90dvh; }
+    .journal-spread { grid-template-columns: 1fr; overflow-y: auto; scrollbar-width: none; }
+    .journal-spread::-webkit-scrollbar { display: none; }
+    .journal-arena {
+        border-right: none;
+        border-bottom: 3px solid #2D231E;
+        min-height: 210px;
+    }
+    .arena-scene { min-height: 240px; }
+    .arena-alice { --sscale: 0.7; }
+    .arena-boss { --sscale: 0.68; }
+    .journal-missions { padding: 10px 10px 12px; }
+}
+
+    @media (max-width: 900px) {
+        .skins-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+        .skins-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .journal-action-row.is-shake { animation: journal-row-shake 240ms ease-in-out; }
+@keyframes journal-row-shake {
+    0%, 100% { transform: none; }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+}

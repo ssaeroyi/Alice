@@ -1,0 +1,263 @@
+/* --- game mode: strip + panel over the reading paper --- */
+/* The battle strip lives INSIDE #reader-topbar. Normal controls and the
+   strip swap on the existing game-mode body flag — one bar, never two. */
+.topbar-normal { display: contents; }
+body[data-game-mode="on"] .topbar-normal { display: none; }
+.gm-strip { display: none; }
+body[data-game-mode="on"] .gm-strip {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+    gap: 8px;
+}
+.gm-task {
+    flex: 1;
+    min-width: 0;
+    font-size: 8px;
+    letter-spacing: 0.06em;
+    color: #2D231E;
+    text-transform: uppercase;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+.gm-timer {
+    font-size: 11px;
+    color: #2D231E;
+    background: #FFFFFF;
+    border: 2px solid #2D231E;
+    border-radius: 8px;
+    padding: 4px 7px;
+    min-width: 46px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.gm-timer.is-low { color: #DC2626; border-color: #DC2626; animation: timer-blink 500ms steps(2, end) infinite; }
+@keyframes timer-blink { 50% { opacity: 0.45; } }
+.gm-quit {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #FFFFFF;
+    color: #2D231E;
+    border: 2px solid #2D231E;
+    border-radius: 8px;
+    box-shadow: 2px 2px 0 0 rgba(45, 35, 30, 1);
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.gm-quit:active { transform: translate(1px, 1px); box-shadow: none; }
+/* Panel content classes: rendered inside .missions-sheet (the MISSIONS tab),
+   so they carry no positioning of their own — the sheet shell owns that. */
+.gm-flavor {
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: #B45309;
+    text-transform: uppercase;
+}
+.gm-prompt { font-size: 13px; color: #000; font-weight: 700; line-height: 1.35; }
+.gm-hint { font-size: 12px; font-weight: 700; color: #000; margin-top: -2px; line-height: 1.4; }
+.gm-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #FFFFFF;
+    border: 2px solid #2D231E;
+    border-radius: 10px;
+    padding: 8px 10px;
+}
+/* Whole row lights up while its input is focused: the eye tracks the line. */
+.gm-row:focus-within {
+    border-color: #F59E0B;
+    background: #FFFBEF;
+    box-shadow: 2px 2px 0 0 #F59E0B;
+}
+/* Small ink number chip: instant scanability, mirrors the MOVE 0X chip. */
+.gm-row-no {
+    flex-shrink: 0;
+    min-width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    font-size: 8px;
+    color: #FAF6EE;
+    background: #2D231E;
+    border-radius: 4px;
+    padding: 0 4px;
+}
+/* Sentblank: the input sits inside the sentence where the blank was, as
+   inline content - the sentence wraps around it like a word at any width. */
+.gm-row--sentence { align-items: baseline; gap: 8px; }
+.gm-row-sentence { min-width: 0; line-height: 2.1; }
+.gm-row--sentence .gm-input {
+    display: inline-block;
+    vertical-align: middle;
+    width: 5em;
+}
+.gm-row-shown {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    font-size: 15px;
+    color: #2D231E;
+    letter-spacing: 0.06em;
+    min-width: 84px;
+}
+.gm-row-hint { flex: 1; font-size: 12px; color: #000; overflow-wrap: anywhere; }
+.gm-input {
+    width: 96px;
+    min-height: 34px;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    font-size: 15px;
+    text-transform: lowercase;
+    color: #2D231E;
+    background: #FFFDF7;
+    border: 2px solid #2D231E;
+    border-radius: 8px;
+    padding: 4px 8px;
+    outline: none;
+}
+.gm-input:focus { border-color: #F59E0B; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.35); }
+.gm-choice-list { display: flex; flex-direction: column; gap: 6px; }
+.gm-choice-q { font-size: 13px; color: #000; font-weight: 700; line-height: 1.3; margin-bottom: 2px; }
+.gm-choice-btn {
+    min-height: 38px;
+    text-align: left;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #2D231E;
+    background: #FFFFFF;
+    border: 2px solid #2D231E;
+    border-radius: 10px;
+    box-shadow: 2px 2px 0 0 rgba(45, 35, 30, 1);
+    cursor: pointer;
+}
+.gm-choice-btn:hover { background: #FFF7E6; }
+.gm-choice-btn.is-picked {
+    background: #FDE68A;
+    border-color: #B45309;
+    box-shadow: none;
+}
+.gm-arrange-row {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    background: #FFFFFF;
+    border: 2px solid #2D231E;
+    border-radius: 10px;
+    padding: 9px 10px 10px;
+}
+/* WORD n + live n-of-total: the at-a-glance hint for each row. */
+.gm-arrange-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.gm-arrange-no {
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    color: #000;
+}
+.gm-arrange-progress {
+    font-size: 11px;
+    font-weight: 700;
+    color: #000;
+    background: #FDE68A;
+    border: 2px solid #2D231E;
+    border-radius: 6px;
+    padding: 1px 7px;
+}
+.gm-arrange-slots { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+/* Empty slot placeholders: dashed boxes show the word's length before any
+   tap, so the slot row is never blank whitespace. */
+.gm-slot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    min-height: 36px;
+    box-sizing: border-box;
+    background: #FBF4E4;
+    border: 2px dashed #B9A88F;
+    border-radius: 8px;
+}
+/* The tray sits in a tinted inset so "letters to use" reads differently
+   from "boxes to fill". */
+.gm-arrange-tray-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: #F6EFE2;
+    border: 2px solid #E6DCCF;
+    border-radius: 8px;
+    padding: 7px 8px 8px;
+}
+.gm-arrange-tray-label {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: #000;
+}
+.gm-arrange-tray { display: flex; flex-wrap: wrap; gap: 6px; }
+.gm-tile {
+    min-width: 36px;
+    min-height: 36px;
+    padding: 4px 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: #2D231E;
+    background: #FFFDF7;
+    border: 2px solid #2D231E;
+    border-radius: 8px;
+    box-shadow: 2px 2px 0 0 rgba(45, 35, 30, 1);
+    cursor: pointer;
+}
+.gm-tile:hover { background: #FFF7E6; }
+.gm-tile.is-used { opacity: 0.35; box-shadow: none; cursor: default; }
+.gm-tile--slot { background: #FDE68A; border-color: #B45309; box-shadow: none; }
+.gm-submit {
+    min-height: 42px;
+    margin-top: 2px;
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    background: #059669;
+    border: 2px solid #2D231E;
+    border-radius: 10px;
+    box-shadow: 2px 2px 0 0 rgba(45, 35, 30, 1);
+    cursor: pointer;
+}
+.gm-submit:hover { background: #047857; }
+.gm-submit:active { transform: translate(2px, 2px); box-shadow: none; }
+.gm-note { font-size: 12px; color: #DC2626; min-height: 1em; }
+
+/* find mode: the story text is the surface */
+body[data-game-mode="on"] .tap-word { cursor: crosshair; }
+.tap-word.gm-hit {
+    background: #FDE68A;
+    box-shadow: 0 0 0 2px #F59E0B;
+    border-radius: 3px;
+}
+.tap-word.gm-miss {
+    animation: gm-word-miss 260ms ease-in-out;
+    color: #DC2626;
+}
+@keyframes gm-word-miss {
+    0%, 100% { transform: translateX(0); }
+    30% { transform: translateX(-3px); }
+    70% { transform: translateX(3px); }
+}
+

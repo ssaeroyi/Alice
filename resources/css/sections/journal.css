@@ -1,0 +1,322 @@
+/* ====================== FIELD JOURNAL (items 43-46) ====================== */
+/* Book popup over the reader: arena + ACTIONS spread, pixel register.
+   Mobile stacks the pages. Game-mode strip rides the top bar; the answer
+   sheet for the active move lives in the MISSIONS tab (no overlays). */
+
+.journal-pulse {
+    animation: journal-pulse-anim 1.4s steps(2, end) infinite;
+}
+@keyframes journal-pulse-anim {
+    0%, 100% { box-shadow: 2px 2px 0 0 rgba(45, 35, 30, 1); }
+    50% { box-shadow: 2px 4px 0 0 rgba(45, 35, 30, 1), 0 0 12px 2px rgba(245, 158, 11, 0.55); }
+}
+
+/* Hub CLAIM button: same hard-step pulse as the journal, emerald glow. */
+.goal-claim-pulse {
+    animation: goal-claim-pulse-anim 1.4s steps(2, end) infinite;
+}
+@keyframes goal-claim-pulse-anim {
+    0%, 100% { box-shadow: 2px 2px 0 0 rgba(45, 35, 30, 1); }
+    50% { box-shadow: 2px 4px 0 0 rgba(45, 35, 30, 1), 0 0 12px 2px rgba(5, 150, 105, 0.55); }
+}
+
+/* Ready-to-claim task card: emerald border + glow that keeps the card's 5px shadow. */
+.task-card-pulse {
+    animation: task-card-pulse-anim 1.4s steps(2, end) infinite;
+}
+@keyframes task-card-pulse-anim {
+    0%, 100% { box-shadow: 5px 5px 0 0 rgba(45, 35, 30, 1); }
+    50% { box-shadow: 5px 5px 0 0 rgba(45, 35, 30, 1), 0 0 14px 3px rgba(5, 150, 105, 0.45); }
+}
+
+/* Task progress bars fill from 0 each time the Tasks tab is shown
+   (display:none -> block restarts CSS animations), never under reduced motion. */
+.bar-grow {
+    width: var(--bar-w, 0%);
+    animation: bar-grow-anim 0.5s steps(8, end) both;
+}
+@keyframes bar-grow-anim {
+    from { width: 0; }
+    to { width: var(--bar-w, 0%); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .bar-grow { animation: none; }
+}
+
+@media (hover: hover) {
+    .card-hover { transition: transform 120ms steps(2, end); }
+    .card-hover:hover { transform: translate(-2px, -2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .card-hover { transition: none; }
+    .card-hover:hover { transform: none; }
+}
+[data-hub-tab] { transition: background-color 100ms steps(2, end); }
+@media (hover: hover) {
+    [data-hub-tab][aria-selected="false"]:hover { background-color: #F3ECE0; }
+}
+@media (prefers-reduced-motion: reduce) {
+    [data-hub-tab] { transition: none; }
+}
+
+
+#journal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: rgba(45, 35, 30, 0.45);
+    backdrop-filter: blur(2px);
+}
+#journal-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 56;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    pointer-events: none;
+}
+#journal-panel .journal-frame {
+    pointer-events: auto;
+    width: min(860px, 100%);
+    max-height: min(88dvh, 680px);
+    display: flex;
+    flex-direction: column;
+    background: #FAF6EE;
+    border: 3px solid #2D231E;
+    border-radius: 14px;
+    box-shadow: 5px 5px 0 0 rgba(45, 35, 30, 1);
+    overflow: hidden;
+}
+.journal-top {
+    display: flex;
+    flex-direction: column;
+    background: #2D231E;
+    color: #FAF6EE;
+    flex-shrink: 0;
+}
+.journal-top-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 12px 5px;
+}
+.journal-title { font-size: 11px; letter-spacing: 0.12em; }
+.journal-top-btns { display: flex; gap: 6px; margin-left: auto; }
+.journal-keys {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 7px;
+    background: #FAF6EE;
+    border: 2px solid #2D231E;
+    border-radius: 7px;
+    box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.4);
+    color: #2D231E;
+}
+.journal-keys-glyph { width: 12px; height: 12px; display: inline-flex; color: #D97706; }
+.journal-keys-glyph svg { width: 100%; height: 100%; display: block; }
+.journal-keys-count { font-size: 9px; line-height: 1; }
+.journal-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 4px 12px 0;
+}
+.journal-tab {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    padding: 6px 13px 7px;
+    background: transparent;
+    color: #FAF6EE;
+    border: 2px solid #FAF6EE;
+    border-bottom: none;
+    border-radius: 7px 7px 0 0;
+    opacity: 0.5;
+    cursor: pointer;
+}
+.journal-tab.is-active {
+    background: #FAF6EE;
+    color: #2D231E;
+    opacity: 1;
+}
+.journal-tab:not(.is-active):hover { opacity: 0.85; }
+.journal-spread[hidden],
+.journal-missions[hidden],
+.journal-skins[hidden],
+#skin-preview[hidden] { display: none; }
+.journal-icon-btn {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #FAF6EE;
+    color: #2D231E;
+    border: 2px solid #2D231E;
+    border-radius: 8px;
+    box-shadow: 2px 2px 0 0 rgba(45, 35, 30, 1);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.journal-icon-btn:active { transform: translate(1px, 1px); box-shadow: none; }
+.journal-icon-btn svg { width: 15px; height: 15px; display: block; }
+/* --------------------- restart confirm dialog -------------------------- */
+#restart-confirm {
+    position: fixed;
+    inset: 0;
+    z-index: 62;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+    background: rgba(45, 35, 30, 0.62);
+}
+#restart-confirm[hidden] { display: none; }
+.restart-confirm-frame {
+    width: min(340px, 100%);
+    background: #FAF6EE;
+    border: 3px solid #2D231E;
+    border-radius: 14px;
+    box-shadow: 5px 5px 0 0 rgba(45, 35, 30, 1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.restart-confirm-top {
+    background: #2D231E;
+    color: #FAF6EE;
+    padding: 9px 12px;
+}
+.restart-confirm-title { font-size: 11px; letter-spacing: 0.1em; }
+.restart-confirm-actions {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+}
+.restart-confirm-btn {
+    flex: 1;
+    font-size: 9px;
+    padding: 10px 0;
+    background: #FFFFFF;
+    color: #2D231E;
+    border: 2px solid #2D231E;
+    border-radius: 8px;
+    box-shadow: 2px 2px 0 0 rgba(45, 35, 30, 1);
+    cursor: pointer;
+}
+.restart-confirm-btn--go { background: #F59E0B; color: #FFFFFF; }
+.restart-confirm-btn--go:hover { background: #D97706; }
+.restart-confirm-btn:active { transform: translate(2px, 2px); box-shadow: none; }
+
+/* ----------------------------- MISSIONS tab ------------------------------ */
+/* The answer sheet for the active move: replaces the old floating overlays.
+   Content inside reuses the gm-* classes; only the shell is new. */
+.journal-missions {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px 16px;
+}
+.missions-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+    padding: 24px 16px;
+    color: #000;
+}
+.missions-empty-title {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: #000;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.35);
+}
+.missions-empty-sub {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #000;
+    max-width: 360px;
+}
+.missions-sheet {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #FFFDF7;
+    border: 2px solid #2D231E;
+    border-radius: 12px;
+    box-shadow: 3px 3px 0 0 rgba(45, 35, 30, 1);
+    padding: 14px;
+}
+.missions-sheet::-webkit-scrollbar { display: none; }
+.missions-sheet.is-shake { animation: missions-shake 240ms ease-in-out; }
+@keyframes missions-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-7px); }
+    75% { transform: translateX(7px); }
+}
+.missions-sheet[hidden],
+.missions-empty[hidden],
+.gm-rows > div[hidden] { display: none; }
+.missions-find-progress {
+    font-size: 22px;
+    letter-spacing: 0.1em;
+    color: #2D231E;
+    background: #FFFFFF;
+    border: 2px solid #2D231E;
+    border-radius: 10px;
+    padding: 12px 14px;
+    text-align: center;
+}
+.missions-hint { color: #000; font-weight: 700; }
+.missions-pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 2px;
+}
+.missions-pager-dots { display: inline-flex; align-items: center; gap: 6px; }
+.missions-pager-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #ECE3D0;
+    border: 2px solid #2D231E;
+    box-sizing: border-box;
+}
+.missions-pager-dot.is-on { background: #F59E0B; }
+.missions-pager-dot.is-done { background: #FDE68A; }
+.missions-pager-btn {
+    min-height: 38px;
+    padding: 6px 14px;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: #2D231E;
+    background: #FFFFFF;
+    border: 2px solid #2D231E;
+    border-radius: 9px;
+    box-shadow: 2px 2px 0 0 rgba(45, 35, 30, 1);
+    cursor: pointer;
+}
+.missions-pager-btn:hover { background: #FFF7E6; }
+.missions-pager-btn:active { transform: translate(2px, 2px); box-shadow: none; }
+.missions-pager-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+    box-shadow: none;
+    transform: none;
+}
+.missions-pager-btn--check { background: #059669; color: #FFFFFF; }
+.missions-pager-btn--check:hover { background: #047857; }
+

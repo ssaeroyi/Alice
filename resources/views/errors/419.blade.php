@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Page expired | ALICE</title>
+    <meta name="description" content="ALICE - Your session expired. Please refresh and try again.">
+
+    @vite(['resources/css/app.css', 'resources/css/web-fonts.css', 'resources/js/app.js'])
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+        }
+        .font-pixel {
+            font-family: 'Press Start 2P', monospace;
+            image-rendering: pixelated;
+        }
+    </style>
+</head>
+<body class="bg-[#FAF6EE] text-[#2D231E] min-h-screen antialiased flex items-center justify-center p-4">
+
+    <div class="w-full max-w-md bg-white border border-[#E6DCCF] rounded-xl p-8 text-center space-y-4">
+        <p class="font-pixel text-[10px] font-bold text-amber-600 uppercase tracking-wider">Error 419</p>
+        <h1 class="text-lg font-extrabold text-[#2D231E]">Page expired</h1>
+        <p class="text-sm font-semibold text-[#8C7B70] leading-relaxed">
+            This page was open for a while and your session ran out. Your work was not lost — just sign in again and
+            try again.
+        </p>
+        <div class="pt-2">
+            <a
+                href="{{ route('login') }}"
+                class="inline-block min-h-[44px] bg-[#2D231E] text-[#FAF6EE] rounded-lg px-6 py-2.5 text-xs font-bold hover:bg-[#3D322C] transition-colors"
+            >
+                SIGN IN AGAIN
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

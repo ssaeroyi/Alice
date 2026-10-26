@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="320" viewBox="0 0 240 320" role="img" aria-label="No cover yet">
+  <rect width="240" height="320" fill="#F3ECE0"/>
+  <rect x="0.5" y="0.5" width="239" height="319" fill="none" stroke="#E6DCCF"/>
+  <path d="M60 130h120M60 150h120M60 170h90" stroke="#D8CCBE" stroke-width="6" stroke-linecap="round"/>
+  <path d="M80 200c20-14 40-14 60 0 8 5 16 8 24 8" fill="none" stroke="#D8CCBE" stroke-width="6" stroke-linecap="round"/>
+  <text x="120" y="245" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#B5A89C">No cover yet</text>
+</svg>

@@ -1,0 +1,54 @@
+@import 'tailwindcss';
+@import './sections/student-reader.css';
+@import './sections/student-quiz.css';
+@import './sections/reader-prefs.css';
+@import './sections/minigames.css';
+@import './sections/theme-dark.css';
+@import './sections/ui-states.css';
+@import './sections/help-modals.css';
+@import './sections/fx-sprites.css';
+@import './sections/reader-backdrop.css';
+@import './sections/journal.css';
+@import './sections/journal-skins.css';
+@import './sections/journal-skin-preview.css';
+@import './sections/journal-battle.css';
+@import './sections/journal-game-mode.css';
+@import './sections/journal-mobile.css';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: 'Quicksand', ui-rounded, 'Segoe UI', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* ---- dark-mode semantic palette (B1 overlay) ----
+       The student UI is deliberately painted from a tiny, consistent, hardcoded
+       palette. Rather than rewrite every blade, we declare those literals once
+       here and let a single .dark block remap them, so the whole student
+       experience (hub, library, study, reader, quiz, games, flashcards) flips
+       from one place and future pages reusing the hexes flip for free. */
+    --c-page: #faf6ee;      /* page background / cream canvas          */
+    --c-surface: #ffffff;    /* cards, popovers, raised surfaces        */
+    --c-ink: #2d231e;        /* primary text + borders + offset shadow  */
+    --c-shadow: rgba(45, 35, 30, 1); /* tactile offset box-shadow       */
+    --c-struck-text: rgba(45, 35, 30, 0.4); /* struck quiz-option text  */
+    --c-muted: #8c7b70;      /* secondary text                          */
+    --c-border: #e6dccf;     /* soft borders / dividers / hairlines     */
+    --c-footer: #f3ece0;     /* footer + muted chip fill                */
+}
+
+[data-toast] {
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+}
+
+[data-toast].toast-hide {
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+}
+

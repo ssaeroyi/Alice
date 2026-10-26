@@ -1,0 +1,78 @@
+{
+  "voice": "af_heart",
+  "model": "kokoro-v1.0",
+  "toolkit": {
+    "python": "3.13.0",
+    "kokoro": "0.7.16",
+    "misaki": "0.7.4",
+    "torch": "2.13.0+cu126"
+  },
+  "lines": {
+    "classwork-0": {
+      "hash": "661d9db3aa587c75ec6b0c98f890b5c47710f1d5937feda8ef02837e0bd4a18c",
+      "mp3": "classwork-0.mp3",
+      "text": "This is Classwork. Your teacher's assignments and your classes all live on this page.",
+      "duration_ms": 5200
+    },
+    "farewell-0": {
+      "hash": "22c7981a5504abfd5abe7bd323eb66c75d6d065b90f4b881a07c26d505e0e0bc",
+      "mp3": "farewell-0.mp3",
+      "text": "That's the whole tour. You know your way around now.",
+      "duration_ms": 3100
+    },
+    "farewell-1": {
+      "hash": "5f85c52186113fb362bec276dd30b4675701c6f2bc4063a5ade1c94f665475d1",
+      "mp3": "farewell-1.mp3",
+      "text": "Tap Library up top to start a story and have fun. I'll be here any time you tap the question mark.",
+      "duration_ms": 6100
+    },
+    "games-0": {
+      "hash": "47e0eb0e5a43b1dd5811a8cd6cca7fbc2872418abea822f4612dc047e9fdbe43",
+      "mp3": "games-0.mp3",
+      "text": "Here is the mini game section. Currently we have three games which are Word Search, Memory and Sentence Builder.",
+      "duration_ms": 6800
+    },
+    "games-1": {
+      "hash": "de376585355ff2106115105fea3890004243071427deef1a041cf290ae4eec3d",
+      "mp3": "games-1.mp3",
+      "text": "Each game has its own help button to help you understand how each game's mechanics work.",
+      "duration_ms": 5600
+    },
+    "hub-go-0": {
+      "hash": "c6dc8f18dff82a96038d45691e9de49e03caae00a50cc335de7ed114483dd449",
+      "mp3": "hub-go-0.mp3",
+      "text": "Now let's find you a story. Off to the Library!",
+      "duration_ms": 3300
+    },
+    "hub-intro-0": {
+      "hash": "62d347a028af07a1d81269b391ada4d0df7c84e7ebe053d56b2adbd75a772ecc",
+      "mp3": "hub-intro-0.mp3",
+      "text": "Hi! I'm Alice. This is the Hub. It's your home base on ALICE.",
+      "duration_ms": 4200
+    },
+    "hub-tabs-0": {
+      "hash": "a7bb27c05fbe6a5adc0c821bdf1a60a4baba102fe220c23cf2319e29d4823393",
+      "mp3": "hub-tabs-0.mp3",
+      "text": "These are your five tabs. Watch them light up as I tap them.",
+      "duration_ms": 3900
+    },
+    "library-drawer-0": {
+      "hash": "fd9456c3dda17173a83e236e20db5186f4e6206d97562fe514b29976ba249a9a",
+      "mp3": "library-drawer-0.mp3",
+      "text": "These are the Filters. Feel free to explore what specific story you would like with the options here.",
+      "duration_ms": 6100
+    },
+    "library-shelves-0": {
+      "hash": "2fad78dbed1ab17e30058792c1ea428fe3b88afa3969c9ba40d8189f0f765212",
+      "mp3": "library-shelves-0.mp3",
+      "text": "Stories here are sorted just for you. Search up top for a title or an author, or you can filter by a specific genre that you like.",
+      "duration_ms": 8100
+    },
+    "study-0": {
+      "hash": "bd7f49981d8a2b8fe53e48c3cf7809873f843608b14c9d344930590b183c3caf",
+      "mp3": "study-0.mp3",
+      "text": "This is your Study corner. You can look up words here with our dictionary, save them and practice them with our flashcard feature. Or you can practice saved words from your past readings.",
+      "duration_ms": 11200
+    }
+  }
+}

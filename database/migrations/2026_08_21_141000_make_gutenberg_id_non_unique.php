@@ -1,0 +1,24 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('stories', function (Blueprint $table) {
+            $table->dropUnique('stories_gutenberg_id_unique');
+            $table->index('gutenberg_id');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('stories', function (Blueprint $table) {
+            $table->dropIndex(['gutenberg_id']);
+            $table->unique('gutenberg_id');
+        });
+    }
+};

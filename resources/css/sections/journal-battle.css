@@ -1,0 +1,388 @@
+/* Boss HP renders as the same hearts sprite, mirrored so the hearts face
+   inward toward Alice, matching the two fighters squaring off below. */
+.arena-hearts--boss .journal-heart { transform: scaleX(-1); }
+.arena-heart-burst { animation: heart-burst 500ms ease-out; }
+@keyframes heart-burst {
+    0% { transform: scaleX(-1) scale(1.3); filter: brightness(2); }
+    100% { transform: scaleX(-1) scale(1); filter: none; }
+}
+.arena-scene {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+}
+.arena-scene.is-shake { animation: arena-shake 320ms ease-in-out; }
+@keyframes arena-shake {
+    0%, 100% { transform: translate(0, 0); }
+    20% { transform: translate(-4px, 2px); }
+    40% { transform: translate(4px, -2px); }
+    60% { transform: translate(-3px, 1px); }
+    80% { transform: translate(3px, -1px); }
+}
+.hit-star {
+    position: absolute;
+    z-index: 2;
+    width: 8px;
+    height: 8px;
+    pointer-events: none;
+    animation: star-pop 600ms ease-out forwards;
+}
+@keyframes star-pop {
+    0% { transform: translate(0, 0) scale(1.2); opacity: 1; }
+    100% { transform: translate(var(--dx, 30px), var(--dy, -30px)) scale(0.3); opacity: 0; }
+}
+.dmg-float {
+    position: absolute;
+    z-index: 3;
+    pointer-events: none;
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: #FAF6EE;
+    text-shadow: 2px 2px 0 #2D231E;
+    animation: dmg-rise 1400ms ease-out forwards;
+}
+/* Pops in above the head, drifts a touch, HOLDS readable until ~65%,
+   then drifts off and fades. */
+@keyframes dmg-rise {
+    0% { transform: translateY(0) scale(1.15); opacity: 1; }
+    35% { transform: translateY(-12px) scale(1); opacity: 1; }
+    65% { transform: translateY(-14px) scale(1); opacity: 1; }
+    100% { transform: translateY(-44px) scale(0.9); opacity: 0; }
+}
+/* Fixed ground-line anchor grid: each fighter is a pure overlay snapped to
+   a column (50% +/- 80px), bottom-aligned on the same ground line,
+   horizontally centered on its anchor via translateX(-50%). Sizes are
+   clamped in setSlotBox() (max alice 125x150 / boss 190x205, aspect
+   preserved), so no skin can ever reach the scene edges. */
+.arena-alice {
+    --sscale: 1;
+    position: absolute;
+    left: calc(50% - 80px);
+    bottom: 16px;
+    /* --sox/--soy = scaled idle-art pivot (setSlotBox): centers the idle
+       pose on the anchor, not the union canvas. */
+    transform: translate(calc(-50% + var(--sox, 0px)), var(--soy, 0px));
+    transform-origin: bottom center;
+    width: calc(var(--sw, 120px) * var(--sscale));
+    height: calc(var(--sh, 120px) * var(--sscale));
+    background-repeat: no-repeat;
+    background-position: bottom left;
+    image-rendering: pixelated;
+    pointer-events: none;
+}
+.arena-alice.is-fall { animation: alice-fall 900ms ease-in forwards; }
+@keyframes alice-fall {
+    /* The pivot vars must be re-asserted each step or the idle anchor drops. */
+    0% { transform: translate(calc(-50% + var(--sox, 0px)), var(--soy, 0px)) rotate(0); }
+    40% { transform: translate(calc(-50% + var(--sox, 0px)), var(--soy, 0px)) rotate(-72deg); }
+    100% { transform: translate(calc(-50% + var(--sox, 0px)), calc(var(--soy, 0px) + 6px)) rotate(-90deg); }
+}
+.arena-alice.is-bounce { animation: alice-bounce 500ms ease-out 2; }
+@keyframes alice-bounce {
+    0%, 100% { transform: translate(calc(-50% + var(--sox, 0px)), var(--soy, 0px)); }
+    40% { transform: translate(calc(-50% + var(--sox, 0px)), calc(var(--soy, 0px) - 14px)); }
+}
+.arena-boss {
+    --sscale: 1;
+    position: absolute;
+    left: calc(50% + 80px);
+    bottom: 16px;
+    /* Mirrored (scaleX(-1)) -> setSlotBox pre-flips the --sox sign. */
+    transform: translate(calc(-50% + var(--sox, 0px)), var(--soy, 0px)) scaleX(-1);
+    transform-origin: bottom center;
+    width: calc(var(--sw, 190px) * var(--sscale));
+    height: calc(var(--sh, 190px) * var(--sscale));
+    background-repeat: no-repeat;
+    background-position: bottom left;
+    image-rendering: pixelated;
+    pointer-events: none;
+    /* Sheets face right (bringer was pre-flipped at the asset level);
+       mirror so the boss opposes Alice from his column. */
+}
+.arena-boss.is-flash { animation: boss-flash 420ms steps(2, end); }
+@keyframes boss-flash {
+    0%, 100% { filter: none; }
+    50% { filter: brightness(3) saturate(0.2); }
+}
+.arena-boss.is-hit { animation: boss-hit 420ms ease-out; }
+@keyframes boss-hit {
+    /* Pre-mirror translateX(-) reads as a rightward knockback on screen;
+       the anchor transform must be re-asserted each step or it drops out. */
+    0% { transform: translate(calc(-50% + var(--sox, 0px)), var(--soy, 0px)) scaleX(-1); }
+    30% { transform: translate(calc(-50% + var(--sox, 0px) - 16px), var(--soy, 0px)) rotate(-6deg) scaleX(-1); }
+    100% { transform: translate(calc(-50% + var(--sox, 0px)), var(--soy, 0px)) scaleX(-1); }
+}
+.journal-actions-page { display: flex; flex-direction: column; gap: 8px; }
+.journal-actions-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.journal-actions-head h3 {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: #2D231E;
+}
+.journal-hearts, .gm-hearts { display: inline-flex; gap: 3px; align-items: center; }
+.journal-heart, .gm-heart {
+    display: inline-block;
+    flex: none;
+    width: 18px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-size: 54px 16px;
+    image-rendering: pixelated;
+}
+.journal-heart.is-full, .gm-heart.is-full { background-position: 0 0; }
+.journal-heart.is-half, .gm-heart.is-half { background-position: -18px 0; }
+.journal-heart.is-empty, .gm-heart.is-empty { background-position: -36px 0; }
+.journal-heart.is-crack { animation: heart-crack 480ms ease-out; }
+@keyframes heart-crack {
+    0% { transform: scale(1); filter: none; }
+    30% { transform: scale(1.4) rotate(-8deg); filter: brightness(2); }
+    100% { transform: scale(1); }
+}
+.journal-action-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.journal-action-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #FFFFFF;
+    border: 2px solid #2D231E;
+    border-radius: 10px;
+    box-shadow: 2px 2px 0 0 rgba(45, 35, 30, 1);
+    padding: 11px 12px;
+    transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.journal-action-row:not(.is-locked):not(.is-done):hover {
+    transform: translateY(-2px);
+    box-shadow: 3px 3px 0 0 rgba(45, 35, 30, 1);
+}
+.journal-action-row.is-done {
+    background: #ECFDF5;
+    border-color: #059669;
+    box-shadow: none;
+    opacity: 0.9;
+}
+.journal-action-row.is-locked { opacity: 0.55; }
+.journal-action-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+/* MOVE 0X chip: the three SPELL STRIKE rows share a flavor name, so the
+   number is what actually tells them apart. */
+.journal-move-no {
+    font-size: 7px;
+    letter-spacing: 0.08em;
+    color: #FAF6EE;
+    background: #2D231E;
+    border-radius: 4px;
+    padding: 3px 5px;
+    align-self: flex-start;
+}
+/* Find-move progress pips: fill up as you tap matching words. */
+.journal-row-pips { display: inline-flex; gap: 4px; align-items: center; margin-top: 3px; }
+.journal-row-pip {
+    width: 9px;
+    height: 9px;
+    background: #FFFFFF;
+    border: 1.5px solid #2D231E;
+    border-radius: 2px;
+    transition: background 120ms ease;
+}
+.journal-row-pip.is-on { background: #F59E0B; }
+.journal-row-progress {
+    font-size: 8px;
+    color: #B45309;
+    margin-left: 3px;
+}
+.journal-action-flavor {
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    color: #B45309;
+    text-transform: uppercase;
+}
+.journal-action-prompt {
+    font-size: 13px;
+    font-weight: 700;
+    color: #2D231E;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+.journal-go {
+    min-width: 54px;
+    min-height: 36px;
+    padding: 0 12px;
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    background: #F59E0B;
+    border: 2px solid #2D231E;
+    border-radius: 8px;
+    box-shadow: 2px 2px 0 0 rgba(45, 35, 30, 1);
+    cursor: pointer;
+    flex-shrink: 0;
+    align-self: center;
+}
+.journal-go:hover { background: #D97706; }
+.journal-go:active { transform: translate(2px, 2px); box-shadow: none; }
+.journal-go:disabled { opacity: 0.5; cursor: default; }
+/* Live action row: the fight is running but game mode is closed. */
+.journal-action-row.is-active {
+    border-color: #D97706;
+    box-shadow: 2px 2px 0 0 #F59E0B;
+    animation: active-row-pulse 1.1s ease-in-out infinite;
+}
+@keyframes active-row-pulse {
+    0%, 100% { box-shadow: 2px 2px 0 0 #F59E0B; }
+    50% { box-shadow: 2px 2px 0 0 #FDE68A; }
+}
+.journal-done-mark {
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    font-size: 10px;
+    color: #059669;
+    flex-shrink: 0;
+    align-self: center;
+}
+/* --- pixel RESTARTING screen over the battle stage (defeat reset) --- */
+.arena-restart {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    background: rgba(27, 46, 31, 0.45);
+    animation: arena-restart-in 200ms steps(3) both;
+}
+@keyframes arena-restart-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.arena-restart-card {
+    background: #FAF6EE;
+    border: 3px solid #2D231E;
+    border-radius: 10px;
+    box-shadow: 4px 4px 0 0 #2D231E;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    animation: restart-card-pop 260ms steps(4) both;
+}
+@keyframes restart-card-pop {
+    from { transform: scale(0.6); }
+    to { transform: scale(1); }
+}
+.arena-restart-text {
+    font-size: 12px;
+    color: #2D231E;
+    letter-spacing: 0.1em;
+    text-shadow: 2px 2px 0 #F59E0B;
+    display: inline-flex;
+}
+.arena-restart-text span {
+    display: inline-block;
+    animation: restart-bob 480ms steps(2) infinite;
+}
+@keyframes restart-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+.arena-restart-bar {
+    width: 130px;
+    height: 10px;
+    background: #FFFFFF;
+    border: 2px solid #2D231E;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.arena-restart-bar span {
+    display: block;
+    height: 100%;
+    background: #F59E0B;
+    animation: restart-fill 1.8s steps(10) both;
+}
+@keyframes restart-fill {
+    from { width: 0; }
+    to { width: 100%; }
+}
+.journal-win {
+    margin-top: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    animation: win-pop 360ms ease-out;
+}
+.journal-win[hidden] { display: none; }
+.journal-win-banner {
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: #FFFFFF;
+    background: #059669;
+    border: 2px solid #2D231E;
+    border-radius: 10px;
+    box-shadow: 2px 2px 0 0 rgba(45, 35, 30, 1);
+    padding: 10px 8px;
+}
+@keyframes win-pop {
+    0% { transform: scale(0.7); opacity: 0; }
+    70% { transform: scale(1.06); }
+    100% { transform: scale(1); opacity: 1; }
+}
+.journal-finish-btn {
+    width: 100%;
+    min-height: 46px;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: #FFFFFF;
+    background: #059669;
+    border: 2px solid #2D231E;
+    border-radius: 10px;
+    box-shadow: 3px 3px 0 0 rgba(45, 35, 30, 1);
+    cursor: pointer;
+}
+.journal-finish-btn:hover { background: #047857; }
+.journal-finish-btn:active { transform: translate(3px, 3px); box-shadow: none; }
+.journal-replay-btn {
+    width: 100%;
+    min-height: 38px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: #2D231E;
+    background: #FFFFFF;
+    border: 2px solid #2D231E;
+    border-radius: 10px;
+    box-shadow: 2px 2px 0 0 rgba(45, 35, 30, 1);
+    cursor: pointer;
+}
+.journal-replay-btn:hover { background: #FFF7E6; }
+.journal-replay-btn:active { transform: translate(2px, 2px); box-shadow: none; }
+.journal-confetti {
+    position: fixed;
+    z-index: 60;
+    width: 8px;
+    height: 8px;
+    pointer-events: none;
+    animation: confetti-fall 1100ms ease-in forwards;
+}
+@keyframes confetti-fall {
+    0% { transform: translateY(0) rotate(0); opacity: 1; }
+    100% { transform: translateY(56vh) rotate(540deg); opacity: 0; }
+}
+

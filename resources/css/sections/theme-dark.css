@@ -1,0 +1,307 @@
+/* ===================== Theme switch (settings + dropdown) =====================
+   A DS-style pill switch used for the dark/light control. The thumb slides on
+   via `.theme-switch-on` (driven by theme-toggle.js / `data-theme-toggle`). */
+.theme-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    width: 44px;
+    height: 26px;
+    background: #E6DCCF;
+    border: 2px solid #2D231E;
+    border-radius: 999px;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+.theme-switch .theme-switch-thumb {
+    position: absolute;
+    top: 50%;
+    left: 2px;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border: 2px solid #2D231E;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: left 0.18s ease;
+}
+.theme-switch .theme-switch-thumb svg {
+    width: 10px;
+    height: 10px;
+}
+.theme-switch.theme-switch-on {
+    background: #fbbf24;
+}
+.theme-switch.theme-switch-on .theme-switch-thumb {
+    left: calc(100% - 24px);
+}
+.dark .theme-switch {
+    background: #42372e;
+    border-color: var(--c-ink);
+}
+.dark .theme-switch .theme-switch-thumb {
+    background: var(--c-surface);
+    border-color: var(--c-ink);
+}
+
+/* ===================== Dark mode (B1 overlay) =====================
+   The student UI paints itself from a tiny, repeated, hardcoded palette
+   (page #FAF6EE, ink #2D231E, border #E6DCCF, muted #8C7B70, footer #F3ECE0,
+   plus `#fff` surfaces and an ink offset shadow). Rather than rewrite every
+   blade, this single .dark block: (1) re-maps the semantic variables used by
+   the interactive classes above, and (2) re-declares the handful of literal
+   Tailwind utilities the blades use (escaped form) so the whole experience —
+   chrome pages, reader, quiz, mini-games and flashcards — flips in one place.
+   New or future blades reusing these hexes inherit dark mode for free. */
+
+:root {
+    --c-shadow: rgba(45, 35, 30, 1);
+    --c-struck-text: rgba(45, 35, 30, 0.4);
+    /* Filled word-search / sentence / pronunciation slots (solved cells). */
+    --c-fillable: #FEF3C7;
+    /* Offline speech-check (Vosk) accent fills. Asserted by classes that do
+       not otherwise expose a Tailwind color, so they can darken in .dark too.
+       --c-say-* named after their light palette role (bg / amber / green /
+       rose / cream). */
+    --c-say-bg: #FDF6E9;
+    --c-say-amber: #E6B86A;
+    --c-say-amber-text: #B07D24;
+    --c-say-green: #C9F2DC;
+    --c-say-green-border: #6FBB8A;
+    --c-say-rose: #FBD3CF;
+    --c-say-rose-border: #EE8F83;
+    --c-say-cream: #F6F1E6;
+}
+
+.dark {
+    /* Warm inverted palette — preserves the tactile DS warmth */
+    --c-page: #1a1512;
+    --c-surface: #251f1a;
+    --c-ink: #efe6d8;
+    --c-muted: #b0a092;
+    --c-border: #42372e;
+    --c-footer: #221c16;
+    --c-shadow: rgba(239, 230, 216, 0.9);
+    --c-struck-text: rgba(239, 230, 216, 0.55);
+    --c-fillable: #6b5418;
+    /* Offline speech-check accents: deep warm tints so the flipped light
+       letters stay legible on the darkened boxes / mic. */
+    --c-say-bg: #2b241d;
+    --c-say-amber: #7a6026;
+    --c-say-amber-text: #e2c47a;
+    --c-say-green: #1f4f3c;
+    --c-say-green-border: #4f8f70;
+    --c-say-rose: #582d33;
+    --c-say-rose-border: #a05a61;
+    --c-say-cream: #3c352e;
+
+    color-scheme: dark;
+}
+
+.dark .bg-\[\#FAF6EE\] { background-color: var(--c-page); }
+.dark .bg-\[\#FAF6EE\]\/90 { background-color: color-mix(in srgb, var(--c-page) 90%, transparent); }
+.dark .bg-\[\#FAF6EE\]\/95 { background-color: color-mix(in srgb, var(--c-page) 95%, transparent); }
+.dark .text-\[\#2D231E\] { color: var(--c-ink); }
+.dark .border-\[\#2D231E\] { border-color: var(--c-ink); }
+.dark .border-\[\#E6DCCF\] { border-color: var(--c-border); }
+.dark .text-\[\#8C7B70\] { color: var(--c-muted); }
+.dark .bg-\[\#F3ECE0\] { background-color: var(--c-footer); }
+.dark .bg-white { background-color: var(--c-surface); }
+.dark .bg-white\/90 { background-color: color-mix(in srgb, var(--c-surface) 90%, transparent); }
+.dark .bg-\[\#FDF6E9\] { background-color: var(--c-say-bg); }
+.dark .bg-\[\#FFF8E7\] { background-color: var(--c-say-bg); }
+.dark .hover\:bg-\[\#FAF6EE\]:hover { background-color: var(--c-page); }
+.dark .hover\:bg-\[\#F3ECE0\]:hover { background-color: var(--c-footer); }
+.dark .hover\:text-\[\#2D231E\]:hover { color: var(--c-ink); }
+
+/* Placeholder text (settings inputs etc.) — brighten the muted warm-brown so
+   it is legible on the dark field. */
+.dark .placeholder-\[\#8C7B70\]::placeholder { color: #a09286; }
+.dark .placeholder-\[\#B5A89C\]::placeholder { color: #a09286; }
+
+/* Ink at reduced opacity (hairst lines, disabled fills, secondary text,
+   backdrops) — remap to transparent light ink so it stays visible on dark.
+   Declared per utility kind so only the attribute that class actually
+   colours is changed (text colour vs border colour vs background). */
+.dark .text-\[\#2D231E\]\/10 { color: #efe6d81a; }
+.dark .text-\[\#2D231E\]\/15 { color: #efe6d826; }
+.dark .text-\[\#2D231E\]\/20 { color: #efe6d833; }
+.dark .text-\[\#2D231E\]\/30 { color: #efe6d84d; }
+.dark .text-\[\#2D231E\]\/40 { color: #efe6d86e; }
+.dark .text-\[\#2D231E\]\/50 { color: #efe6d889; }
+.dark .text-\[\#2D231E\]\/60 { color: #efe6d89f; }
+.dark .text-\[\#2D231E\]\/70 { color: #efe6d8b8; }
+.dark .text-\[\#2D231E\]\/75 { color: #efe6d8c2; }
+.dark .text-\[\#2D231E\]\/80 { color: #efe6d8cc; }
+.dark .border-\[\#2D231E\]\/10 { border-color: #efe6d81a; }
+.dark .border-\[\#2D231E\]\/15 { border-color: #efe6d826; }
+.dark .border-\[\#2D231E\]\/20 { border-color: #efe6d833; }
+.dark .border-\[\#2D231E\]\/30 { border-color: #efe6d84d; }
+.dark .border-\[\#2D231E\]\/40 { border-color: #efe6d866; }
+.dark .border-\[\#2D231E\]\/50 { border-color: #efe6d880; }
+.dark .border-\[\#2D231E\]\/60 { border-color: #efe6d899; }
+.dark .border-\[\#2D231E\]\/70 { border-color: #efe6d8b3; }
+.dark .border-\[\#2D231E\]\/75 { border-color: #efe6d8bf; }
+.dark .border-\[\#2D231E\]\/80 { border-color: #efe6d8cc; }
+.dark .bg-\[\#2D231E\]\/10 { background-color: #efe6d81a; }
+.dark .bg-\[\#2D231E\]\/15 { background-color: #efe6d826; }
+.dark .bg-\[\#2D231E\]\/20 { background-color: #efe6d833; }
+.dark .bg-\[\#2D231E\]\/30 { background-color: #efe6d84d; }
+.dark .bg-\[\#2D231E\]\/40 { background-color: #efe6d866; }
+.dark .bg-\[\#2D231E\]\/50 { background-color: #efe6d880; }
+.dark .bg-\[\#2D231E\]\/60 { background-color: #efe6d899; }
+.dark .bg-\[\#2D231E\]\/70 { background-color: #efe6d8b3; }
+.dark .bg-\[\#2D231E\]\/75 { background-color: #efe6d8bf; }
+.dark .bg-\[\#2D231E\]\/80 { background-color: #efe6d8cc; }
+
+/* Soft warm secondary fills / faint text that also need to flip so they do
+   not blow out on the dark canvas (progress tracks, empty chips, faint
+   labels, near-white reader/quiz paper). */
+.dark .text-\[\#B5A89C\] { color: #a09286; }
+.dark .text-\[\#D8CDBF\] { color: #85786b; }
+.dark .text-\[\#C5B8A8\] { color: #8f8172; }
+.dark .bg-\[\#EDE4D8\] { background-color: #2e2822; }
+.dark .bg-\[\#F4F0EA\] { background-color: #2b241e; }
+.dark .bg-\[\#FFFDF7\] { background-color: #2a231d; }
+.dark .border-\[\#E0D6C8\] { border-color: #42372e; }
+
+/* Ink offset shadows (the DS tactile press) flip warm in dark so buttons
+   still read as pressed instead of turning into black blocks. */
+.dark .shadow-\[3px_3px_0px_0px_rgba\(45\2c 35\2c 30\2c 1\)\] {
+    box-shadow: 3px 3px 0 0 var(--c-shadow);
+}
+.dark .shadow-\[2px_2px_0px_0px_rgba\(45\2c 35\2c 30\2c 1\)\] {
+    box-shadow: 2px 2px 0 0 var(--c-shadow);
+}
+.dark .shadow-\[1px_1px_0px_0px_rgba\(45\2c 35\2c 30\2c 1\)\] {
+    box-shadow: 1px 1px 0 0 var(--c-shadow);
+}
+.dark .shadow-\[4px_4px_0px_0px_rgba\(45\2c 35\2c 30\2c 1\)\] {
+    box-shadow: 4px 4px 0 0 var(--c-shadow);
+}
+.dark .shadow-\[2px_2px_0px_0px_rgba\(45\2c 35\2c 30\2c 0\.9\)\] {
+    box-shadow: 2px 2px 0 0 color-mix(in srgb, var(--c-shadow) 90%, transparent);
+}
+.dark .shadow-\[0px_-4px_0px_0px_rgba\(45\2c 35\2c 30\2c 0\.15\)\] {
+    box-shadow: 0px -4px 0px 0px color-mix(in srgb, var(--c-shadow) 15%, transparent);
+}
+.dark .shadow-none { box-shadow: none; }
+
+/* Saturated accent FILLS that carry ink-flip text (bg-*-400 + text-[#2D231E]).
+   The light-mode buttons/tabs pair a light/mid fill with the near-black ink;
+   in dark that ink flips to light cream, so the fill must darken with it or
+   the text becomes light-on-light. Each hue flips to a warm-dark tint of the
+   SAME hue so its meaning (amber=primary, emerald=success, sky=game,
+   violet=rank, rose=strike/quit) survives while the light text stays legible.
+   NOTE: -500 fills that carry text-white are deliberately NOT remapped — white
+   already sits legibly on them, and keeping them bright preserves progress/
+   status emphasis. */
+.dark .bg-amber-400 { background-color: #876b22; }
+.dark .bg-emerald-400 { background-color: #2b6b52; }
+.dark .bg-sky-400 { background-color: #2b5f73; }
+.dark .bg-violet-400 { background-color: #5b4a8f; }
+.dark .bg-rose-400 { background-color: #8a3f44; }
+.dark .bg-\[\#E6DCCF\] { background-color: #4a4036; }
+.dark .hover\:bg-amber-300:hover { background-color: #9b7c28; }
+
+/* Light-emphasis PASTEL fills (-100/-50/-200) — the soft chip / highlight
+   accents that pair with EITHER ink text (#2D231E) OR a semantic text color.
+   In light mode these are light pastels with dark text; in dark they must
+   darken (otherwise the flipped-ink text becomes light-on-light) AND their
+   semantic text must flip to a light tint of the same hue (else dark-on-dark).
+   Each is darkened to a warm tint of ITS OWN hue so green=victory,
+   rose=strike, amber=reward etc. keep their meaning on the dark canvas. */
+.dark .bg-amber-100 { background-color: #6b5418; }
+.dark .bg-amber-50 { background-color: #5f4a17; }
+.dark .bg-amber-200 { background-color: #7a5e1d; }
+.dark .bg-emerald-100 { background-color: #1f5c45; }
+.dark .bg-emerald-50 { background-color: #1c4f3c; }
+.dark .bg-emerald-200 { background-color: #25664d; }
+.dark .bg-sky-100 { background-color: #205066; }
+.dark .bg-sky-50 { background-color: #1c4557; }
+.dark .bg-sky-200 { background-color: #26596f; }
+.dark .bg-violet-100 { background-color: #4a4276; }
+.dark .bg-violet-50 { background-color: #3f3863; }
+.dark .bg-violet-200 { background-color: #534a81; }
+.dark .bg-rose-100 { background-color: #713a42; }
+.dark .bg-rose-50 { background-color: #5f3239; }
+.dark .bg-rose-200 { background-color: #7e4249; }
+.dark .bg-orange-100 { background-color: #71481f; }
+.dark .bg-orange-50 { background-color: #633c18; }
+.dark .bg-orange-200 { background-color: #7d5123; }
+.dark .bg-stone-100 { background-color: #4d463f; }
+.dark .bg-stone-200 { background-color: #544d46; }
+
+/* Dark hover counterparts so highlights no longer snap back to a light block. */
+.dark .hover\:bg-amber-100:hover { background-color: #6b5418; }
+.dark .hover\:bg-emerald-100:hover { background-color: #1f5c45; }
+.dark .hover\:bg-sky-100:hover { background-color: #205066; }
+
+/* Flip semantic -600/-700/-800 text to a LIGHT tint of its own hue so it
+   reads on the now-darkened pastel fills (hue meaning still preserved). */
+.dark .text-amber-700 { color: #e9cb87; }
+.dark .text-amber-800 { color: #efd69b; }
+.dark .text-emerald-700 { color: #7fc9a8; }
+.dark .text-emerald-800 { color: #8fd4b5; }
+.dark .text-sky-700 { color: #87c2da; }
+.dark .text-sky-800 { color: #96cde2; }
+.dark .text-violet-700 { color: #b3a9e0; }
+.dark .text-violet-800 { color: #c0b7e8; }
+.dark .text-rose-700 { color: #e2a6ac; }
+.dark .text-rose-800 { color: #eab4ba; }
+.dark .text-orange-700 { color: #e8bd87; }
+.dark .text-orange-800 { color: #efc895; }
+.dark .text-stone-600 { color: #b3aca4; }
+.dark .text-stone-700 { color: #c0bab2; }
+
+/* Flip semantic -600/-500 text to a LIGHT tint too: legend labels, layout
+   stats, combo indicators and rank/streak readouts sit on dark surface or
+   darkened pastel fills, so their saturated six- and five-hundred tiers
+   read as dark-on-dark. Hue meaning is preserved; -700/-800 are above. */
+.dark .text-amber-600 { color: #e6bc7c; }
+.dark .text-emerald-600 { color: #71c09d; }
+.dark .text-sky-600 { color: #7dbcd4; }
+.dark .text-violet-600 { color: #a99fd8; }
+.dark .text-rose-600 { color: #db9aa1; }
+.dark .text-orange-600 { color: #e0b384; }
+.dark .text-amber-500 { color: #ddb06d; }
+.dark .text-emerald-500 { color: #63b58f; }
+.dark .text-sky-500 { color: #6fb0c9; }
+.dark .text-violet-500 { color: #9d92d0; }
+.dark .text-rose-500 { color: #d08b93; }
+
+/* Combo star pips + MAX readout on the mini-game HUD. The pip sprite is
+   swapped to the Kenney white star in dark (arcade.js), so lift the off-pip
+   presence and make the rose overdrive legible on the near-black HUD. */
+.dark .game-pip {
+    opacity: 0.55;
+    filter: drop-shadow(0 0 3px rgba(245, 158, 11, 0.45));
+}
+.dark .game-combo-max {
+    color: #f0a0a8;
+    text-shadow: 0 0 6px rgba(225, 29, 72, 0.5);
+}
+
+/* Filled word-search / sentence / pronunciation slots: the SOLVED fill
+   (#FEF3C7) darkens via the --c-fillable variable set in .dark above, so the
+   flipped cream letters stay legible. No per-selector override needed. */
+
+/* White text (minute indicator / tooltips) on an INK background that the dark
+   remap turns to cream → white-on-cream. Re-darken the ink fill when it holds
+   white text so the label stays readable (ink *as text/border* still flips). */
+.dark .bg-\[\#2D231E\]\/75 { background-color: rgba(45, 35, 30, 0.9); }
+
+/* Horizontally scrollable strips that must look scrollbar-free on touch
+   (teacher story tabs, batch-action bar, compact toolbar rows). Tabs keep
+   working for keyboard users: focused items auto-scroll into view. */
+@utility no-scrollbar {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+

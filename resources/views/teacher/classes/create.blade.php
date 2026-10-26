@@ -1,0 +1,42 @@
+@extends('layouts.teacher')
+
+@section('title', 'New Class')
+@section('eyebrow', 'Classes')
+
+@section('content')
+    <div class="max-w-2xl mx-auto">
+        <a href="{{ route('teacher.classes.index') }}" class="inline-flex items-center gap-1 text-sm font-bold text-[#2D231E] mb-4">
+            <x-icons.core.arrow-left class="w-4 h-4" />
+            Back to classes
+        </a>
+
+        <form method="POST" action="{{ route('teacher.classes.store') }}" class="bg-white border border-[#E6DCCF] rounded-xl p-4 sm:p-6 space-y-6">
+            @csrf
+
+            <div>
+                <label for="name" class="block text-sm font-extrabold text-[#2D231E] mb-1">Class name</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value="{{ old('name') }}"
+                    required
+                    maxlength="80"
+                    placeholder="e.g. Grade 7 Diamond"
+                    class="w-full px-3 py-2.5 border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-sky-600"
+                >
+                @error('name')<p class="mt-1 text-xs font-bold text-rose-600">{{ $message }}</p>@enderror
+            </div>
+
+            <div class="bg-[#FAF6EE] border border-[#E6DCCF] rounded-xl p-4">
+                <p class="text-xs font-bold text-[#2D231E] uppercase tracking-wide mb-1">How students join</p>
+                <p class="text-sm font-semibold text-[#2D231E]">A join code is created automatically. Share it with your class. Students enter it (or accept an invite) in their "Classwork" area to enroll.</p>
+            </div>
+
+            <div class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-center sm:justify-end gap-2 sm:gap-3 pt-2 border-t border-[#E6DCCF]">
+                <a href="{{ route('teacher.classes.index') }}" class="flex items-center justify-center w-full sm:w-auto px-4 py-2.5 rounded-lg text-sm font-bold text-[#2D231E]">Cancel</a>
+                <button type="submit" class="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 transition-colors cursor-pointer">Create class</button>
+            </div>
+        </form>
+    </div>
+@endsection

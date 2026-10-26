@@ -1,0 +1,70 @@
+/* ====================== FX celebration sprites (2026-10-05 asset round - Phase 4) ==
+   Three finite pixel-smoke bursts cut from the "Free Smoke Fx Pixel 2"
+   pack (storage/asset-packs; see public/image/game/ATTRIBUTION.md). Each
+   file under public/image/game/fx/ is a horizontal sprite strip of 192px
+   cells; the classes below replay it once with steps() and stop (no
+   looping). Driven by components/celebrate.js - server pages tag elements
+   with data-celebrate="reward|levelup|win", JS games call
+   window.Celebrate('win', el). Plain CSS (not Tailwind utilities) so it is
+   never purged; the ink drop-shadow keeps white smoke readable on cream
+   tiles and stays invisible-but-harmless in dark mode. */
+
+.fx-sprite {
+    position: fixed;
+    z-index: 95;
+    width: 192px;
+    height: 192px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    pointer-events: none;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    image-rendering: pixelated;
+    filter: drop-shadow(2px 2px 0 #2D231E);
+    transform: translate(-50%, -50%);
+    animation-fill-mode: forwards;
+}
+
+.fx-sprite--reward {
+    background-image: url("/image/game/fx/reward.png");
+    animation-name: fx-play-reward;
+    animation-duration: 0.6s; /* 6 frames @ 10fps, source timing */
+    animation-timing-function: steps(6);
+}
+
+@keyframes fx-play-reward {
+    from { background-position: 0 0; }
+    to   { background-position: -1152px 0; } /* 6 * 192, never reached (steps end) */
+}
+
+.fx-sprite--levelup {
+    background-image: url("/image/game/fx/levelup.png");
+    animation-name: fx-play-levelup;
+    animation-duration: 0.66s; /* 11 frames @ ~16.7fps */
+    animation-timing-function: steps(11);
+}
+
+@keyframes fx-play-levelup {
+    from { background-position: 0 0; }
+    to   { background-position: -2112px 0; } /* 11 * 192 */
+}
+
+.fx-sprite--win {
+    background-image: url("/image/game/fx/win.png");
+    animation-name: fx-play-win;
+    animation-duration: 0.54s; /* 9 frames @ ~16.7fps */
+    animation-timing-function: steps(9);
+}
+
+@keyframes fx-play-win {
+    from { background-position: 0 0; }
+    to   { background-position: -1728px 0; } /* 9 * 192 */
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fx-sprite {
+        display: none !important;
+    }
+}
+

@@ -1,0 +1,202 @@
+/* Student quiz player (STUDENT_PAGES_PLAN 4.4): one question per
+   screen, pixel register, cream paper like the reader pane. */
+.q-option {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    width: 100%;
+    min-height: 56px;
+    padding: 0.75rem 1rem;
+    background: var(--c-surface);
+    border: 2px solid var(--c-ink);
+    border-radius: 1rem;
+    box-shadow: 3px 3px 0 0 var(--c-shadow);
+    transition: all 120ms ease;
+}
+
+.q-option:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 0 var(--c-shadow);
+}
+
+.q-option[aria-pressed="true"] {
+    background: #fbbf24;
+}
+
+.q-option.q-struck {
+    background: #fee2e2;
+    color: var(--c-struck-text);
+    pointer-events: none;
+    text-decoration: line-through;
+    box-shadow: none;
+    transform: none;
+}
+
+.q-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    background: var(--c-page);
+    border: 2px solid var(--c-ink);
+    border-radius: 0.6rem;
+}
+
+.q-big {
+    min-height: 96px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    background: var(--c-surface);
+    border: 2px solid var(--c-ink);
+    border-radius: 1.25rem;
+    box-shadow: 3px 3px 0 0 var(--c-shadow);
+    transition: all 120ms ease;
+}
+
+.q-big:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 0 var(--c-shadow);
+}
+
+.q-big[aria-pressed="true"] {
+    background: #fbbf24;
+}
+
+/* Matching chips: tap a left card, then its partner on the right to
+   lock the pair with a shared colour and number badge. */
+.q-chip {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 52px;
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    font-weight: 600;
+    line-height: 1.25;
+    background: var(--c-surface);
+    border: 2px solid var(--c-ink);
+    border-radius: 1rem;
+    box-shadow: 2px 2px 0 0 var(--c-shadow);
+    transition: all 120ms ease;
+}
+
+.q-chip:active {
+    transform: translate(1px, 1px);
+    box-shadow: none;
+}
+
+.q-chip.q-pending {
+    outline: 3px dashed #d97706;
+    outline-offset: 2px;
+}
+
+.q-chip.q-paired {
+    border-color: var(--pair-color, var(--c-ink));
+    background: color-mix(in srgb, var(--pair-color, var(--c-ink)) 12%, var(--c-surface));
+}
+
+/* Hint-revealed chips are settled truth: untappable. */
+.q-chip.q-locked {
+    opacity: 0.8;
+    cursor: default;
+    pointer-events: none;
+}
+
+.q-chip.q-shake {
+    animation: q-shake 0.4s ease;
+}
+
+@keyframes q-shake {
+
+    20%,
+    60% {
+        translate: -5px 0;
+    }
+
+    40%,
+    80% {
+        translate: 5px 0;
+    }
+}
+
+.pair-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin-left: auto;
+    flex-shrink: 0;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--pair-color, var(--c-ink));
+    border: 2px solid var(--c-ink);
+    border-radius: 999px;
+}
+
+/* Sequence: tap items into the ordered strip; numbers stamp as they land.
+   Chips are fully neutral like matching's; placement unlocks one fixed
+   amber number badge per item, so students track an event through
+   pool -> strip -> badge without a "right colour" to lean on. */
+.seq-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    background: #d97706;
+    border: 2px solid var(--c-ink);
+    border-radius: 0.5rem;
+}
+
+[data-seq-strip] [data-seq-item]:active {
+    transform: none;
+    box-shadow: 2px 2px 0 0 var(--c-shadow);
+}
+
+/* Key-spend feedback: the KEYS pill flashes once on a successful hint. */
+.balance-pop {
+    animation: balance-pop 0.5s ease;
+}
+
+@keyframes balance-pop {
+
+    0% {
+        transform: scale(1);
+    }
+
+    40% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Hint-strike feedback: a wrong MCQ option jolts as it's crossed out. */
+.q-strike-pop {
+    animation: q-strike-pop 0.35s ease;
+}
+
+@keyframes q-strike-pop {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    55% { transform: translateX(4px); }
+    100% { transform: translateX(0); }
+}
+

@@ -1,0 +1,6 @@
+Mascot sprite: Schoolgirl 1
+Source: CraftPix Free Tiny Schoolgirl Pixel Art Sprite Pack
+https://craftpix.net/freebies/free-tiny-schoolgirl-pixel-art-sprite-pack/
+License: CraftPix free license (royalty-free use in games/apps; no resale/redistribution of raw assets)
+https://craftpix.net/file-licenses/
+Used animations: Idle (6f), Walk (6f), Attack_1 (4f) - 128x128 frames.
