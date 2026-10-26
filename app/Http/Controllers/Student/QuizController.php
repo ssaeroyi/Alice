@@ -36,12 +36,37 @@ use Illuminate\Support\Str;
  */
 class QuizController extends Controller
 {
+    /**
+     * Where Leave / the results "back" link goes: the page the quiz was opened
+     * from (remembered in the session), or null for the story preview.
+     */
+    private function returnUrl(Story $story): ?string
+    {
+        return session("quiz_return.{$story->id}");
+    }
+
+    /** Accept only same-site paths ("/x"), never external or protocol-relative URLs. */
+    private function safeReturn(?string $url): ?string
+    {
+        if ($url === null || $url === '' || ! str_starts_with($url, '/') || str_starts_with($url, '//') || str_contains($url, '\\') || preg_match('/[\r\n]/', $url)) {
+            return null;
+        }
+
+        return $url;
+    }
+
     public function show(Request $request, Story $story)
     {
         abort_unless($story->status === StoryStatus::Published, 404);
 
         if (! $story->questions()->exists()) {
             abort(404);
+        }
+
+        if ($safe = $this->safeReturn($request->query('return'))) {
+            $request->session()->put("quiz_return.{$story->id}", $safe);
+        } else {
+            $request->session()->forget("quiz_return.{$story->id}");
         }
 
         $opened = StoryProgress::query()
@@ -84,6 +109,7 @@ class QuizController extends Controller
 
         return view('student.quiz', [
             'story' => $story,
+            'leaveUrl' => $this->returnUrl($story) ?? route('story.preview', $story),
             'panels' => $panels,
             'total' => count($panels),
             'band' => AliceLibrary::difficultyBand((int) $story->reading_level),
@@ -922,7 +948,7 @@ class QuizController extends Controller
             'stamped' => (bool) ($stamp['stamped'] ?? false),
             'streak' => (int) ($stamp['streak'] ?? 0),
             'retake_url' => route('reader.quiz', $story),
-            'back_url' => route('story.preview', $story),
+            'back_url' => $this->returnUrl($story) ?? route('story.preview', $story),
             'results_url' => route('reader.quiz.results', [$story, $attempt->attempt_uuid]),
             'live' => $live,
         ];

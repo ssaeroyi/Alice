@@ -44,7 +44,7 @@
         <p class="text-sm font-semibold text-[#2D231E]/70 text-center">Your answers are not saved yet, so leaving means starting over. Your question order and hints stay for next time.</p>
         <div class="flex items-center justify-center gap-3 pt-1">
             <button type="button" data-modal-close class="min-h-[44px] px-5 font-pixel text-[9px] font-bold uppercase bg-white border-2 border-[#2D231E] rounded-xl shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all">STAY</button>
-            <a href="{{ route('story.preview', $story) }}" class="min-h-[44px] inline-flex items-center px-5 font-pixel text-[9px] font-bold uppercase bg-rose-600 text-white hover:bg-rose-700 border-2 border-[#2D231E] rounded-xl shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all">LEAVE</a>
+            <a href="{{ $leaveUrl }}" class="min-h-[44px] inline-flex items-center px-5 font-pixel text-[9px] font-bold uppercase bg-rose-600 text-white hover:bg-rose-700 border-2 border-[#2D231E] rounded-xl shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all">LEAVE</a>
         </div>
     </x-modal>
 
