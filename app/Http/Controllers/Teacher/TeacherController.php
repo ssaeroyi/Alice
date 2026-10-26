@@ -94,6 +94,7 @@ class TeacherController extends Controller
             'thinkingGrade' => $thinkingGrade,
             'gradeBreakdown' => static::gradeBreakdown(),
             'comprehensionLevels' => static::comprehensionDistribution(),
+            'placementOnlyCount' => static::placementOnlyCount(),
             'textDifficulty' => static::textDifficulty($studentIds),
             'struggling' => static::struggling(),
             'activeAssignments' => static::activeAssignmentsQuery()
@@ -891,6 +892,15 @@ class TeacherController extends Controller
             ->pluck('total', 'level')
             ->map(fn ($total) => (int) $total)
             ->all();
+    }
+
+    /** Finished placement but no live quiz result yet (shown at their placement grade). */
+    private static function placementOnlyCount(): int
+    {
+        return static::studentQuery()
+            ->where('is_setup_complete', true)
+            ->whereDoesntHave('readingProgress', fn ($q) => $q->whereNotNull('comprehension_level'))
+            ->count();
     }
 
     /**

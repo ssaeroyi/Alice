@@ -147,7 +147,8 @@
                                     {{ $student->grade_level ? 'Grade '.$student->effectiveGrade() : '—' }}
                                 </td>
                                 <td class="px-4 py-3 hidden md:table-cell text-xs font-bold text-[#2D231E]">
-                                        {{ $student->reading_level ? 'Grade '.$student->reading_level : '—' }}
+                                        @php $served = $student->readingProgress?->reading_grade ?? $student->reading_level; @endphp
+                                        {{ $served ? 'Grade '.$served : '—' }}
                                 </td>
                                 <td class="px-4 py-3 hidden lg:table-cell">
                                     @php $rp = $student->readingProgress; @endphp

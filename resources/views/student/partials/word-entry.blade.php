@@ -123,9 +123,11 @@
                 </button>
 
                 @if ($savedWord !== null)
-                    <span class="flex-1 min-h-[44px] inline-flex items-center justify-center gap-2 bg-emerald-400 border-2 border-[#2D231E] rounded-2xl font-pixel text-[11px] font-bold text-[#2D231E] uppercase cursor-default" data-saved-flag>
+                    <button type="button" data-unsave-word="{{ $entry['resolved_to'] }}" title="Tap to remove from your words"
+                            class="flex-1 min-h-[44px] inline-flex items-center justify-center gap-2 bg-emerald-400 border-2 border-[#2D231E] rounded-2xl font-pixel text-[11px] font-bold text-[#2D231E] uppercase cursor-pointer shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+                            data-saved-flag>
                         In your words
-                    </span>
+                    </button>
                 @else
                     <button type="button" data-save-word="{{ $entry['resolved_to'] }}"
                             class="flex-1 min-h-[44px] inline-flex items-center justify-center gap-2 bg-amber-400 border-2 border-[#2D231E] rounded-2xl font-pixel text-[11px] font-bold text-[#2D231E] shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer uppercase">
