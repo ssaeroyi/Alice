@@ -33,7 +33,7 @@
                 TERMS & CONDITIONS
             </span>
             <span class="font-pixel text-[9px] sm:text-[10px] bg-[#E6DCCF] border border-[#2D231E] text-[#2D231E] px-2 py-1 rounded-md font-bold uppercase">
-                LAST UPDATED: SEP 2026
+                LAST UPDATED: OCT 2026
             </span>
         </div>
 

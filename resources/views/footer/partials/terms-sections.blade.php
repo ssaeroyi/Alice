@@ -32,6 +32,7 @@
     <section id="privacy" class="space-y-2 scroll-mt-24">
         <h2 class="font-pixel text-[10px] sm:text-xs font-bold text-amber-600 uppercase">5. PERSONAL INFORMATION & DATA PRIVACY</h2>
         <p>We collect only the information needed to operate the Platform: your name, email address, assigned reading level, and learning progress data. This information is used solely to personalize your learning experience and is processed in accordance with the <span class="font-bold">Data Privacy Act of 2012 (Republic Act No. 10173)</span>.</p>
+        <p>The Platform keeps login attempts and request logs, which include your IP address, to protect accounts and fix problems. Voice practice and the grammar check run in your browser, so that text stays on your device.</p>
         <p>We do not sell, rent, or share your personal information with third parties. You may request access to, correction of, or deletion of your personal data at any time through the Contact page.</p>
     </section>
 
@@ -95,6 +96,11 @@
             <li><span class="font-bold">Nieobie</span> — Game Icon Pack (bell, bookmark and sound icons). CC0 1.0 (public domain). <a href="https://nieobie.itch.io/free-icons" class="font-bold text-amber-700 hover:text-[#2D231E] hover:underline transition-colors">nieobie.itch.io</a></li>
             <li><span class="font-bold">Kenney</span> — kenney.nl. CC0 1.0 (public domain). <a href="https://kenney.nl/" class="font-bold text-amber-700 hover:text-[#2D231E] hover:underline transition-colors">kenney.nl</a></li>
             <li><span class="font-bold">Google Fonts</span> — Press Start 2P, Quicksand. SIL Open Font License. <a href="https://fonts.google.com/" class="font-bold text-amber-700 hover:text-[#2D231E] hover:underline transition-colors">fonts.google.com</a></li>
+            <li><span class="font-bold">Harper.js</span> — grammar check. Apache License 2.0. <a href="https://writewithharper.com/" class="font-bold text-amber-700 hover:text-[#2D231E] hover:underline transition-colors">writewithharper.com</a></li>
+            <li><span class="font-bold">Vosk</span> — offline speech recognition. Apache License 2.0. <a href="https://alphacephei.com/vosk/" class="font-bold text-amber-700 hover:text-[#2D231E] hover:underline transition-colors">alphacephei.com/vosk</a></li>
+            <li><span class="font-bold">Chart.js</span> — charts. MIT License. <a href="https://www.chartjs.org/" class="font-bold text-amber-700 hover:text-[#2D231E] hover:underline transition-colors">chartjs.org</a></li>
+            <li><span class="font-bold">anime.js</span> — animation. MIT License. <a href="https://animejs.com/" class="font-bold text-amber-700 hover:text-[#2D231E] hover:underline transition-colors">animejs.com</a></li>
+            <li><span class="font-bold">Flatpickr</span> — date picker. MIT License. <a href="https://flatpickr.js.org/" class="font-bold text-amber-700 hover:text-[#2D231E] hover:underline transition-colors">flatpickr.js.org</a></li>
         </ul>
     </section>
 

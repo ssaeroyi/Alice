@@ -98,6 +98,7 @@
                     <span class="font-pixel text-[9px] sm:text-[10px] bg-sky-300 border-2 border-[#2D231E] text-[#2D231E] px-3 py-1.5 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] uppercase">JAVASCRIPT</span>
                     <span class="font-pixel text-[9px] sm:text-[10px] bg-violet-400 border-2 border-[#2D231E] text-[#2D231E] px-3 py-1.5 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] uppercase">CHART.JS</span>
                     <span class="font-pixel text-[9px] sm:text-[10px] bg-rose-400 border-2 border-[#2D231E] text-[#2D231E] px-3 py-1.5 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] uppercase">ANIME.JS</span>
+                    <span class="font-pixel text-[9px] sm:text-[10px] bg-amber-300 border-2 border-[#2D231E] text-[#2D231E] px-3 py-1.5 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] uppercase">FLATPICKR</span>
                 </div>
             </div>
 
@@ -106,7 +107,7 @@
                 <div class="flex flex-wrap gap-2">
                     <span class="font-pixel text-[9px] sm:text-[10px] bg-cyan-300 border-2 border-[#2D231E] text-[#2D231E] px-3 py-1.5 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] uppercase">VOSK SPEECH</span>
                     <span class="font-pixel text-[9px] sm:text-[10px] bg-rose-300 border-2 border-[#2D231E] text-[#2D231E] px-3 py-1.5 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] uppercase">KOKORO TTS</span>
-                    <span class="font-pixel text-[9px] sm:text-[10px] bg-amber-300 border-2 border-[#2D231E] text-[#2D231E] px-3 py-1.5 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] uppercase">LANGUAGETOOL</span>
+                    <span class="font-pixel text-[9px] sm:text-[10px] bg-amber-300 border-2 border-[#2D231E] text-[#2D231E] px-3 py-1.5 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] uppercase">HARPER.JS</span>
                     <span class="font-pixel text-[9px] sm:text-[10px] bg-emerald-300 border-2 border-[#2D231E] text-[#2D231E] px-3 py-1.5 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] uppercase">WORDNET</span>
                     <span class="font-pixel text-[9px] sm:text-[10px] bg-sky-200 border-2 border-[#2D231E] text-[#2D231E] px-3 py-1.5 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] uppercase">FLESCH-KINCAID</span>
                 </div>
