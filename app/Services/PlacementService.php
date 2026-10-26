@@ -97,6 +97,7 @@ class PlacementService
                 'comprehension_bar' => $result['percentage'],
                 'reading_level' => $readingLevel,
                 'is_setup_complete' => true,
+                'last_login_at' => $user->last_login_at ?? now(),
             ]);
 
             if (! $wasSetupComplete) {

@@ -198,11 +198,11 @@
             title="Where the class stands"
             icon="book"
             subtitle="Live reading level from each student's recent reading and quiz evidence."
-            info="This is each student's current comprehension level, kept live off recent reading and quiz evidence rather than the placement snapshot. Students without enough evidence yet are not shown. Pick a band to open the roster filtered to it."
+            info="This is each student's current comprehension level, kept live off recent reading and quiz evidence rather than the placement snapshot. Students with no quiz results yet are counted at their placement level and labeled as placement. Pick a band to open the roster filtered to it."
         >
             @if ($placementOnlyCount > 0)
                 <p class="mb-3 text-[11px] font-semibold text-[#2D231E]">
-                    <span class="font-extrabold">{{ $placementOnlyCount }}</span> placement only: finished placement, no quiz results yet. They are not in the bands below.
+                    <span class="font-extrabold">{{ $placementOnlyCount }}</span> placement only: finished placement, no quiz results yet. They are counted in the bands below at their placement level.
                 </p>
             @endif
             @if (! empty($comprehensionLevels))

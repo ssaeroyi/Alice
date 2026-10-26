@@ -50,6 +50,7 @@ Route::middleware(['auth', 'not.staff', 'not.suspended', 'not.deleted'])->group(
         Route::get('/assignments/{assignment}', [StudentAssignmentController::class, 'show'])->name('student.assignments.show');
         Route::get('/inbox', [InboxController::class, 'index'])->name('inbox');
         Route::get('/inbox/preview', [InboxController::class, 'preview'])->name('inbox.preview');
+Route::get('/inbox/unread.json', [InboxController::class, 'unread'])->name('inbox.unread');
         Route::post('/inbox/{notification}/read', [InboxController::class, 'read'])->name('inbox.read');
         Route::post('/inbox/{notification}/claim', [InboxController::class, 'claim'])->name('inbox.claim');
         Route::post('/inbox/read-all', [InboxController::class, 'readAll'])->name('inbox.read-all');

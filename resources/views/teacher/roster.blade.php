@@ -179,6 +179,9 @@
                                                 </p>
                                             @endif
                                         @endif
+                                    @elseif ($student->comprehension_level && $student->is_setup_complete)
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#F3ECE0] text-[#2D231E] border border-[#E6DCCF]">{{ $student->comprehension_level->label() }}</span>
+                                        <p class="mt-1 text-[10px] font-semibold text-[#2D231E]">From placement, no quiz results yet</p>
                                     @else
                                         <span class="text-xs font-semibold text-[#2D231E]">No live result yet</span>
                                     @endif

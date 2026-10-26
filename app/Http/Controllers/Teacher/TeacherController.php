@@ -693,7 +693,14 @@ class TeacherController extends Controller
                 if ($level === 'none') {
                     $query->whereDoesntHave('readingProgress', fn ($progress) => $progress->whereNotNull('comprehension_level'));
                 } else {
-                    $query->whereHas('readingProgress', fn ($progress) => $progress->where('comprehension_level', $level));
+                    $query->where(function ($q) use ($level) {
+                        $q->whereHas('readingProgress', fn ($progress) => $progress->where('comprehension_level', $level))
+                            ->orWhere(function ($p) use ($level) {
+                                $p->where('is_setup_complete', true)
+                                    ->where('users.comprehension_level', $level)
+                                    ->whereDoesntHave('readingProgress', fn ($progress) => $progress->whereNotNull('comprehension_level'));
+                            });
+                    });
                 }
             })
             ->when($skillIds !== null, fn ($query) => $query->whereIn('users.id', $skillIds))
@@ -885,13 +892,30 @@ class TeacherController extends Controller
      */
     private static function comprehensionDistribution(): array
     {
-        return static::studentQuery()
+        $live = static::studentQuery()
             ->join('reading_progress', 'reading_progress.user_id', '=', 'users.id')
             ->selectRaw('reading_progress.comprehension_level AS level, COUNT(*) AS total')
             ->groupBy('reading_progress.comprehension_level')
             ->pluck('total', 'level')
             ->map(fn ($total) => (int) $total)
             ->all();
+
+        // Finished placement, no live quiz result yet: counted at their placement band.
+        $placement = static::studentQuery()
+            ->where('is_setup_complete', true)
+            ->whereNotNull('users.comprehension_level')
+            ->whereDoesntHave('readingProgress', fn ($q) => $q->whereNotNull('comprehension_level'))
+            ->selectRaw('users.comprehension_level AS level, COUNT(*) AS total')
+            ->groupBy('users.comprehension_level')
+            ->pluck('total', 'level')
+            ->map(fn ($total) => (int) $total)
+            ->all();
+
+        foreach ($placement as $level => $total) {
+            $live[$level] = ($live[$level] ?? 0) + $total;
+        }
+
+        return $live;
     }
 
     /** Finished placement but no live quiz result yet (shown at their placement grade). */

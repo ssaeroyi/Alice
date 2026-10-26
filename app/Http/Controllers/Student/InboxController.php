@@ -28,6 +28,14 @@ class InboxController extends Controller
      */
     private const FILTERS = ['all', 'unread', 'assignments', 'invites'];
 
+    /** Unread count for the header bell poll (every 30s). */
+    public function unread(Request $request): JsonResponse
+    {
+        return response()->json([
+            'unread' => $request->user()->notifications()->unread()->count(),
+        ]);
+    }
+
     /**
      * How many rows the nav-bell preview shows. Deliberately small: the panel
      * is a glance layer, the inbox page is the full list.

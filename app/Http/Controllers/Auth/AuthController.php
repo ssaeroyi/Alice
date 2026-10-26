@@ -220,6 +220,7 @@ class AuthController extends Controller
         });
 
         Auth::login($user);
+        $user->update(['last_login_at' => now()]);
         $request->session()->regenerate();
 
         return redirect()->route('placement.step1')->with('toast', [

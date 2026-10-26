@@ -202,11 +202,9 @@
                     aria-label="Inbox"
                 >
                     <span class="w-4 h-4 shrink-0 text-[#2D231E] [&>svg]:h-full [&>svg]:w-full">{!! \App\Support\LibraryPresentation::iconGlyph('ui', 'bell') !!}</span>
-                    @if ($unreadNotifications > 0)
-                        <span data-unread-badge class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 border-2 border-[#2D231E] text-white font-pixel text-[7px] font-bold flex items-center justify-center shadow-[1px_1px_0px_0px_rgba(45,35,30,0.9)]">
-                            {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
-                        </span>
-                    @endif
+                    <span data-student-unread class="{{ $unreadNotifications > 0 ? '' : 'hidden' }} absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 border-2 border-[#2D231E] text-white font-pixel text-[7px] font-bold flex items-center justify-center shadow-[1px_1px_0px_0px_rgba(45,35,30,0.9)]">
+                        {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
+                    </span>
                 </a>
 
                 <!-- Bell preview panel. Header is static; [data-bell-body] is
@@ -379,11 +377,9 @@
                             >
                                 <span class="w-3.5 h-3.5 shrink-0 text-[#2D231E] [&>svg]:h-full [&>svg]:w-full">{!! \App\Support\LibraryPresentation::iconGlyph('ui', 'bell') !!}</span>
                                 <span>Inbox</span>
-                                @if ($unreadNotifications > 0)
-                                    <span data-unread-badge class="ml-auto min-w-[20px] h-[20px] px-1 rounded-full bg-rose-500 border border-[#2D231E] text-white font-pixel text-[8px] font-bold flex items-center justify-center">
-                                        {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
-                                    </span>
-                                @endif
+                                <span data-student-unread class="{{ $unreadNotifications > 0 ? '' : 'hidden' }} ml-auto min-w-[20px] h-[20px] px-1 rounded-full bg-rose-500 border border-[#2D231E] text-white font-pixel text-[8px] font-bold flex items-center justify-center">
+                                    {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
+                                </span>
                             </a>
                             <a
                                 href="/settings"
