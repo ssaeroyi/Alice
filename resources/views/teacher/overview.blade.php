@@ -293,6 +293,95 @@
             </div>
         </x-admin.panel>
 
+        <!-- READING GROWTH (the trend line + compare) -->
+        <x-admin.panel
+            title="Reading growth"
+            icon="chart-line"
+            subtitle="Average quiz score per week, full history, school-wide."
+            info="This is the big-picture line: the average score on every story quiz, week by week, since the first record. The compare statement averages the last 30 days against the previous 30. Rising line and a positive delta = comprehension is improving."
+        >
+            @php
+                $delta = $growthCompare;
+                $deltaLabel = $delta === null ? null : ($delta['delta'] > 0
+                    ? 'up ' . $delta['delta'] . ' points'
+                    : ($delta['delta'] < 0 ? 'down ' . abs($delta['delta']) . ' points' : 'flat'));
+            @endphp
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-2 mb-3">
+                <span class="text-sm font-extrabold text-[#2D231E]">
+                    @if ($delta !== null && $delta['previous'] > 0)
+                        Last 30 days: {{ $delta['current'] }}% avg,
+                        <span class="{{ $delta['delta'] >= 0 ? 'text-emerald-700' : 'text-rose-600' }}">{{ $deltaLabel }}</span> vs previous 30.
+                    @elseif ($delta !== null)
+                        Last 30 days: {{ $delta['current'] }}% avg. Not enough history yet for a comparison.
+                    @else
+                        No quiz data yet.
+                    @endif
+                </span>
+            </div>
+            <div class="relative h-52">
+                <canvas
+                    data-growth-line-canvas
+                    data-growth='@json($growthLine)'
+                    class="absolute inset-0 w-full h-full"
+                ></canvas>
+                @if (count($growthLine) === 0)
+                    <p class="absolute inset-0 flex items-center justify-center text-sm font-semibold text-[#2D231E]">No quiz history yet. This line draws as students take quizzes.</p>
+                @endif
+            </div>
+        </x-admin.panel>
+
+        <!-- WORDS & FIT -->
+        <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#2D231E] flex items-center gap-1.5">
+            <x-icons.book-open class="w-3.5 h-3.5" /> Words & fit
+        </p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <!-- VOCAB MASTERY PYRAMID -->
+            <x-admin.panel
+                title="Word mastery"
+                icon="spell-book"
+                subtitle="Every saved word by flashcard strength."
+                info="Depth of vocabulary: a word counts as mastered once flashcard reviews grade it Strong. Words saved is the count collected; this shows how many have stuck."
+            >
+                @if (! empty($masteryPyramid) && array_sum(array_column($masteryPyramid, 'total')) > 0)
+                    @php $maxMastery = max(1, max(array_column($masteryPyramid, 'total'))); @endphp
+                    <div class="space-y-2">
+                        @foreach ($masteryPyramid as $tier)
+                            <div class="flex items-center gap-3">
+                                <span class="shrink-0 w-24 text-[11px] font-bold text-[#2D231E]">{{ $tier['label'] }}</span>
+                                <div class="flex-1 h-3 rounded-full bg-[#F3ECE0] overflow-hidden">
+                                    <div class="h-full rounded-full {{ $tier['level'] >= 3 ? 'bg-emerald-500' : ($tier['level'] >= 1 ? 'bg-amber-400' : 'bg-stone-400') }}" style="width: {{ round($tier['total'] / $maxMastery * 100) }}%"></div>
+                                </div>
+                                <span class="shrink-0 w-10 text-right text-[11px] font-extrabold text-[#2D231E] tabular-nums">{{ $tier['total'] }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-sm font-semibold text-[#2D231E]">No saved words yet. Students save words while reading.</p>
+                @endif
+            </x-admin.panel>
+
+            <!-- GOOD FIT RATE -->
+            <x-admin.panel
+                title="Reading the right books"
+                icon="compass"
+                subtitle="Finished books within one grade of the reader's own level."
+                info="A good-fit book sits within one grade of the student's reading level: easy enough to understand, hard enough to grow. Too easy means coasting; too hard means frustration. Computed over all finished books."
+            >
+                @if ($goodFit !== null)
+                    <div class="flex items-center gap-5">
+                        <span class="text-5xl font-extrabold text-[#2D231E] tabular-nums">{{ $goodFit['pct'] }}%</span>
+                        <p class="text-xs font-semibold text-[#2D231E] leading-relaxed">
+                            {{ $goodFit['fit'] }} of {{ $goodFit['total'] }} finished books were a good fit
+                            for the student's reading level.
+                        </p>
+                    </div>
+                @else
+                    <p class="text-sm font-semibold text-[#2D231E]">No finished books yet.</p>
+                @endif
+            </x-admin.panel>
+        </div>
+
         <!-- CLASSWORK -->
         <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#2D231E] flex items-center gap-1.5">
             <x-icons.landmark class="w-3.5 h-3.5" /> Classwork
@@ -453,6 +542,44 @@
             </x-admin.panel>
 
         </div>
+
+        <!-- WHAT THEY'RE READING (stories finished in range) -->
+        <x-admin.panel
+            title="What they're reading"
+            icon="book"
+            subtitle="Stories finished in the selected window, most finished first."
+            info="Finish counts and the average quiz score per story. The bar shows the score: red under 60, amber under 75, green above. Click Open to review or swap the story."
+        >
+            @if ($readingNow->isNotEmpty())
+                @php $worstAvg = max($readingNow->max('avg_score') ?: 100, 1); @endphp
+                <ul class="divide-y divide-[#F0E9DD]">
+                    @foreach ($readingNow as $row)
+                        <li class="py-2.5">
+                            <div class="flex items-center gap-3">
+                                <span class="shrink-0 min-w-[44px] text-center rounded-lg px-2 py-1.5 text-xs font-extrabold tabular-nums {{ $row->finishes }} finish{{ $row->finishes === 1 ? '' : 'es' }} bg-[#FAF6EE] text-[#2D231E]">{{ $row->finishes }}×</span>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-xs font-bold text-[#2D231E] truncate">{{ $row->title }}</p>
+                                    <p class="text-[11px] font-semibold text-[#2D231E]">
+                                        Grade {{ $row->reading_level }} text
+                                        @if ($row->avg_score !== null)
+                                            · {{ round($row->avg_score) }}% avg quiz
+                                        @endif
+                                    </p>
+                                </div>
+                                <a href="{{ route('teacher.stories.index') }}" class="shrink-0 text-[11px] font-bold text-sky-600 hover:text-sky-700 transition-colors">Open</a>
+                            </div>
+                            @if ($row->avg_score !== null)
+                                <div class="mt-1.5 ml-[3.4rem] h-2 rounded-full bg-[#F3ECE0] overflow-hidden">
+                                    <div class="h-full rounded-full {{ $row->avg_score >= 75 ? 'bg-emerald-500' : ($row->avg_score >= 60 ? 'bg-amber-400' : 'bg-rose-400') }}" style="width: {{ min(100, round($row->avg_score / $worstAvg * 100)) }}%"></div>
+                                </div>
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <p class="text-sm font-semibold text-[#2D231E]">No stories finished in this window. It fills as students reach the end.</p>
+            @endif
+        </x-admin.panel>
 
         <!-- ATTENTION -->
         <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#2D231E] flex items-center gap-1.5">

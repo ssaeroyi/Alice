@@ -417,6 +417,48 @@ function initReadingDonut(canvas) {
 
 const GRADE_COLORS = ['#34D399', '#38BDF8', '#FBBF24', '#A78BFA', '#FB7185', '#2DD4BF', '#F472B6'];
 
+/** Reading-growth line: weekly average quiz score over the full history. */
+function initGrowthLine(canvas) {
+    const rows = parseJson(canvas.dataset.growth, []);
+
+    if (rows.length === 0) {
+        return;
+    }
+
+    loadCharts()
+        .then(({ Chart }) => {
+            new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: rows.map((row) => row.date),
+                    datasets: [
+                        {
+                            label: 'Avg quiz score',
+                            data: rows.map((row) => row.count),
+                            borderColor: '#34D399',
+                            backgroundColor: 'rgba(52, 211, 153, 0.15)',
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: rows.length > 40 ? 0 : 3,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { suggestedMin: 0, suggestedMax: 100 },
+                        x: { ticks: { maxTicksLimit: 8, font: { size: 10 } } },
+                    },
+                },
+            });
+        })
+        .catch(() => {
+            // The compare statement still carries the headline.
+        });
+}
+
 /** Grade-distribution doughnut: same mechanics as the reading donut, click a
  *  slice opens the roster filtered to that grade. */
 function initGradeDonut(canvas) {
@@ -496,5 +538,11 @@ export default function init() {
 
     if (gradeCanvas && gradeCanvas.dataset.grade) {
         initGradeDonut(gradeCanvas);
+    }
+
+    const growthCanvas = document.querySelector('[data-growth-line-canvas]');
+
+    if (growthCanvas && growthCanvas.dataset.growth) {
+        initGrowthLine(growthCanvas);
     }
 }

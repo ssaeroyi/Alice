@@ -99,6 +99,11 @@ class TeacherController extends Controller
             'comprehensionLevels' => static::comprehensionDistribution(),
             'placementOnlyCount' => static::placementOnlyCount(),
             'growthTrends' => static::growthTrends($studentIds),
+            'growthLine' => static::growthHistorySeries($studentIds),
+            'growthCompare' => static::growthCompare($studentIds),
+            'goodFit' => static::goodFitRate($studentIds),
+            'masteryPyramid' => static::masteryPyramid($studentIds),
+            'readingNow' => static::whatTheyRead($range, $studentIds),
             'textDifficulty' => static::textDifficulty($studentIds),
             'struggling' => static::struggling(),
             'activeAssignments' => static::activeAssignmentsQuery()
@@ -1057,6 +1062,110 @@ class TeacherController extends Controller
             'steady' => $withRow - $up - $down,
             'none' => $studentIds->count() - $withRow,
         ];
+    }
+
+    /** Weekly average quiz score over the full recorded history (progress line). */
+    private static function growthHistorySeries(Collection $studentIds): array
+    {
+        if ($studentIds->isEmpty()) {
+            return [];
+        }
+
+        $rows = TestAttempt::query()
+            ->whereIn('user_id', $studentIds)
+            ->orderBy('created_at')
+            ->get(['score_pct', 'created_at']);
+
+        $weeks = [];
+        foreach ($rows as $row) {
+            $week = $row->created_at->startOfWeek()->toDateString();
+            $weeks[$week]['sum'] = ($weeks[$week]['sum'] ?? 0) + (float) $row->score_pct;
+            $weeks[$week]['n'] = ($weeks[$week]['n'] ?? 0) + 1;
+        }
+
+        return collect($weeks)->map(fn ($b, $week) => ['date' => $week, 'count' => round($b['sum'] / $b['n'], 1)])->values()->all();
+    }
+
+    /** Average quiz score, last 30 days vs the previous 30. */
+    private static function growthCompare(Collection $studentIds): ?array
+    {
+        if ($studentIds->isEmpty()) {
+            return null;
+        }
+
+        $avg = fn (Carbon $from, Carbon $to) => (float) (TestAttempt::query()
+            ->whereIn('user_id', $studentIds)
+            ->whereBetween('created_at', [$from, $to])
+            ->avg('score_pct') ?? 0);
+
+        $now = Carbon::now();
+        $current = $avg($now->copy()->subDays(30), $now);
+        $previous = $avg($now->copy()->subDays(60), $now->copy()->subDays(30));
+
+        return ['current' => round($current, 1), 'previous' => round($previous, 1), 'delta' => round($current - $previous, 1)];
+    }
+
+    /** Share of finished books within ±1 grade of the student's own level. */
+    private static function goodFitRate(Collection $studentIds): ?array
+    {
+        if ($studentIds->isEmpty()) {
+            return null;
+        }
+
+        $rows = StoryProgress::query()
+            ->whereIn('story_progress.user_id', $studentIds)
+            ->whereNotNull('story_progress.completed_at')
+            ->join('stories', 'stories.id', '=', 'story_progress.story_id')
+            ->join('users', 'users.id', '=', 'story_progress.user_id')
+            ->whereNotNull('users.reading_level')
+            ->selectRaw('SUM(ABS(stories.reading_level - users.reading_level) <= 1) AS fit, COUNT(*) AS total')
+            ->first();
+
+        if (! $rows || (int) $rows->total === 0) {
+            return null;
+        }
+
+        return ['fit' => (int) $rows->fit, 'total' => (int) $rows->total, 'pct' => round($rows->fit / $rows->total * 100)];
+    }
+
+    /** Saved words grouped by flashcard mastery level (0=not studied .. 4). */
+    private static function masteryPyramid(Collection $studentIds): array
+    {
+        if ($studentIds->isEmpty()) {
+            return [];
+        }
+
+        $rows = \App\Models\SavedWord::query()
+            ->whereIn('user_id', $studentIds)
+            ->selectRaw('mastery_level, COUNT(*) AS total')
+            ->groupBy('mastery_level')
+            ->pluck('total', 'mastery_level');
+
+        return collect(range(0, 4))->map(fn ($level) => [
+            'level' => $level,
+            'label' => ['Not studied', 'Just saved', 'Learning', 'Reviewing', 'Strong'][$level] ?? (string) $level,
+            'total' => (int) ($rows[$level] ?? 0),
+        ])->all();
+    }
+
+    /** Stories finished in the range: finish counts + avg quiz score per story. */
+    private static function whatTheyRead(DashboardRange $range, Collection $studentIds): Collection
+    {
+        if ($studentIds->isEmpty()) {
+            return collect();
+        }
+
+        return StoryProgress::query()
+            ->whereIn('story_progress.user_id', $studentIds)
+            ->whereNotNull('story_progress.completed_at')
+            ->whereBetween('story_progress.completed_at', [$range->start(), $range->end()])
+            ->join('stories', 'stories.id', '=', 'story_progress.story_id')
+            ->leftJoin('test_attempts', 'test_attempts.story_id', '=', 'stories.id')
+            ->selectRaw('stories.title, stories.reading_level, COUNT(DISTINCT story_progress.user_id) AS finishes, AVG(test_attempts.score_pct) AS avg_score')
+            ->groupBy('stories.id', 'stories.title', 'stories.reading_level')
+            ->orderByDesc('finishes')
+            ->limit(6)
+            ->get();
     }
 
     /**
