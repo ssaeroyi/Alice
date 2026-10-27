@@ -3,7 +3,7 @@
     $keysNow = (int) ($gamer['keys'] ?? 0);
 @endphp
 @foreach ($tasks as $t)
-    <div class="card-hover bg-white border-4 {{ $t['can_claim'] ? 'border-emerald-500 task-card-pulse' : 'border-[#2D231E]' }} rounded-2xl p-4 shadow-[5px_5px_0px_0px_rgba(45,35,30,1)]">
+    <div data-task-card class="card-hover bg-white border-4 {{ $t['can_claim'] ? 'border-emerald-500 task-card-pulse' : 'border-[#2D231E]' }} rounded-2xl p-4 shadow-[5px_5px_0px_0px_rgba(45,35,30,1)]">
         <div class="flex items-start gap-3">
             <span class="font-semibold w-12 h-12 shrink-0 border-2 border-[#2D231E] rounded-xl flex items-center justify-center {{ $t['claimed'] ? 'bg-[#E6DCCF] text-[#2D231E]' : 'bg-emerald-100 text-emerald-700' }} [&>svg]:h-6 [&>svg]:w-6">
                 {!! \App\Support\LibraryPresentation::iconGlyph('ui', $t['type']->icon()) !!}
@@ -52,7 +52,7 @@
 
         <div class="mt-4 flex items-center gap-2">
             @unless ($t['claimed'])
-                <div class="flex items-center gap-2" data-task-actions data-task-id="{{ $t['id'] }}" data-reward-keys="{{ $t['reward_keys'] }}"{{ $t['can_claim'] ? ' data-can-claim' : '' }}>
+                <div class="flex items-center gap-2" data-task-actions data-task-id="{{ $t['id'] }}" @if ($t['can_claim']) data-can-claim @endif data-reward-keys="{{ $t['reward_keys'] }}"{{ $t['can_claim'] ? ' data-can-claim' : '' }}>
                     @if ($t['can_claim'])
                         <form method="POST" action="{{ route('tasks.claim') }}" class="inline" data-task-claim-form>
                             @csrf

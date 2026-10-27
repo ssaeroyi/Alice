@@ -85,6 +85,24 @@ function swapToClaimed(wrap) {
         chip.classList.remove('hidden');
         chip.classList.add('inline-flex');
     }
+
+    // Calm the card the moment it's claimed: kill the claimable pulse and
+    // settle the border back to ink (was waiting for a full page refresh).
+    const card = wrap.closest('[data-task-card]');
+    if (card) {
+        card.classList.remove('task-card-pulse', 'border-emerald-500');
+        card.classList.add('border-[#2D231E]');
+    }
+    refreshHubBadge();
+}
+
+/** Repaint both HUB claimable badges (desktop + mobile) from the DOM count. */
+function refreshHubBadge() {
+    const remaining = Array.from(document.querySelectorAll('[data-can-claim]')).filter((el) => !el.hidden).length;
+    document.querySelectorAll('[data-hub-claimable-badge]').forEach((badge) => {
+        badge.textContent = remaining > 9 ? '9+' : String(remaining);
+        badge.classList.toggle('hidden', remaining <= 0);
+    });
 }
 
 function initGoalClaim() {

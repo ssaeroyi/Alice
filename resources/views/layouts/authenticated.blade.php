@@ -132,11 +132,10 @@
                     class="relative font-pixel text-xs font-bold px-4 lg:px-5 py-2.5 rounded-2xl border-2 border-[#2D231E] {{ request()->routeIs('hub*', 'tasks*', 'badges') ? 'bg-amber-400' : 'bg-white hover:bg-amber-100' }} text-[#2D231E] shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] transition-all uppercase"
                 >
                     HUB
-                    @if (($gamer['claimable_tasks'] ?? 0) > 0)
-                        <span class="absolute -top-2 -right-2 min-w-[22px] h-[22px] px-1.5 rounded-full bg-rose-500 border-2 border-[#2D231E] text-white font-pixel text-[9px] font-bold flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(45,35,30,0.9)]">
-                            {{ $gamer['claimable_tasks'] }}
-                        </span>
-                    @elseif (($gamer['in_progress_tasks'] ?? 0) > 0)
+                    <span data-hub-claimable-badge class="{{ ($gamer['claimable_tasks'] ?? 0) > 0 ? '' : 'hidden' }} absolute -top-2 -right-2 min-w-[22px] h-[22px] px-1.5 rounded-full bg-rose-500 border-2 border-[#2D231E] text-white font-pixel text-[9px] font-bold flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(45,35,30,0.9)]">
+                        {{ $gamer['claimable_tasks'] }}
+                    </span>
+                    @if (($gamer['claimable_tasks'] ?? 0) <= 0 && ($gamer['in_progress_tasks'] ?? 0) > 0)
                         <span class="absolute -top-2 -right-2 w-[14px] h-[14px] rounded-full bg-amber-400 border-2 border-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,0.9)]" title="A daily task is in progress" aria-label="A daily task is in progress"></span>
                     @endif
                 </a>
@@ -433,11 +432,10 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
                 <span>HUB</span>
-                @if (($gamer['claimable_tasks'] ?? 0) > 0)
-                    <span class="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 rounded-full bg-rose-500 border-2 border-[#2D231E] text-white font-pixel text-[8px] font-bold flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(45,35,30,0.9)]">
-                        {{ $gamer['claimable_tasks'] }}
-                    </span>
-                @elseif (($gamer['in_progress_tasks'] ?? 0) > 0)
+                <span data-hub-claimable-badge class="{{ ($gamer['claimable_tasks'] ?? 0) > 0 ? '' : 'hidden' }} absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 rounded-full bg-rose-500 border-2 border-[#2D231E] text-white font-pixel text-[8px] font-bold flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(45,35,30,0.9)]">
+                    {{ $gamer['claimable_tasks'] }}
+                </span>
+                @if (($gamer['claimable_tasks'] ?? 0) <= 0 && ($gamer['in_progress_tasks'] ?? 0) > 0)
                     <span class="absolute -top-1 -right-1 w-[12px] h-[12px] rounded-full bg-amber-400 border-2 border-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,0.9)]" title="A daily task is in progress" aria-label="A daily task is in progress"></span>
                 @else
                     <span data-student-unread class="{{ $unreadNotifications > 0 ? '' : 'hidden' }} absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 rounded-full bg-rose-500 border-2 border-[#2D231E] text-white font-pixel text-[8px] font-bold flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(45,35,30,0.9)]" title="{{ $unreadNotifications }} unread in your inbox" aria-label="{{ $unreadNotifications }} unread in your inbox">
