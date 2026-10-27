@@ -172,15 +172,15 @@
                             type="button"
                             data-suggest-prev
                             aria-label="Previous suggestions"
-                            class="w-8 h-8 inline-flex items-center justify-center bg-white border-2 border-[#2D231E] rounded-lg text-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] hover:bg-[#FAF6EE] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all [&>svg]:h-4 [&>svg]:w-4"
+                            class="w-9 h-9 inline-flex items-center justify-center bg-white border-2 border-[#2D231E] rounded-lg text-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] hover:bg-[#FAF6EE] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all [&>svg]:h-4 [&>svg]:w-4"
                         >
-                            <x-icons.arrow-left />
+                            <x-icons.arrow-right class="-scale-x-100" />
                         </button>
                         <button
                             type="button"
                             data-suggest-next
                             aria-label="More suggestions"
-                            class="w-8 h-8 inline-flex items-center justify-center bg-white border-2 border-[#2D231E] rounded-lg text-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] hover:bg-[#FAF6EE] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all [&>svg]:h-4 [&>svg]:w-4"
+                            class="w-9 h-9 inline-flex items-center justify-center bg-white border-2 border-[#2D231E] rounded-lg text-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] hover:bg-[#FAF6EE] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all [&>svg]:h-4 [&>svg]:w-4"
                         >
                             <x-icons.arrow-right />
                         </button>

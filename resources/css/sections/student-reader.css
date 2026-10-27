@@ -85,3 +85,73 @@
     #reader-mascot { display: block; }
 }
 
+
+/* ============ mobile Alice: she lives at the bar's left end ==============
+   Desktop keeps her in the left margin (base rule above). Below 1280px the
+   reader has no margin, so she docks into the control bar instead: the bar
+   reserves her slot via [data-reader-bar] padding so she never covers the
+   play controls. Fixed position = zero layout impact on the bar. */
+@media (max-width: 1279px) {
+    #reader-mascot {
+        display: block;
+        position: fixed;
+        bottom: 8px;
+        left: 6px;
+        --mscale: 0.21;
+        z-index: 5;
+    }
+
+    [data-reader-bar] {
+        padding-left: 52px;
+    }
+}
+
+/* Milestone + event bubble. Fixed, out of flow, pointer-events none, so it
+   can never block a control. Slides up beside Alice, then fades away. */
+#reader-mascot-bubble {
+    position: fixed;
+    bottom: 62px;
+    left: 8px;
+    max-width: 210px;
+    padding: 8px 12px;
+    background: #2D231E;
+    color: #FAF6EE;
+    border: 2px solid #FAF6EE;
+    border-radius: 12px;
+    box-shadow: 3px 3px 0 0 rgba(45, 35, 30, 1);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.35;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+    z-index: 6;
+}
+
+#reader-mascot-bubble.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (min-width: 1280px) {
+    #reader-mascot-bubble {
+        bottom: auto;
+        top: calc(50% - 60px);
+        left: calc(50% - 384px - 130px + 30px);
+    }
+}
+
+/* One-shot pulse on the FINISH button when the battle is won mid-session. */
+@keyframes finish-flash {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.18); }
+}
+
+.finish-flash {
+    animation: finish-flash 0.4s ease 3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .finish-flash { animation: none; }
+}

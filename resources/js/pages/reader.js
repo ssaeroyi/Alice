@@ -164,6 +164,32 @@ function updateScrollProgress() {
     lastScrollPct = Math.max(lastScrollPct, pct);
     setProgressBar(pct);
     updateFinishButton(pct);
+    checkMilestones(pct);
+}
+
+/* Reading milestones: one celebration each at 25/50/75%. Alice reacts and a
+   bubble appears above the bar, then everything settles back. The restored
+   scroll position seeds lastMilestone so a resume never spams old bubbles. */
+let lastMilestone = 0;
+const MILESTONES = [[75, 'Almost done!'], [50, 'Halfway there!'], [25, 'Good start!']];
+
+function checkMilestones(pct) {
+    const hit = MILESTONES.find(([m]) => pct >= m && lastMilestone < m);
+    if (!hit) return;
+    lastMilestone = hit[0];
+    showMascotBubble(hit[1]);
+    mascotReact('walk');
+}
+
+let bubbleTimer = 0;
+
+function showMascotBubble(text) {
+    const bubble = document.getElementById('reader-mascot-bubble');
+    if (!bubble) return;
+    bubble.textContent = text;
+    bubble.classList.add('show');
+    clearTimeout(bubbleTimer);
+    bubbleTimer = setTimeout(() => bubble.classList.remove('show'), 3000);
 }
 
 function setProgressBar(pct) {
@@ -199,6 +225,7 @@ function restoreScrollPosition() {
     // percentage (0-100) tracked by the heartbeat, so "Continue reading" and a
     // cross-device reopen both resume exactly where the student left off.
     const initialPct = parseInt(document.getElementById('reader-main')?.dataset.initialPct ?? '0', 10);
+    lastMilestone = initialPct;
     const maxScroll = paperEl.scrollHeight - paperEl.clientHeight;
     let target = 0;
 
@@ -846,6 +873,28 @@ function bind() {
     });
 
     bindFinishFlush();
+
+    // Battle-win sync: the journal dispatches this on victory. Reveal the
+    // bottom-bar FINISH instantly (it only used to appear after a reload)
+    // and celebrate through Alice.
+    document.addEventListener('alice:battle-won', () => {
+        document.querySelector('[data-finish-form]')?.classList.remove('hidden');
+        const btn = document.querySelector('[data-finish-btn]');
+        btn?.classList.add('finish-flash');
+        setTimeout(() => btn?.classList.remove('finish-flash'), 1600);
+        showMascotBubble("Bruno's down! Finish the story!");
+        mascotReact('attack');
+    });
+
+    // First visit to a mission story: auto-open HOW TO FINISH once so the
+    // rule lands before they start. Every other visit stays quiet; the ?
+    // button still opens it anytime.
+    try {
+        if (document.querySelector('[data-journal-open]') && localStorage.getItem('alice-reader-goal-seen') !== '1') {
+            localStorage.setItem('alice-reader-goal-seen', '1');
+            setTimeout(() => document.querySelector('[data-modal-open="journal-help-modal"]')?.click(), 700);
+        }
+    } catch { /* storage off */ }
 }
 
 /**
@@ -1045,10 +1094,43 @@ function initNarration(scope) {
 
     applyNarrSpeed(speedButton);
 
-    speedButton?.addEventListener('click', () => {
-        narrSpeedIndex = (narrSpeedIndex + 1) % NARRATION_SPEEDS.length;
-        applyNarrSpeed(speedButton);
-        try { localStorage.setItem('narration-speed', String(NARRATION_SPEEDS[narrSpeedIndex])); } catch { /* */ }
+    // Narration options menu: speeds as explicit rows + replay. Replaces the
+    // blind 1x cycle chip; same storage key and playback path underneath.
+    const menuWrap = wrap.querySelector('[data-narr-menu-wrap]');
+    const menuBtn = wrap.querySelector('[data-narr-menu]');
+    const menuPanel = wrap.querySelector('[data-narr-menu-panel]');
+    const closeNarrMenu = () => {
+        menuPanel?.classList.add('hidden');
+        menuBtn?.setAttribute('aria-expanded', 'false');
+    };
+
+    menuBtn?.addEventListener('click', () => {
+        const open = menuPanel?.classList.toggle('hidden') === false;
+        menuBtn?.setAttribute('aria-expanded', String(open));
+    });
+
+    document.addEventListener('click', (e) => {
+        if (menuPanel && !menuPanel.classList.contains('hidden') && !menuWrap?.contains(e.target)) closeNarrMenu();
+    });
+
+    menuPanel?.querySelectorAll('[data-narr-speed-option]').forEach((opt) => {
+        opt.addEventListener('click', () => {
+            narrSpeedIndex = NARRATION_SPEEDS.indexOf(parseFloat(opt.dataset.speed));
+            if (narrSpeedIndex < 0) narrSpeedIndex = 1;
+            applyNarrSpeed(speedButton);
+            try { localStorage.setItem('narration-speed', String(NARRATION_SPEEDS[narrSpeedIndex])); } catch { /* */ }
+            closeNarrMenu();
+        });
+    });
+
+    menuPanel?.querySelector('[data-narr-replay]')?.addEventListener('click', () => {
+        closeNarrMenu();
+        if (!narrationAudio) return;
+        narrationAudio.pause();
+        currentSegmentIdx = 0;
+        lastSentIdx = -1;
+        setNarrationState(toggle, icon, true);
+        loadSegment(0, toggle, icon, speedButton, offsets);
     });
 
     let currentSegmentIdx = 0;
@@ -1190,7 +1272,12 @@ function applyNarrSpeed(speedButton) {
     if (narrationAudio) {
         narrationAudio.playbackRate = NARRATION_SPEEDS[narrSpeedIndex];
     }
-    if (speedButton) speedButton.textContent = `${NARRATION_SPEEDS[narrSpeedIndex]}×`;
+    // Active speed row inside the options menu (the button itself is a dots glyph).
+    document.querySelectorAll('[data-narr-speed-option]').forEach((opt) => {
+        const active = parseFloat(opt.dataset.speed) === NARRATION_SPEEDS[narrSpeedIndex];
+        opt.classList.toggle('bg-amber-400', active);
+        opt.classList.toggle('bg-white', !active);
+    });
 }
 
 function setNarrationState(toggle, icon, playing) {

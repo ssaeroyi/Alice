@@ -975,6 +975,10 @@ function winSequence() {
 
     confettiBurst();
 
+    // Reader-page sync: the reader listens for this to reveal the bottom-bar
+    // FINISH live (it only used to appear after a reload).
+    document.dispatchEvent(new CustomEvent('alice:battle-won'));
+
     const openBtn = document.querySelector('[data-journal-open]');
     if (openBtn) openBtn.classList.remove('journal-pulse');
 }

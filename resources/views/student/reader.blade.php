@@ -1,4 +1,4 @@
-@extends('layouts.authenticated')
+﻿@extends('layouts.authenticated')
 
 @section('page', 'reader')
 
@@ -51,7 +51,7 @@
         <div id="scroll-progress" class="h-full bg-emerald-500 rounded-full transition-[width] duration-150" style="width:0%"></div>
     </div>
 
-    {{-- Top bar: back · Aa · ⋮ — swaps to the battle strip during a move --}}
+    {{-- Top bar: back Â· Aa Â· â‹® â€” swaps to the battle strip during a move --}}
     <div
         class="reader-surface flex items-center gap-2 shrink-0 bg-white border-2 border-[#2D231E] rounded-xl shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] px-3 py-1.5"
         id="reader-topbar"
@@ -75,7 +75,7 @@
                 class="min-h-[40px] min-w-[40px] px-2 inline-flex items-center justify-center font-pixel text-xs font-bold bg-white border-2 border-[#2D231E] rounded-xl shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
             >Aa</button>
 
-            {{-- ⋮: story menu --}}
+            {{-- â‹®: story menu --}}
             <button
                 type="button"
                 data-menu-open
@@ -95,10 +95,13 @@
     </div>
 
     {{-- Alice: decorative companion. position:fixed (CSS) so she is out of
-         flow and never affects layout — on desktop she sits in the left
+         flow and never affects layout â€” on desktop she sits in the left
          margin outside the card, on narrow/mobile she overlays the control
          bar. pointer-events:none keeps every control tappable. --}}
-    <div id="reader-mascot" data-anim="idle" data-skin='@json($equippedAlice)' aria-hidden="true"></div>
+    $1
+
+    {{-- Milestone + event bubble: fixed, out of flow, never tappable. --}}
+    <div id="reader-mascot-bubble" role="status" aria-live="polite"></div>
 
     <div
         id="reader-main"
@@ -123,7 +126,7 @@
         </div>
 
         {{-- Bottom bar --}}
-        <div class="reader-surface shrink-0 flex items-center justify-between gap-2 bg-white border-2 border-[#2D231E] rounded-xl shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] px-3 py-1.5">
+        <div class="reader-surface shrink-0 flex items-center justify-between gap-2 bg-white border-2 border-[#2D231E] rounded-xl shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] px-3 py-1.5" data-reader-bar>
             {{-- Center: narration --}}
             @if ($narrationSegments)
                 <div
@@ -138,14 +141,25 @@
                         aria-pressed="false"
                         aria-label="LISTEN"
                         class="min-h-[40px] px-3 inline-flex items-center gap-1.5 font-pixel text-[9px] font-bold uppercase text-white bg-emerald-600 hover:bg-emerald-700 border-2 border-[#2D231E] rounded-xl shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
-                    ><span data-narr-icon>▶</span></button>
-                    <button
-                        type="button"
-                        data-narr-speed
-                        data-cue="select"
-                        aria-label="Change reading speed"
-                        class="min-h-[40px] px-2 font-pixel text-[8px] font-bold uppercase bg-white border-2 border-[#2D231E] rounded-lg shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
-                    >1×</button>
+                    ><span data-narr-icon>â–¶</span></button>
+                    <div class="relative" data-narr-menu-wrap>
+                        <button
+                            type="button"
+                            data-narr-menu
+                            aria-label="Narration options"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            class="min-h-[40px] px-2.5 font-pixel text-sm font-bold bg-white border-2 border-[#2D231E] rounded-lg shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] hover:bg-[#FAF6EE] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                        >&#8942;</button>
+                        <div data-narr-menu-panel class="hidden absolute bottom-full mb-2 left-0 z-30 w-44 bg-white border-2 border-[#2D231E] rounded-xl shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] p-2 space-y-1">
+                            <p class="font-pixel text-[8px] font-bold uppercase tracking-wider text-[#8C7B70] px-1">Speed</p>
+                            <button type="button" data-narr-speed-option data-speed="0.75" class="w-full min-h-[36px] px-2 rounded-lg text-xs font-bold text-[#2D231E] bg-white hover:bg-[#FAF6EE] transition-colors text-left">0.75x Slow</button>
+                            <button type="button" data-narr-speed-option data-speed="1" class="w-full min-h-[36px] px-2 rounded-lg text-xs font-bold text-[#2D231E] bg-white hover:bg-[#FAF6EE] transition-colors text-left">1x Normal</button>
+                            <button type="button" data-narr-speed-option data-speed="1.25" class="w-full min-h-[36px] px-2 rounded-lg text-xs font-bold text-[#2D231E] bg-white hover:bg-[#FAF6EE] transition-colors text-left">1.25x Fast</button>
+                            <div class="h-px bg-[#2D231E]/10"></div>
+                            <button type="button" data-narr-replay class="w-full min-h-[36px] px-2 rounded-lg text-xs font-bold text-[#2D231E] bg-white hover:bg-[#FAF6EE] transition-colors text-left">Replay narration</button>
+                        </div>
+                    </div>
                 </div>
             @else
                 <span></span>
@@ -162,8 +176,7 @@
                         class="min-h-[40px] px-3 inline-flex items-center gap-1.5 font-pixel text-[9px] font-bold uppercase text-white bg-amber-500 hover:bg-amber-600 border-2 border-[#2D231E] rounded-xl shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all{{ $battleComplete ? '' : ' journal-pulse' }}"
                     >JOURNAL</button>
                 @endif
-                @if (!$missionsEnabled || $battleComplete)
-                <form method="POST" action="{{ route('reader.finish', $story) }}">
+                <form method="POST" action="{{ route('reader.finish', $story) }}" data-finish-form class="{{ $missionsEnabled && ! $battleComplete ? 'hidden' : '' }}">
                     @csrf
                     <button
                         type="submit"
@@ -171,7 +184,6 @@
                         class="min-h-[40px] px-3 inline-flex items-center gap-1.5 font-pixel text-[9px] font-bold uppercase text-white bg-emerald-600 hover:bg-emerald-700 border-2 border-[#2D231E] rounded-xl shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all opacity-30 pointer-events-none"
                     >FINISH</button>
                 </form>
-                @endif
             </div>
         </div>
     </div>
@@ -317,6 +329,12 @@
         <div class="flex-1 min-w-0">
             {{-- Overview --}}
             <section data-jh-panel="overview" class="space-y-2.5 text-xs font-medium text-[#2D231E] leading-relaxed">
+                <div class="bg-amber-400 border-2 border-[#2D231E] rounded-2xl p-3 space-y-1">
+                    <p class="font-pixel text-[10px] font-bold text-[#2D231E] uppercase">3 STEPS TO BEAT THIS STORY</p>
+                    <p><span class="font-extrabold">1.</span> Read to the end.</p>
+                    <p><span class="font-extrabold">2.</span> Open the Field Journal and defeat the boss. Do the actions in the ACTIONS list. Every action damages the boss.</p>
+                    <p><span class="font-extrabold">3.</span> Tap FINISH. That marks the story beaten and pays your reward.</p>
+                </div>
                 <div class="bg-[#FAF6EE] border-2 border-[#2D231E] rounded-2xl p-3 space-y-1">
                     <p class="font-pixel text-[10px] font-bold text-amber-600 uppercase">THE JOURNAL</p>
                     <p>This is your field journal. Every mission story hides a boss in the arena, and you beat it by finishing the tasks in the ACTIONS list.</p>
@@ -459,7 +477,7 @@
             data-aa-close
             aria-label="Close settings"
             class="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-[#2D231E] text-[#2D231E] font-bold text-sm hover:bg-[#FAF6EE] transition-colors cursor-pointer"
-        >✕</button>
+        >âœ•</button>
     </div>
 
     {{-- Scrollable content --}}
@@ -494,7 +512,7 @@
     </div>
 </div>
 
-{{-- ⋮ slide panel: story menu --}}
+{{-- â‹® slide panel: story menu --}}
 <div id="menu-backdrop" class="fixed inset-0 z-50 bg-[#2D231E]/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200"></div>
 <div
     id="menu-panel"
@@ -508,7 +526,7 @@
             data-menu-close
             aria-label="Close menu"
             class="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-[#2D231E] text-[#2D231E] font-bold text-sm hover:bg-[#FAF6EE] transition-colors cursor-pointer"
-        >✕</button>
+        >âœ•</button>
     </div>
 
     {{-- Scrollable content --}}
