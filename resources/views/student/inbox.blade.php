@@ -1,4 +1,4 @@
-﻿@extends('layouts.authenticated')
+@extends('layouts.authenticated')
 
 @section('title', 'Inbox')
 @section('page', 'inbox')

@@ -13,7 +13,7 @@
 @endphp
 
 @section('content')
-<div class="max-w-3xl mx-auto px-4 py-6 space-y-4">
+<div class="max-w-3xl mx-auto px-4 py-8 sm:py-6 space-y-4">
 
     <div class="flex items-center gap-3">
         <button

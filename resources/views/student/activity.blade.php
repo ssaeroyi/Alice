@@ -16,7 +16,7 @@
 @endphp
 
 @section('content')
-<div class="max-w-5xl mx-auto px-4 py-6 space-y-6">
+<div class="max-w-5xl mx-auto px-4 py-8 sm:py-6 space-y-6">
 
     <!-- Header -->
     <div class="flex items-center gap-3">

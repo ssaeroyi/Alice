@@ -95,9 +95,9 @@
                 <div class="space-y-6">
 
                     <!-- Snapshot cards -->
-                    <div class="grid grid-cols-3 gap-2 sm:gap-4">
-                        <a href="{{ route('activity', ['tab' => 'streak']) }}" class="bg-white border-2 border-[#2D231E] rounded-2xl p-3 sm:p-4 shadow-[4px_4px_0px_0px_rgba(45,35,30,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all">
-                            <div class="flex items-start justify-between gap-1">
+                    <div class="grid grid-cols-3 gap-2.5 sm:gap-4">
+                        <a href="{{ route('activity', ['tab' => 'streak']) }}" class="bg-white border-2 border-[#2D231E] rounded-2xl p-3.5 sm:p-4 shadow-[4px_4px_0px_0px_rgba(45,35,30,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all">
+                            <div class="flex items-start justify-between gap-1.5">
                                 <span class="font-pixel text-[8px] sm:text-[9px] font-bold text-[#2D231E] uppercase leading-tight">Streak</span>
                                 <x-info label="What is a streak?" modal="hub-help-streak"></x-info>
                             </div>
@@ -106,7 +106,7 @@
                                 <span class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-600 [&>svg]:h-full [&>svg]:w-full">{!! \App\Support\LibraryPresentation::iconGlyph('ui', 'flame') !!}</span>
                             </div>
                         </a>
-                        <a href="{{ route('activity', ['tab' => 'keys']) }}" class="bg-white border-2 border-[#2D231E] rounded-2xl p-3 sm:p-4 shadow-[4px_4px_0px_0px_rgba(45,35,30,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all">
+                        <a href="{{ route('activity', ['tab' => 'keys']) }}" class="bg-white border-2 border-[#2D231E] rounded-2xl p-3.5 sm:p-4 shadow-[4px_4px_0px_0px_rgba(45,35,30,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all">
                             <div class="flex items-start justify-between gap-1">
                                 <span class="font-pixel text-[8px] sm:text-[9px] font-bold text-[#2D231E] uppercase leading-tight">Keys</span>
                                 <x-info label="What are keys?" modal="hub-help-keys"></x-info>
@@ -116,7 +116,7 @@
                                 <span class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600 [&>svg]:h-full [&>svg]:w-full">{!! \App\Support\LibraryPresentation::iconGlyph('ui', 'key') !!}</span>
                             </div>
                         </a>
-                        <a href="{{ route('study') }}" class="bg-white border-2 border-[#2D231E] rounded-2xl p-3 sm:p-4 shadow-[4px_4px_0px_0px_rgba(45,35,30,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all">
+                        <a href="{{ route('study') }}" class="bg-white border-2 border-[#2D231E] rounded-2xl p-3.5 sm:p-4 shadow-[4px_4px_0px_0px_rgba(45,35,30,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all">
                             <div class="flex items-start justify-between gap-1">
                                 <span class="font-pixel text-[8px] sm:text-[9px] font-bold text-[#2D231E] uppercase leading-tight">Saved Words</span>
                                 <x-info label="What are saved words?" modal="hub-help-saved-words"></x-info>

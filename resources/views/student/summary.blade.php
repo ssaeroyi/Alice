@@ -3,7 +3,7 @@
 @section('page', 'summary')
 
 @section('content')
-<div class="max-w-2xl mx-auto px-4 py-6 space-y-6">
+<div class="max-w-2xl mx-auto px-4 py-8 sm:py-6 space-y-6">
 
     {{-- Completion header: centered, pixel, mascot-free. --}}
     <div class="pt-2 flex flex-col items-center text-center space-y-3">

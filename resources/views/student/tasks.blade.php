@@ -1,7 +1,7 @@
 @extends('layouts.authenticated')
 
 @section('content')
-<div class="max-w-3xl mx-auto px-4 py-6 space-y-6" data-tasks-hub>
+<div class="max-w-3xl mx-auto px-4 py-8 sm:py-6 space-y-6" data-tasks-hub>
 
     <!-- Header -->
     <div class="flex items-center gap-3">

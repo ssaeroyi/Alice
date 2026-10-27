@@ -15,7 +15,7 @@
         100% { opacity: 0; visibility: hidden; }
     }
 </style>
-<div class="max-w-2xl mx-auto px-4 py-6 space-y-6" data-game-setup data-game="{{ $game }}">
+<div class="max-w-2xl mx-auto px-4 py-8 sm:py-6 space-y-6" data-game-setup data-game="{{ $game }}">
 
     <!-- Header -->
     <div class="flex items-center gap-3">

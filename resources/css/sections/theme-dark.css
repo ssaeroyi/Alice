@@ -140,6 +140,7 @@
 .dark .border-\[\#2D231E\]\/10 { border-color: #efe6d81a; }
 .dark .border-\[\#2D231E\]\/15 { border-color: #efe6d826; }
 .dark .border-\[\#2D231E\]\/20 { border-color: #efe6d833; }
+.dark .border-\[\#2D231E\]\/25 { border-color: #efe6d840; }
 .dark .border-\[\#2D231E\]\/30 { border-color: #efe6d84d; }
 .dark .border-\[\#2D231E\]\/40 { border-color: #efe6d866; }
 .dark .border-\[\#2D231E\]\/50 { border-color: #efe6d880; }
@@ -207,6 +208,24 @@
 .dark .bg-rose-400 { background-color: #8a3f44; }
 .dark .bg-\[\#E6DCCF\] { background-color: #4a4036; }
 .dark .hover\:bg-amber-300:hover { background-color: #9b7c28; }
+
+/* Classwork-revamp tints + soft borders that predate no dark rule: the people
+   drawer teacher-card tint, the claimed chip, and pastel semantic borders on
+   darkened cards. Warm-dark mixes of their own hue, meaning preserved. */
+.dark .bg-amber-400\/40 { background-color: color-mix(in srgb, #876b22 40%, transparent); }
+.dark .bg-\[\#D8CDBF\] { background-color: #4a4036; }
+.dark .text-\[\#5B4A3F\] { color: #c9bcae; }
+.dark .border-emerald-300 { border-color: #4f8f70; }
+.dark .border-emerald-400 { border-color: #4f8f70; }
+.dark .border-rose-400 { border-color: #a05a61; }
+
+/* The reading-page mascot bubble is an ink chip by design; pin it in dark so
+   it never inherits a flip (cream border + dark fill = always legible). */
+.dark #reader-mascot-bubble {
+    background: #2D231E;
+    border-color: #efe6d8;
+    color: #FAF6EE;
+}
 
 /* Light-emphasis PASTEL fills (-100/-50/-200) — the soft chip / highlight
    accents that pair with EITHER ink text (#2D231E) OR a semantic text color.

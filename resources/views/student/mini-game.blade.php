@@ -3,7 +3,7 @@
 @section('page', 'mini-game')
 
 @section('content')
-<div class="max-w-4xl mx-auto px-4 py-6 space-y-6" data-mini-game-hub>
+<div class="max-w-4xl mx-auto px-4 py-8 sm:py-6 space-y-6" data-mini-game-hub>
 
     <!-- Header -->
     <div class="flex items-center gap-3">

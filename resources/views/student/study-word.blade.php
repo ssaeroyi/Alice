@@ -5,7 +5,7 @@
 @section('page', 'study-word')
 
 @section('content')
-<div class="max-w-2xl mx-auto px-4 py-6 space-y-5">
+<div class="max-w-2xl mx-auto px-4 py-8 sm:py-6 space-y-5">
 
     <!-- Header row -->
     <div class="flex items-center justify-between gap-3">

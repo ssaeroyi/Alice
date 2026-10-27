@@ -301,7 +301,7 @@
             <div class="skin-preview-stage" data-preview-stage style="background-image: url('{{ asset($skinsPayload['catalog']['background'][$skinsPayload['state']['equipped']['background']]['file']) }}')"></div>
             <p class="skin-preview-name font-pixel" data-preview-name></p>
             <p class="skin-preview-sub" data-preview-sub></p>
-            <button type="button" class="skin-preview-action font-pixel" data-preview-action></button>
+            <button type="button" class="skin-preview-action font-pixel" data-preview-action>✕</button>
         </div>
     </div>
 
@@ -361,11 +361,11 @@
             <section data-jh-panel="actions">
                 <div data-jh-pager class="space-y-3">
                     <div class="flex items-center gap-1.5" role="group" aria-label="Action pages">
-                        <button type="button" class="help-pager-dot is-active" data-jh-dot="0" aria-label="Page 1: Spell Strike" aria-current="true"></button>
-                        <button type="button" class="help-pager-dot" data-jh-dot="1" aria-label="Page 2: Grammar Strike"></button>
-                        <button type="button" class="help-pager-dot" data-jh-dot="2" aria-label="Page 3: Prefix and Suffix Puzzle"></button>
-                        <button type="button" class="help-pager-dot" data-jh-dot="3" aria-label="Page 4: Missing Words"></button>
-                        <button type="button" class="help-pager-dot" data-jh-dot="4" aria-label="Page 5: Letter Scramble"></button>
+                        <button type="button" class="help-pager-dot is-active" data-jh-dot="0" aria-label="Page 1: Spell Strike" aria-current="true">✕</button>
+                        <button type="button" class="help-pager-dot" data-jh-dot="1" aria-label="Page 2: Grammar Strike">✕</button>
+                        <button type="button" class="help-pager-dot" data-jh-dot="2" aria-label="Page 3: Prefix and Suffix Puzzle">✕</button>
+                        <button type="button" class="help-pager-dot" data-jh-dot="3" aria-label="Page 4: Missing Words">✕</button>
+                        <button type="button" class="help-pager-dot" data-jh-dot="4" aria-label="Page 5: Letter Scramble">✕</button>
                     </div>
 
                     <div data-jh-page class="space-y-2.5 text-xs font-medium text-[#2D231E] leading-relaxed">
@@ -485,7 +485,7 @@
             data-aa-close
             aria-label="Close settings"
             class="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-[#2D231E] text-[#2D231E] font-bold text-sm hover:bg-[#FAF6EE] transition-colors cursor-pointer"
-        >âœ•</button>
+        >✕</button>
     </div>
 
     {{-- Scrollable content --}}
@@ -534,7 +534,7 @@
             data-menu-close
             aria-label="Close menu"
             class="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-[#2D231E] text-[#2D231E] font-bold text-sm hover:bg-[#FAF6EE] transition-colors cursor-pointer"
-        >âœ•</button>
+        >✕</button>
     </div>
 
     {{-- Scrollable content --}}

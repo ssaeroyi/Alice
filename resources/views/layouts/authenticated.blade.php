@@ -418,7 +418,7 @@
     @endunless
 
     <!-- MAIN VIEW AREA -->
-    <main class="{{ $immersive ? 'flex-grow' : 'flex-grow max-w-7xl mx-auto w-full p-4 sm:p-6 pb-24 md:pb-8' }}">
+    <main class="{{ $immersive ? 'flex-grow' : 'flex-grow max-w-7xl mx-auto w-full px-4 py-6 sm:px-6 sm:py-6 lg:py-8 pb-24 md:pb-8' }}">
         @yield('content')
     </main>
 
