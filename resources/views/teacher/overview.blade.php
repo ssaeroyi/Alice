@@ -339,7 +339,7 @@
             <!-- VOCAB MASTERY PYRAMID -->
             <x-admin.panel
                 title="Word mastery"
-                icon="spell-book"
+                icon="book"
                 subtitle="Every saved word by flashcard strength."
                 info="Depth of vocabulary: a word counts as mastered once flashcard reviews grade it Strong. Words saved is the count collected; this shows how many have stuck."
             >
