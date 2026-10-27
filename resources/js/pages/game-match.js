@@ -36,7 +36,28 @@ export default function init() {
 
     roundId = crypto.randomUUID?.() || Date.now().toString(36) + Math.random().toString(36).slice(2);
     setupBoard();
-    startMemorize();
+
+    // First-time gate: show the How to Play modal BEFORE the memorize
+    // countdown starts; the timer only runs once they click GOT IT. Repeat
+    // players (flag set) go straight into the memorize phase.
+    const HELP_FLAG = 'alice-match-help-seen';
+    let helpSeen = false;
+    try { helpSeen = localStorage.getItem(HELP_FLAG) === '1'; } catch { /* storage off */ }
+
+    if (helpSeen) {
+        startMemorize();
+    } else {
+        const helpModal = document.getElementById('game-help-modal');
+        const gotIt = helpModal?.querySelector('[data-modal-close]');
+        openModal(helpModal);
+        gotIt?.addEventListener('click', () => {
+            try { localStorage.setItem(HELP_FLAG, '1'); } catch { /* storage off */ }
+            if (!memorizing && !started && !finished) {
+                startMemorize();
+            }
+        }, { once: true });
+    }
+
     wireEvents();
 }
 

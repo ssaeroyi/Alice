@@ -20,12 +20,12 @@
     <!-- Header -->
     <div class="flex items-center gap-3">
         <a href="{{ route('mini-game') }}" aria-label="Back to games"
-           class="w-10 h-10 flex items-center justify-center bg-white border-2 border-[#2D231E] rounded-xl text-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all">
+           class="shrink-0 w-10 h-10 flex items-center justify-center bg-white border-2 border-[#2D231E] rounded-xl text-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all">
             <x-icons.arrow-left class="w-4 h-4" />
         </a>
-        <h1 class="font-pixel text-base font-bold text-[#2D231E] uppercase">{{ $game === 'wordsearch' ? 'Word Search' : ($game === 'match' ? 'Memory' : 'Sentence Builder') }} Setup</h1>
-        <div class="ml-auto flex items-center gap-2">
-            <span class="setup-help-tag font-pixel text-[8px] sm:text-[9px] font-bold text-[#2D231E] bg-white border-2 border-[#2D231E] rounded-lg px-2 py-1.5 shadow-[2px_2px_0px_0px_rgba(45,35,30,1)]">HOW TO PLAY</span>
+        <h1 class="flex-1 min-w-0 font-pixel text-[11px] sm:text-base font-bold text-[#2D231E] uppercase leading-relaxed">{{ $game === 'wordsearch' ? 'Word Search' : ($game === 'match' ? 'Memory' : 'Sentence Builder') }} Setup</h1>
+        <div class="ml-auto flex items-center gap-2 shrink-0">
+            <span class="setup-help-tag hidden sm:inline-flex font-pixel text-[8px] sm:text-[9px] font-bold text-[#2D231E] bg-white border-2 border-[#2D231E] rounded-lg px-2 py-1.5 shadow-[2px_2px_0px_0px_rgba(45,35,30,1)]">HOW TO PLAY</span>
             <button type="button" data-modal-open="game-help-modal" aria-label="How to play"
                     class="setup-help-btn min-w-[44px] min-h-[44px] flex items-center justify-center bg-amber-400 border-2 border-[#2D231E] rounded-xl font-pixel text-sm font-bold text-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] transition-all uppercase">
                 ?
@@ -67,12 +67,12 @@
             </div>
             @endif
         </div>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <!-- Pick a Story (wordsearch only) -->
             <button data-source="open" @if(! $usesWordBank) data-open-picker @endif
                 class="source-card group relative bg-white border-2 border-[#2D231E] rounded-2xl p-4 text-left transition-all shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] hover:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] hover:translate-x-[2px] hover:translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)]">
                 <div class="flex items-center gap-3 mb-2">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-100 border-2 border-[#2D231E] flex items-center justify-center">
+                    <div class="shrink-0 w-10 h-10 rounded-xl bg-emerald-100 border-2 border-[#2D231E] flex items-center justify-center">
                         <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                     </div>
                     <div>
@@ -87,7 +87,7 @@
             <button data-source="saved"
                 class="source-card group relative bg-white border-2 border-[#2D231E] rounded-2xl p-4 text-left transition-all shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] hover:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] hover:translate-x-[2px] hover:translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] {{ $savedCount < 5 ? 'opacity-40 pointer-events-none' : '' }}">
                 <div class="flex items-center gap-3 mb-2">
-                    <div class="w-10 h-10 rounded-xl bg-amber-100 border-2 border-[#2D231E] flex items-center justify-center">
+                    <div class="shrink-0 w-10 h-10 rounded-xl bg-amber-100 border-2 border-[#2D231E] flex items-center justify-center">
                         <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
                     </div>
                     <div>
@@ -122,7 +122,7 @@
         <div class="grid grid-cols-3 gap-3">
             <!-- Easy -->
             <button data-difficulty="easy"
-                class="diff-card bg-white border-2 border-[#2D231E] rounded-2xl p-4 text-center transition-all shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] hover:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] hover:translate-x-[2px] hover:translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)]">
+                class="diff-card bg-white border-2 border-[#2D231E] rounded-2xl p-3 sm:p-4 text-center transition-all shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] hover:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] hover:translate-x-[2px] hover:translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)]">
                 <div class="w-10 h-10 mx-auto rounded-xl bg-emerald-100 border-2 border-[#2D231E] flex items-center justify-center mb-2">
                     <span class="font-pixel text-xs font-bold text-emerald-600">E</span>
                 </div>
@@ -132,7 +132,7 @@
 
             <!-- Medium -->
             <button data-difficulty="medium"
-                class="diff-card bg-white border-2 border-[#2D231E] rounded-2xl p-4 text-center transition-all shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] hover:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] hover:translate-x-[2px] hover:translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)]">
+                class="diff-card bg-white border-2 border-[#2D231E] rounded-2xl p-3 sm:p-4 text-center transition-all shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] hover:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] hover:translate-x-[2px] hover:translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)]">
                 <div class="w-10 h-10 mx-auto rounded-xl bg-sky-100 border-2 border-[#2D231E] flex items-center justify-center mb-2">
                     <span class="font-pixel text-xs font-bold text-sky-600">M</span>
                 </div>
@@ -142,7 +142,7 @@
 
             <!-- Hard -->
             <button data-difficulty="hard"
-                class="diff-card bg-white border-2 border-[#2D231E] rounded-2xl p-4 text-center transition-all shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] hover:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] hover:translate-x-[2px] hover:translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)]">
+                class="diff-card bg-white border-2 border-[#2D231E] rounded-2xl p-3 sm:p-4 text-center transition-all shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] hover:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] hover:translate-x-[2px] hover:translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)]">
                 <div class="w-10 h-10 mx-auto rounded-xl bg-rose-100 border-2 border-[#2D231E] flex items-center justify-center mb-2">
                     <span class="font-pixel text-xs font-bold text-rose-600">H</span>
                 </div>

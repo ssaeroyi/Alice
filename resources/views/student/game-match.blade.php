@@ -74,7 +74,7 @@
 
     <!-- Status -->
     <p id="game-status" class="text-center text-sm font-bold text-[#2D231E] uppercase">
-        Memorize the pairs!
+        Memorize the synonym pairs!
     </p>
 
     <!-- Help Modal -->
