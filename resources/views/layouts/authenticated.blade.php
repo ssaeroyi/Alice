@@ -603,22 +603,18 @@
     <x-modal id="help-modal" title="HOW ALICE WORKS" pixel>
         <div data-help-pager class="space-y-4">
 
-            <!-- Pager head: journal-style section tabs -->
-            <div class="flex gap-1.5 pb-1 overflow-x-auto no-scrollbar" role="group" aria-label="Help sections">
-                <button type="button" class="jh-tab font-pixel is-active" data-help-dot="0" aria-label="Welcome" aria-current="true">WELCOME</button>
-                <button type="button" class="jh-tab font-pixel" data-help-dot="1" aria-label="Hub">HUB</button>
-                <button type="button" class="jh-tab font-pixel" data-help-dot="2" aria-label="Library">LIBRARY</button>
-                <button type="button" class="jh-tab font-pixel" data-help-dot="3" aria-label="Study">STUDY</button>
-                <button type="button" class="jh-tab font-pixel" data-help-dot="4" aria-label="Mini Games">GAMES</button>
-                <button type="button" class="jh-tab font-pixel" data-help-dot="5" aria-label="Classwork">CLASSWORK</button>
+            <!-- Pager head: dots -->
+            <div class="flex items-center gap-1.5" role="group" aria-label="Help pages">
+                <button type="button" class="help-pager-dot is-active" data-help-dot="0" aria-label="Page 1: Welcome" aria-current="true"></button>
+                <button type="button" class="help-pager-dot" data-help-dot="1" aria-label="Page 2: Hub"></button>
+                <button type="button" class="help-pager-dot" data-help-dot="2" aria-label="Page 3: Library"></button>
+                <button type="button" class="help-pager-dot" data-help-dot="3" aria-label="Page 4: Study"></button>
+                <button type="button" class="help-pager-dot" data-help-dot="4" aria-label="Page 5: Mini Games"></button>
+                <button type="button" class="help-pager-dot" data-help-dot="5" aria-label="Page 6: Classwork"></button>
             </div>
 
             <!-- Page 1 · Welcome -->
             <div data-help-page data-label="Welcome" class="space-y-2.5">
-                <div class="bg-[#FAF6EE] border-2 border-[#2D231E] rounded-2xl p-3 space-y-1">
-                    <p class="font-pixel text-[10px] font-bold text-amber-600 uppercase">WELCOME TO ALICE</p>
-                    <p>Alice is your reading companion. The HUB is your home base, the LIBRARY holds the stories, STUDY grows your words, and GAMES and CLASSWORK keep it fun. Take the tour and Alice will walk you through it.</p>
-                </div>
                 <button
                     type="button"
                     data-tour-start
