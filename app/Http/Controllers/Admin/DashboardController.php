@@ -77,6 +77,13 @@ class DashboardController extends Controller
                 ->limit(5)
                 ->get(),
             'recentJoins' => User::realAccounts()->latest('created_at')->limit(5)->get(),
+            // Freshest activity first, same GREATEST rule as the presence
+            // filter, so the dashboard list and roster agree.
+            'activeNow' => User::realAccounts()
+                ->whereRaw("GREATEST(COALESCE(last_seen_at, '1970-01-01'), COALESCE(last_login_at, '1970-01-01')) >= ?", [now()->subDay()])
+                ->orderByRaw("GREATEST(COALESCE(last_seen_at, '1970-01-01'), COALESCE(last_login_at, '1970-01-01')) DESC")
+                ->limit(6)
+                ->get(),
             'growthSeries' => $range->bucket(self::growthSeries($range)),
             'onboardingSeries' => $range->bucket(self::onboardingSeries($range)),
         ]);

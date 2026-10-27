@@ -179,6 +179,36 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
+            <!-- ACTIVE NOW (presence mirror of the teacher activity list) -->
+            <x-admin.panel title="Active now">
+                <div class="flex items-center justify-between mb-1">
+                    <p class="text-[11px] font-semibold text-[#2D231E]">Who is signed into the app right now and in the last day.</p>
+                    <a href="{{ route('admin.accounts.index') }}" class="text-[11px] font-bold text-amber-700 hover:text-[#2D231E] transition-colors">All accounts</a>
+                </div>
+                @if ($activeNow->isEmpty())
+                    <p class="text-sm font-semibold text-[#2D231E]">Nobody has signed in yet today.</p>
+                @else
+                    <ul class="divide-y divide-[#F0E9DD] mt-2">
+                        @foreach ($activeNow as $account)
+                            <li class="py-2.5 flex items-center justify-between gap-4">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <x-avatar :user="$account" :size="32" />
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-bold text-[#2D231E] truncate">
+                                            {{ $account->nickname ?? strtok($account->email, '@') }}
+                                        </p>
+                                        <p class="text-[11px] font-semibold text-[#2D231E] truncate">
+                                            {{ $account->role->value }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <x-presence-dot :at="$account->lastActiveAt()" compact />
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </x-admin.panel>
+
             <!-- RECENT AUDIT -->
             <x-admin.panel title="Recent audit events">
                 @if ($recentAudit->isEmpty())
@@ -229,6 +259,7 @@
                                     </div>
                                 </div>
                                 <div class="shrink-0 flex items-center gap-2">
+                                    <x-presence-dot :at="$account->lastActiveAt()" compact />
                                     <x-admin.pill :tone="$account->role === \App\Enums\Role::Admin ? 'warn' : ($account->role === \App\Enums\Role::Teacher ? 'ok' : 'neutral')">
                                         {{ $account->role->value }}
                                     </x-admin.pill>

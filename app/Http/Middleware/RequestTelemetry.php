@@ -35,6 +35,18 @@ class RequestTelemetry
                     })
                     ->delete();
             }
+
+            // Presence heartbeat: one 60s-throttled update per user, so the
+            // green dot on roster and account lists stays live without a
+            // write on every request.
+            if ($request->user() !== null) {
+                DB::table('users')
+                    ->where('id', $request->user()->id)
+                    ->where(fn ($query) => $query
+                        ->whereNull('last_seen_at')
+                        ->orWhere('last_seen_at', '<', now()->subSeconds(60)))
+                    ->update(['last_seen_at' => now()]);
+            }
         } catch (\Throwable) {
             // Telemetry must never break a request.
         }

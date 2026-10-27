@@ -13,6 +13,7 @@
                 request('status') ? 1 : 0,
                 request('setup') ? 1 : 0,
                 request('attention') ? 1 : 0,
+                request('presence') ? 1 : 0,
             ])->sum();
         @endphp
 
@@ -80,6 +81,16 @@
                 </label>
 
                 <label class="block">
+                    <span class="text-[11px] font-bold uppercase tracking-wide text-[#2D231E]">Presence</span>
+                    <select name="presence" class="mt-1 w-full h-11 px-3 bg-[#FAF6EE] border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-[#2D231E] cursor-pointer">
+                        <option value="">Any presence</option>
+                        <option value="online" @selected(request('presence') === 'online')>Online now</option>
+                        <option value="recent" @selected(request('presence') === 'recent')>Recently active (24h)</option>
+                        <option value="away" @selected(request('presence') === 'away')>Away (over a day)</option>
+                    </select>
+                </label>
+
+                <label class="block">
                     <span class="text-[11px] font-bold uppercase tracking-wide text-[#2D231E]">Needs attention</span>
                     <select name="attention" class="mt-1 w-full h-11 px-3 bg-[#FAF6EE] border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-[#2D231E] cursor-pointer">
                         <option value="">Any</option>
@@ -104,6 +115,7 @@
                             <th class="px-4 py-3 font-extrabold hidden sm:table-cell">Grade</th>
                             <th class="px-4 py-3 font-extrabold hidden md:table-cell">Reading grade</th>
                             <th class="px-4 py-3 font-extrabold hidden lg:table-cell">Comprehension</th>
+                            <th class="px-4 py-3 font-extrabold hidden xl:table-cell">Presence</th>
                             <th class="px-4 py-3 font-extrabold hidden lg:table-cell">Last login</th>
                             <th class="px-4 py-3 font-extrabold">Status</th>
                         </tr>
@@ -165,6 +177,9 @@
                                         <span class="text-xs font-semibold text-[#2D231E]">No live result yet</span>
                                     @endif
                                 </td>
+                                <td class="px-4 py-3 hidden xl:table-cell">
+                                    <x-presence-dot :at="$student->lastActiveAt()" compact />
+                                </td>
                                 <td class="px-4 py-3 hidden lg:table-cell text-xs font-semibold text-[#2D231E]">
                                     {{ $student->last_login_at?->diffForHumans() ?? 'Never' }}
                                 </td>
@@ -180,7 +195,7 @@
                             </tr>
                         @empty
                             <tr>
-                                    <td colspan="6" class="px-4 py-10 text-center">
+                                    <td colspan="7" class="px-4 py-10 text-center">
                                     <p class="text-sm font-bold text-[#2D231E]">No students match these filters.</p>
                                 </td>
                             </tr>

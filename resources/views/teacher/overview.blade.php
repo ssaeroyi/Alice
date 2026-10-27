@@ -445,7 +445,7 @@
                 title="Needs attention"
                 icon="face-sad"
                 subtitle="Students who likely need a nudge."
-                info="A student appears here when their account is suspended, they have not finished the placement quick check, have not signed in for two weeks, or their comprehension is slipping (failing a recent string of quizzes). This list is the teacher's starting point. Visit the roster for full detail."
+                info="A student appears here when their account is suspended, they have not finished the placement quick check, have not signed in for two weeks, or their comprehension is slipping (failing a recent string of quizzes). The Nudge button sends one friendly reminder email to the student. Nudged students get a day of quiet before another one can go out."
             >
                 <x-slot:actions>
                     <a href="{{ route('teacher.roster') }}" class="text-[11px] font-bold text-sky-600 hover:text-sky-700 transition-colors">View all</a>
@@ -453,26 +453,47 @@
                 @if ($struggling->isNotEmpty())
                     <ul class="divide-y divide-[#F0E9DD]">
                         @foreach ($struggling as $student)
+                            @php
+                                $displayName = $student->first_name ?: ($student->nickname ?? strtok($student->email, '@'));
+                                $cooldown = $student->last_nudged_at !== null && $student->last_nudged_at->gt(now()->subHours(24));
+                                $nudgeable = $student->suspended_at === null && $student->nudgeKind() !== null;
+                            @endphp
                             <li class="py-2.5 flex items-center justify-between gap-4">
                                 <a href="{{ route('teacher.student', $student) }}" class="min-w-0 flex items-center gap-3 group">
                                     <div class="min-w-0">
                                         <p class="text-xs font-bold text-[#2D231E] truncate group-hover:text-sky-600 transition-colors">
-                                            {{ $student->nickname ?? strtok($student->email, '@') }}
+                                            {{ $displayName }}
                                         </p>
                                         <p class="text-[11px] font-semibold text-[#2D231E]">
-                                            {{ $student->last_login_at?->diffForHumans() ?? 'Never signed in' }}
+                                            @if ($cooldown)
+                                                nudged {{ $student->last_nudged_at->diffForHumans() }}
+                                            @else
+                                                {{ $student->last_login_at?->diffForHumans() ?? 'Never signed in' }}
+                                            @endif
                                         </p>
                                     </div>
                                 </a>
-                                @if ($student->suspended_at)
-                                    <x-admin.pill tone="crit">Suspended</x-admin.pill>
-                                @elseif (! $student->is_setup_complete)
-                                    <x-admin.pill tone="warn">Setup pending</x-admin.pill>
-                                @elseif ($student->readingProgress?->slipping)
-                                    <x-admin.pill tone="crit">Slipping</x-admin.pill>
-                                @else
-                                    <x-admin.pill>No recent sign-in</x-admin.pill>
-                                @endif
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    @if ($student->suspended_at)
+                                        <x-admin.pill tone="crit">Suspended</x-admin.pill>
+                                    @elseif (! $student->is_setup_complete)
+                                        <x-admin.pill tone="warn">Setup pending</x-admin.pill>
+                                    @elseif ($student->readingProgress?->slipping)
+                                        <x-admin.pill tone="crit">Slipping</x-admin.pill>
+                                    @else
+                                        <x-admin.pill>No recent sign-in</x-admin.pill>
+                                    @endif
+                                    @if ($nudgeable)
+<form method="POST" action="{{ route('teacher.students.nudge', $student) }}"
+      onsubmit="return confirm('Send {{ $displayName }} a friendly reminder email?')"
+>
+                                            @csrf
+                                            <button type="submit" class="rounded-lg border border-[#E6DCCF] bg-[#FAF6EE] px-2.5 py-1.5 text-[11px] font-bold text-[#2D231E] hover:border-emerald-400 hover:bg-emerald-50 hover:text-emerald-700 transition-colors {{ $cooldown ? 'opacity-50' : '' }}">
+                                                {{ $cooldown ? 'Nudged' : 'Nudge' }}
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
                             </li>
                         @endforeach
                     </ul>
@@ -485,7 +506,10 @@
             <x-admin.panel title="Recent activity" icon="eye">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-5">
                     <div>
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-[#2D231E] mb-1">Active</p>
+                        <div class="flex items-center justify-between mb-1">
+                            <p class="text-[11px] font-bold uppercase tracking-wider text-[#2D231E]">Active</p>
+                            <a href="{{ route('teacher.roster', ['presence' => 'recent']) }}" class="text-[11px] font-bold text-sky-600 hover:text-sky-700 transition-colors">View all</a>
+                        </div>
                         @if ($recentActive->isNotEmpty())
                             <ul class="divide-y divide-[#F0E9DD]">
                                 @foreach ($recentActive as $student)
@@ -498,9 +522,7 @@
                                                 </p>
                                             </span>
                                         </a>
-                                        <span class="shrink-0 text-[11px] font-semibold text-[#2D231E]">
-                                            {{ $student->last_login_at?->diffForHumans() }}
-                                        </span>
+                                        <x-presence-dot :at="$student->lastActiveAt()" compact />
                                     </li>
                                 @endforeach
                             </ul>
@@ -509,7 +531,10 @@
                         @endif
                     </div>
                     <div class="mt-5 sm:mt-0 sm:border-l sm:border-[#F0E9DD] sm:pl-5">
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-[#2D231E] mb-1">Joined</p>
+                        <div class="flex items-center justify-between mb-1">
+                            <p class="text-[11px] font-bold uppercase tracking-wider text-[#2D231E]">Joined</p>
+                            <a href="{{ route('teacher.roster') }}" class="text-[11px] font-bold text-sky-600 hover:text-sky-700 transition-colors">View all</a>
+                        </div>
                         @if ($recentJoins->isNotEmpty())
                             <ul class="divide-y divide-[#F0E9DD]">
                                 @foreach ($recentJoins as $student)
@@ -522,9 +547,7 @@
                                                 </p>
                                             </span>
                                         </a>
-                                        <span class="shrink-0 text-[11px] font-semibold text-[#2D231E]">
-                                            {{ $student->created_at->diffForHumans() }}
-                                        </span>
+                                        <x-presence-dot :at="$student->lastActiveAt()" compact />
                                     </li>
                                 @endforeach
                             </ul>

@@ -18,6 +18,7 @@ Route::middleware(['auth', 'role:teacher,admin', 'not.deleted'])->prefix('teache
     Route::get('/students/{user}', [TeacherController::class, 'student'])->name('student');
         Route::post('/students/{user}/hold-grade', [TeacherController::class, 'holdGrade'])->name('students.hold-grade');
         Route::post('/students/{user}/unhold-grade', [TeacherController::class, 'unholdGrade'])->name('students.unhold-grade');
+        Route::post('/students/{user}/nudge', [TeacherController::class, 'nudge'])->name('students.nudge')->middleware('throttle:20,1');
 
     Route::get('/inbox', [TeacherInboxController::class, 'index'])->name('inbox');
     Route::get('/inbox/preview', [TeacherInboxController::class, 'preview'])->name('inbox.preview');

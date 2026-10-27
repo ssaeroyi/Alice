@@ -14,6 +14,7 @@ use App\Models\StoryProgress;
 use App\Models\TestAttempt;
 use App\Models\User;
 use App\Models\UserDailyActivity;
+use App\Services\NudgeService;
 use App\Support\DashboardRange;
 use App\Support\IntegritySignals;
 use App\Support\SchoolYear;
@@ -781,6 +782,18 @@ class TeacherController extends Controller
                     ? $query->where('is_setup_complete', true)
                     : $query->where('is_setup_complete', false);
             })
+            ->when(in_array($request->string('presence')->toString(), ['online', 'recent', 'away'], true), function ($query) use ($request) {
+                // Presence reads off the fresher of last-seen and last-login
+                // (last_seen_at only exists for newer activity windows).
+                $query->whereRaw(
+                    "GREATEST(COALESCE(last_seen_at, '1970-01-01'), COALESCE(last_login_at, '1970-01-01')) ".match ($request->string('presence')->toString()) {
+                        'online' => '>= ?',
+                        'recent' => '>= ?',
+                        'away' => '< ?',
+                    },
+                    [$request->string('presence')->toString() === 'away' ? now()->subDay() : now()->subMinutes(5)],
+                );
+            })
             ->latest('created_at')
             ->paginate(25)
             ->withQueryString();
@@ -905,6 +918,28 @@ class TeacherController extends Controller
         return back()->with('toast', [
             'message' => 'Grade hold released. It will advance again this June.',
         ]);
+    }
+
+    /**
+     * Send one friendly nudge email to a student who needs attention.
+     * The template is picked by the student's own state. Feedback lands in
+     * the same toast language as every other teacher action.
+     */
+    public function nudge(User $user): RedirectResponse
+    {
+        abort_unless($user->role === Role::Student, 404);
+        abort_unless(User::realAccounts()->whereKey($user->id)->exists(), 404);
+
+        $result = NudgeService::send($user, 'teacher');
+
+        $message = match ($result) {
+            'sent' => ($user->first_name ?: $user->nickname).' was nudged by email.',
+            'cooldown' => 'This student was nudged recently. The next one can go out tomorrow.',
+            'recently_active' => ($user->first_name ?: $user->nickname).' was active today, so no nudge went out.',
+            default => 'No nudge sent. This account is suspended.',
+        };
+
+        return back()->with('toast', ['message' => $message]);
     }
 
     /**

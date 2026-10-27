@@ -47,6 +47,9 @@ class AuditCatalog
         'user.exported_csv' => ['Accounts exported', 'accounts', 'warn'],
         'group.created' => ['Class created', 'accounts', 'neutral'],
         'group.deleted' => ['Class deleted', 'accounts', 'warn'],
+        'nudge.sent_teacher' => ['Teacher sent a nudge email', 'accounts', 'neutral'],
+        'nudge.sent_auto' => ['Auto nudge email sent', 'system', 'neutral'],
+        'nudge.skipped_cooldown' => ['Nudge blocked by cooldown', 'accounts', 'neutral'],
 
         // Content (stories, questions, narration)
         'story.created' => ['Story created', 'content', 'neutral'],

@@ -21,7 +21,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 
-    #[Fillable(['first_name', 'last_name', 'nickname', 'avatar', 'email', 'password', 'role', 'grade_level', 'grade_anchor_year', 'grade_hold_school_year', 'comprehension_level', 'comprehension_bar', 'reading_level', 'section', 'last_viewed_assignment_at', 'is_setup_complete', 'last_login_at', 'suspended_at', 'deleted_at', 'deletion_requested_at', 'total_keys', 'points', 'rank_title', 'current_streak', 'longest_streak', 'streak_freezes', 'streak_freezes_used', 'streak_freezes_bought', 'last_stamped_date', 'preferences', 'daily_reading_goal', 'daily_study_goal'])]
+    #[Fillable(['first_name', 'last_name', 'nickname', 'avatar', 'email', 'password', 'role', 'grade_level', 'grade_anchor_year', 'grade_hold_school_year', 'comprehension_level', 'comprehension_bar', 'reading_level', 'section', 'last_viewed_assignment_at', 'is_setup_complete', 'last_login_at', 'last_seen_at', 'last_nudged_at', 'last_nudge_kind', 'suspended_at', 'deleted_at', 'deletion_requested_at', 'total_keys', 'points', 'rank_title', 'current_streak', 'longest_streak', 'streak_freezes', 'streak_freezes_used', 'streak_freezes_bought', 'last_stamped_date', 'preferences', 'daily_reading_goal', 'daily_study_goal'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -40,6 +40,8 @@ class User extends Authenticatable
             'password' => 'hashed',
             'password_changed_at' => 'datetime',
             'last_login_at' => 'datetime',
+            'last_seen_at' => 'datetime',
+            'last_nudged_at' => 'datetime',
             'suspended_at' => 'datetime',
             'deleted_at' => 'datetime',
             'deletion_requested_at' => 'datetime',
@@ -295,6 +297,34 @@ class User extends Authenticatable
             ->whereNot('email', 'like', '%@'.ViewAs::SCRATCH_DOMAIN)
             ->whereNot('email', 'like', '%@example.com')
             ->whereNot('email', 'like', '%@alice.test');
+    }
+
+    /**
+     * The freshest of last-seen and last-login, so presence stays honest
+     * for accounts created before last_seen_at existed.
+     */
+    public function lastActiveAt(): ?\Carbon\CarbonInterface
+    {
+        return collect([$this->last_seen_at, $this->last_login_at])
+            ->filter()
+            ->sortDesc()
+            ->first();
+    }
+
+    /**
+     * Which nudge template fits this student right now: they either never
+     * finished the placement check (setup) or drifted away mid-reading
+     * (inactive). Null when neither applies (recently active).
+     */
+    public function nudgeKind(): ?string
+    {
+        if (! $this->is_setup_complete) {
+            return 'setup';
+        }
+
+        $lastActive = $this->lastActiveAt();
+
+        return ($lastActive === null || $lastActive->lt(now()->subDays(3))) ? 'inactive' : null;
     }
 
     /**

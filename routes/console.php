@@ -35,3 +35,8 @@ Schedule::command('alice:accounts:purge-deleted')->dailyAt('04:15');
 
 // Daily: prune login_attempts older than 30 days (security audit trail, §46.6).
 Schedule::call(fn () => DB::table('login_attempts')->where('created_at', '<', now()->subDays(30))->delete())->dailyAt('05:20');
+
+// Daily: friendly reminder email to setup-complete students inactive for
+// 3+ days. Weekly repeat while still inactive; shares the 24h cooldown
+// with the teacher's manual nudge button.
+Schedule::command('alice:nudge-inactive')->dailyAt('10:00');

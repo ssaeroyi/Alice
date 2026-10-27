@@ -143,6 +143,7 @@
                             <th class="px-4 py-3 font-extrabold">Account</th>
                             <th class="px-4 py-3 font-extrabold hidden sm:table-cell">Grade</th>
                             <th class="px-4 py-3 font-extrabold hidden lg:table-cell">Joined</th>
+                            <th class="px-4 py-3 font-extrabold hidden xl:table-cell">Presence</th>
                             <th class="px-4 py-3 font-extrabold hidden lg:table-cell">Last login</th>
                             <th class="px-4 py-3 font-extrabold">Status</th>
                         </tr>
@@ -173,6 +174,9 @@
                                 <td class="px-4 py-3 hidden lg:table-cell text-xs font-semibold text-[#2D231E]">
                                     {{ $account->created_at->format('M j, Y') }}
                                 </td>
+                                <td class="px-4 py-3 hidden xl:table-cell">
+                                    <x-presence-dot :at="$account->lastActiveAt()" compact />
+                                </td>
                                 <td class="px-4 py-3 hidden lg:table-cell text-xs font-semibold text-[#2D231E]">
                                     {{ $account->last_login_at?->format('M j, Y') ?? 'Never' }}
                                 </td>
@@ -197,7 +201,7 @@
                             </tr>
                         @empty
                             <tr>
-                                    <td colspan="5" class="px-4 py-10 text-center">
+                                    <td colspan="6" class="px-4 py-10 text-center">
                                     <p class="text-sm font-bold text-[#2D231E]">No accounts match these filters.</p>
                                 </td>
                             </tr>

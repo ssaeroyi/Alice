@@ -2,6 +2,7 @@
 
 use App\Console\Commands\AdminManage;
 use App\Console\Commands\NotifyAssignmentDue;
+use App\Console\Commands\NudgeInactive;
 use App\Console\Commands\ProbeIntegrations;
 use App\Console\Commands\PurgeDeletedAccounts;
 use App\Console\Commands\SnapshotStatus;
@@ -33,6 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ProbeIntegrations::class,
         NotifyAssignmentDue::class,
         PurgeDeletedAccounts::class,
+        NudgeInactive::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
