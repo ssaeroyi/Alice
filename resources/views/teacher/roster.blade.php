@@ -137,7 +137,7 @@
                                         <x-avatar :user="$student" :size="36" />
                                         <div class="min-w-0">
                                             <a href="{{ route('teacher.student', $student) }}" class="block font-bold text-sky-700 hover:text-sky-800 hover:underline underline-offset-2 truncate">
-                                                {{ $student->nickname ?? strtok($student->email, '@') }}
+                                                {{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}
                                             </a>
                                             <p class="text-[11px] font-semibold text-[#2D231E] truncate">{{ $student->email }}</p>
                                         </div>

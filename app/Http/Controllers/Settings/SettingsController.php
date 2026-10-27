@@ -38,6 +38,21 @@ class SettingsController extends Controller
         ]);
     }
 
+    /** Student real name (first/last) — same rules as the teacher profile. */
+    public function updateStudentProfile(UpdateTeacherProfileRequest $request): RedirectResponse
+    {
+        $data = $request->validated();
+
+        $request->user()->update([
+            'first_name' => $data['first_name'] ?? $request->user()->first_name,
+            'last_name' => $data['last_name'] ?? $request->user()->last_name,
+        ]);
+
+        return redirect()->route('settings')->with('toast', [
+            'message' => 'Name updated.',
+        ]);
+    }
+
     public function updateEmail(UpdateEmailRequest $request): RedirectResponse
     {
         $user = $request->user();

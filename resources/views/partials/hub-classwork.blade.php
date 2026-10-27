@@ -18,7 +18,8 @@
 
 <div class="space-y-5" data-cw-root
     data-join-url="{{ route('student.classes.join') }}"
-    data-leave-url="{{ route('student.classes.leave', ['group' => '__ID__']) }}">
+    data-leave-url="{{ route('student.classes.leave', ['group' => '__ID__']) }}"
+    data-has-name="{{ filled(trim(auth()->user()->first_name.' '.auth()->user()->last_name)) ? 1 : 0 }}">
 
     {{-- Landing view --}}
     <div data-cw-view="classes" class="space-y-5">

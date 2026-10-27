@@ -171,15 +171,16 @@ class MiniGameController extends Controller
 
         $userIds = $byGame->flatten(1)->pluck('user_id')->unique()->values();
         $users = $userIds->isNotEmpty()
-            ? User::realAccounts()->whereIn('id', $userIds)->get(['id', 'nickname', 'avatar'])->keyBy('id')
+            ? User::realAccounts()->whereIn('id', $userIds)->get(['id', 'nickname', 'first_name', 'last_name', 'avatar'])->keyBy('id')
             : collect();
 
         return $byGame->map(function (Collection $entries) use ($users) {
             return $entries
                 ->map(function (array $score) use ($users) {
-                    $u = $users->get($score['user_id']);
+                $u = $users->get($score['user_id']);
+                $displayName = $u ? (trim(($u->first_name ?? '').' '.($u->last_name ?? '')) ?: ($u->nickname ?? 'Reader')) : 'Reader';
 
-                    return [...$score, 'name' => $u?->nickname ?? 'Reader', 'avatar' => $u?->avatar];
+                return [...$score, 'name' => $displayName, 'avatar' => $u?->avatar];
                 })
                 ->values();
         });

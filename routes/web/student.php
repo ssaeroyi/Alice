@@ -139,6 +139,7 @@ Route::get('/library/suggest', [StudentLibraryController::class, 'suggest'])->na
 
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
         Route::post('/settings/name', [SettingsController::class, 'updateName'])->name('settings.name');
+Route::put('/settings/profile', [SettingsController::class, 'updateStudentProfile'])->name('settings.profile');
         Route::post('/settings/avatar', [SettingsController::class, 'updateAvatar'])->middleware('throttle:10,1')->name('settings.avatar');
         Route::post('/settings/email', [SettingsController::class, 'updateEmail'])->name('settings.email');
         Route::post('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.password');

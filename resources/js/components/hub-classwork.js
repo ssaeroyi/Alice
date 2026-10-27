@@ -39,8 +39,14 @@ export function initHubClasswork(root = document) {
 }
 
 function apply() {
-    const joinForm = rootEl.querySelector('#hub-join-class-form');
-    if (joinForm) joinForm.addEventListener('submit', onJoin);
+const joinForm = rootEl.querySelector('#hub-join-class-form');
+if (joinForm) joinForm.addEventListener('submit', onJoin);
+
+// Reopening the join modal always starts from the form (not the name gate).
+document.getElementById('hub-join-class')?.addEventListener('alice:modal-open', () => {
+    document.getElementById('hub-join-class-form')?.classList.remove('hidden');
+    document.getElementById('hub-join-name-gate')?.classList.add('hidden');
+});
 
     // A join/leave re-render can drop the open drawer node; never leave the
     // body scroll locked on a detached element.
@@ -178,6 +184,16 @@ async function onJoin(event) {
     const code = form.elements.join_code?.value?.trim() || '';
     const errorBox = form.querySelector('[data-cw-join-error]');
     const submit = form.querySelector('button[type="submit"]');
+
+    // Name gate: students without a real name can't join (the server
+    // enforces this too; this just saves them the round trip). The modal
+    // swaps to a friendly "add your name" panel with a Settings shortcut.
+    if (cwRoot.dataset.hasName !== '1') {
+        form.classList.add('hidden');
+        document.getElementById('hub-join-name-gate')?.classList.remove('hidden');
+        return;
+    }
+
     if (submit) {
         submit.disabled = true;
         submit.setAttribute('aria-busy', 'true');

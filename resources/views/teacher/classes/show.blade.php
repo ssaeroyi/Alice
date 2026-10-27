@@ -141,9 +141,9 @@
                             <div class="flex items-center gap-3 min-w-0">
                                 <x-avatar :user="$student" :size="36" />
                                 <span class="min-w-0">
-                                    <span class="block text-sm font-bold text-[#2D231E] truncate">{{ $student->nickname ?? strtok($student->email, '@') }}</span>
+                                    <span class="block text-sm font-bold text-[#2D231E] truncate">{{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}</span>
                                     @if (filled(trim($student->first_name.' '.$student->last_name)))
-                                        <span class="block text-xs font-semibold text-[#2D231E]">{{ $student->first_name }} {{ $student->last_name }}</span>
+                                        <span class="block text-xs font-semibold text-[#2D231E]">{{ $student->nickname ?? strtok($student->email, '@') }}</span>
                                     @endif
                                     <span class="block text-xs font-semibold text-[#2D231E]">{{ $student->email }}</span>
                                 </span>
@@ -174,9 +174,9 @@
     </x-modal>
 
     @foreach ($group->members as $student)
-        <x-modal id="remove-member-{{ $student->id }}" title="Remove {{ $student->nickname ?? strtok($student->email, '@') }} from this class?">
+        <x-modal id="remove-member-{{ $student->id }}" title="Remove {{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }} from this class?">
             <p class="text-xs font-semibold text-[#2D231E]">
-                {{ $student->nickname ?? strtok($student->email, '@') }} will lose access to this class's assignments. They can rejoin using the class code if needed.
+                {{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }} will lose access to this class's assignments. They can rejoin using the class code if needed.
             </p>
             <div class="flex items-center justify-end gap-2">
                 <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer">Cancel</button>

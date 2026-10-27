@@ -27,9 +27,45 @@
             </p>
         </div>
 
-        <!-- Registration Form -->
+            <!-- Registration Form -->
         <form action="{{ route('register.submit') }}" method="POST" data-submit-guard class="space-y-4">
             @csrf
+
+            <!-- Name Fields -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="space-y-1.5">
+                    <label for="first_name" class="font-pixel text-[10px] sm:text-xs font-bold text-[#2D231E] uppercase tracking-wider">
+                        First name
+                    </label>
+                    <input
+                        type="text"
+                        id="first_name"
+                        name="first_name"
+                        value="{{ old('first_name') }}"
+                        required
+                        maxlength="50"
+                        autocomplete="given-name"
+                        class="w-full min-h-[44px] px-4 py-2.5 bg-[#FAF6EE] border-2 border-[#2D231E] rounded-xl text-sm font-bold text-[#2D231E] placeholder-[#8C7B70] focus:outline-none focus:ring-2 focus:ring-amber-400 transition-all"
+                    >
+                    <x-input-error field="first_name" />
+                </div>
+                <div class="space-y-1.5">
+                    <label for="last_name" class="font-pixel text-[10px] sm:text-xs font-bold text-[#2D231E] uppercase tracking-wider">
+                        Last name
+                    </label>
+                    <input
+                        type="text"
+                        id="last_name"
+                        name="last_name"
+                        value="{{ old('last_name') }}"
+                        required
+                        maxlength="50"
+                        autocomplete="family-name"
+                        class="w-full min-h-[44px] px-4 py-2.5 bg-[#FAF6EE] border-2 border-[#2D231E] rounded-xl text-sm font-bold text-[#2D231E] placeholder-[#8C7B70] focus:outline-none focus:ring-2 focus:ring-amber-400 transition-all"
+                    >
+                    <x-input-error field="last_name" />
+                </div>
+            </div>
 
             <!-- Username Field -->
             <div class="space-y-1.5">

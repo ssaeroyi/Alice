@@ -30,6 +30,25 @@
             </button>
         </div>
 
+        <div class="flex items-center justify-between gap-6">
+            <div class="space-y-1 min-w-0">
+                <p class="font-pixel text-[10px] sm:text-xs font-bold text-[#2D231E] uppercase tracking-wider">
+                    Name
+                </p>
+                <p class="text-sm font-bold text-[#2D231E] truncate">
+                    {{ trim(($user->first_name ?? '').' '.($user->last_name ?? '')) ?: '-' }}
+                </p>
+            </div>
+
+            <button
+                type="button"
+                data-modal-open="realname-modal"
+                class="shrink-0 min-h-[44px] font-pixel text-[10px] px-4 py-2 rounded-xl bg-[#FAF6EE] border-2 border-[#2D231E] text-[#2D231E] font-bold flex items-center justify-center shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] transition-all cursor-pointer uppercase"
+            >
+                <span>Edit</span>
+            </button>
+        </div>
+
         <div class="space-y-1.5">
             <p class="font-pixel text-[10px] sm:text-xs font-bold text-[#2D231E] uppercase tracking-wider">
                 Grade Level
@@ -265,8 +284,8 @@
     </form>
 </x-modal>
 
-<!-- CHANGE DISPLAY NAME MODAL -->
-<x-modal id="name-modal" title="Change Display Name" pixel>
+            <!-- CHANGE DISPLAY NAME MODAL -->
+            <x-modal id="name-modal" title="Change Display Name" pixel>
     <form action="{{ route('settings.name') }}" method="POST" data-submit-guard class="space-y-4">
         @csrf
         <input type="hidden" name="modal" value="name-modal">
@@ -298,6 +317,64 @@
             >
                 <span data-submit-idle>UPDATE NAME</span>
                 <span data-submit-active class="hidden"><x-spinner label="Updating..." /></span>
+            </button>
+        </div>
+    </form>
+</x-modal>
+
+<!-- CHANGE REAL NAME MODAL -->
+<x-modal id="realname-modal" title="Change Name" pixel>
+    <form action="{{ route('settings.profile') }}" method="POST" data-submit-guard class="space-y-5">
+        @csrf
+        @method('PUT')
+        <input type="hidden" name="modal" value="realname-modal">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+                <label for="first_name" class="block font-pixel text-[10px] sm:text-xs font-bold text-[#2D231E] uppercase tracking-wider">
+                    First name
+                </label>
+                <input
+                    type="text"
+                    id="first_name"
+                    name="first_name"
+                    value="{{ old('first_name', $user->first_name) }}"
+                    required
+                    maxlength="50"
+                    autocomplete="given-name"
+                    class="w-full min-h-[44px] px-4 py-2.5 bg-[#FAF6EE] border-2 border-[#2D231E] rounded-xl text-sm font-bold text-[#2D231E] placeholder-[#8C7B70] focus:outline-none focus:ring-2 focus:ring-amber-400 transition-all"
+                >
+                <x-input-error field="first_name" />
+            </div>
+            <div class="space-y-1.5">
+                <label for="last_name" class="block font-pixel text-[10px] sm:text-xs font-bold text-[#2D231E] uppercase tracking-wider">
+                    Last name
+                </label>
+                <input
+                    type="text"
+                    id="last_name"
+                    name="last_name"
+                    value="{{ old('last_name', $user->last_name) }}"
+                    required
+                    maxlength="50"
+                    autocomplete="family-name"
+                    class="w-full min-h-[44px] px-4 py-2.5 bg-[#FAF6EE] border-2 border-[#2D231E] rounded-xl text-sm font-bold text-[#2D231E] placeholder-[#8C7B70] focus:outline-none focus:ring-2 focus:ring-amber-400 transition-all"
+                >
+                <x-input-error field="last_name" />
+            </div>
+        </div>
+
+        <p class="text-[11px] font-semibold text-[#2D231E]">
+            Your real name is what your teacher and classmates see. Your username stays your public handle.
+        </p>
+
+        <div class="pt-1">
+            <button
+                type="submit"
+                class="w-full min-h-[44px] font-pixel text-xs px-6 py-3.5 rounded-2xl bg-amber-400 border-2 border-[#2D231E] text-[#2D231E] font-bold flex items-center justify-center gap-2 shadow-[4px_4px_0px_0px_rgba(45,35,30,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] transition-all cursor-pointer uppercase"
+            >
+                <span data-submit-idle>SAVE NAME</span>
+                <span data-submit-active class="hidden"><x-spinner label="Saving..." /></span>
             </button>
         </div>
     </form>

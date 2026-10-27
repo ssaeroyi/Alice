@@ -49,6 +49,17 @@ class ClassController extends Controller
 
     public function join(Request $request): RedirectResponse|JsonResponse
     {
+        // Name gate: a classmate list full of usernames helps nobody. A
+        // student must have a real name on file before they can join.
+        if (trim($request->user()->first_name.' '.$request->user()->last_name) === '') {
+            $nameError = ['join_code' => 'Please add your first and last name in Settings before joining a class.'];
+            if ($request->expectsJson()) {
+                return response()->json(['ok' => false, 'errors' => $nameError, 'reason' => 'name_required'], 422);
+            }
+
+            return back()->withErrors($nameError)->withInput();
+        }
+
         $validated = $request->validate([
             'join_code' => ['required', 'string', 'max:16'],
         ]);

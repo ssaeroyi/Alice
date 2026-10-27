@@ -16,10 +16,6 @@
 <!-- Join class modal — opened via data-modal-open/modals.js; submit handled by hub-classwork.js -->
 <x-modal id="hub-join-class" title="JOIN A CLASS" pixel>
     <div class="space-y-5 pt-2">
-        <p class="text-sm font-semibold text-[#2D231E] leading-relaxed">
-            Type the code your teacher shared to join their class. Once you're in, their assignments show up here.
-        </p>
-
         <form id="hub-join-class-form" method="POST" action="{{ route('student.classes.join') }}" class="space-y-3">
             @csrf
             <label class="block text-sm font-extrabold text-[#2D231E] mb-1" for="join_code">Class code</label>
@@ -41,6 +37,28 @@
                 Join class
             </button>
         </form>
+
+        <!-- Name gate: students without a real name fill it first -->
+        <div id="hub-join-name-gate" class="hidden space-y-4">
+            <p class="text-sm font-semibold text-[#2D231E] leading-relaxed">
+                You're almost in! Add your first and last name first so your teacher and classmates know who you are.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button
+                    type="button"
+                    data-modal-close
+                    class="flex-1 min-h-[48px] bg-white border-2 border-[#2D231E] rounded-2xl font-pixel text-xs font-bold text-[#2D231E] shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] transition-all cursor-pointer uppercase"
+                >
+                    Not now
+                </button>
+                <a
+                    href="{{ route('settings') }}"
+                    class="flex-1 min-h-[48px] inline-flex items-center justify-center bg-amber-400 border-2 border-[#2D231E] rounded-2xl font-pixel text-xs font-bold text-[#2D231E] shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] transition-all uppercase"
+                >
+                    Go to settings
+                </a>
+            </div>
+        </div>
     </div>
 </x-modal>
 

@@ -202,6 +202,8 @@ class AuthController extends Controller
             $user = User::create([
                 'email' => $validated['email'],
                 'nickname' => $validated['nickname'],
+                'first_name' => $validated['first_name'],
+                'last_name' => $validated['last_name'],
                 'password' => $validated['password'],
                 'avatar' => Arr::random(array_column(config('avatars'), 'file')),
                 'role' => Role::Student,

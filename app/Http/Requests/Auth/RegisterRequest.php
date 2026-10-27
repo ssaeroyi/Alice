@@ -26,6 +26,8 @@ class RegisterRequest extends FormRequest
         $banned = array_map('mb_strtolower', config('placement.banned_names'));
 
         return [
+            'first_name' => ['required', 'string', 'max:50'],
+            'last_name' => ['required', 'string', 'max:50'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'nickname' => [
                 'required',
