@@ -107,9 +107,7 @@
                     <p class="mt-0.5 text-xs font-bold uppercase tracking-wider text-[#2D231E]/80">{{ $class->section_label }}</p>
                 @endif
                 <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-bold text-[#2D231E]">
-                    <span class="font-extrabold">{{ $displayName($class->teacher) }}</span>
-                    <span class="font-extrabold bg-[#2D231E] text-amber-300 px-2 py-0.5 rounded-md">{{ $class->members_count }} {{ $class->members_count === 1 ? 'STUDENT' : 'STUDENTS' }}</span>
-                    <span class="font-mono">{{ $class->join_code }}</span>
+                    <span class="font-pixel text-[11px] sm:text-xs font-bold">{{ $displayName($class->teacher) }}</span>
                 </div>
             </div>
 
@@ -164,13 +162,15 @@
                         </div>
                     </div>
 
-                    <div role="tabpanel" data-cw-panel="class-{{ $class->id }}-details" class="space-y-4">
-                        <p class="font-pixel text-[9px] font-bold uppercase tracking-wider text-[#8C7B70]">About this class</p>
-                        @if ($class->description)
-                            <p class="text-sm font-semibold text-[#2D231E] leading-relaxed whitespace-pre-wrap">{{ $class->description }}</p>
-                        @else
-                            <p class="text-sm font-semibold text-[#8C7B70] italic">No description yet. Your teacher can add one from the teacher portal.</p>
-                        @endif
+                    <div role="tabpanel" data-cw-panel="class-{{ $class->id }}-details" class="space-y-3">
+                        <p class="font-pixel text-[9px] font-bold uppercase tracking-wider text-[#2D231E]">About this class</p>
+                        <div class="rounded-xl border-2 border-[#2D231E]/25 bg-[#FAF6EE] p-4">
+                            @if ($class->description)
+                                <p class="text-sm font-bold text-[#2D231E] leading-relaxed whitespace-pre-wrap">{{ $class->description }}</p>
+                            @else
+                                <p class="text-sm font-bold text-[#2D231E]">No description yet. Your teacher can add one from the teacher portal.</p>
+                            @endif
+                        </div>
                     </div>
 
                     <div role="tabpanel" data-cw-panel="class-{{ $class->id }}-assignments" hidden>
