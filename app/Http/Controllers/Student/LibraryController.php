@@ -391,10 +391,10 @@ class LibraryController extends Controller
             return response()->json(['results' => []]);
         }
 
-        $needle = "%{$q}%";
+        $needle = '[[:<:]]'.preg_quote($q, '/');
 
         $results = $this->baseQuery()
-            ->where(fn (Builder $query) => $query->where('title', 'like', $needle)->orWhere('author', 'like', $needle))
+            ->where(fn (Builder $query) => $query->where('title', 'regexp', $needle)->orWhere('author', 'regexp', $needle))
             ->orderBy('title')
             ->limit(6)
             ->get(['title', 'author', 'slug'])
@@ -416,21 +416,21 @@ class LibraryController extends Controller
     private function applyFilterCriteria(Builder $query, array $filters): void
     {
         if (($filters['q'] ?? null) !== null) {
-            // Every whitespace-separated term must match the title or the
-            // author, so multi-word queries like "hans andersen" stay useful
-            // instead of dying as one substring.
+            // Every whitespace-separated term must word-START-match the title
+            // or the author ("the" hits "The Legend", never "Mother"; "phil"
+            // hits "Philip"). Multi-word queries like "hans andersen" stay
+            // useful because each term must find its own home.
             $terms = preg_split('/\s+/', trim($filters['q']), -1, PREG_SPLIT_NO_EMPTY) ?: [];
 
-            // Titles and authors only: genre names and synopsis text are too
-            // noisy as search hits (students searching "fairy" want a title,
-            // not every fairy-tale synopsis).
             $query->where(function (Builder $inner) use ($terms) {
                 foreach ($terms as $term) {
-                    $needle = "%{$term}%";
+                    // Escape regex metacharacters so "c++" or "love?" are
+                    // searched literally.
+                    $pattern = '[[:<:]]'.preg_quote($term, '/');
 
-                    $inner->where(function (Builder $row) use ($needle) {
-                        $row->where('title', 'like', $needle)
-                            ->orWhere('author', 'like', $needle);
+                    $inner->where(function (Builder $row) use ($pattern) {
+                        $row->where('title', 'regexp', $pattern)
+                            ->orWhere('author', 'regexp', $pattern);
                     });
                 }
             });
