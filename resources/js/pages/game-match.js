@@ -59,7 +59,7 @@ export default function init() {
         }, { once: true });
     }
 
-    initMascot('game-mascot');
+    initMascot();
     wireEvents();
 }
 

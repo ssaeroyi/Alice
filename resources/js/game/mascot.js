@@ -23,7 +23,7 @@ let SHEETS = {
 
 const HOLD_MS = 900;
 
-let el = null;
+let els = [];
 let anim = 'idle';
 let frame = 0;
 let lastTick = 0;
@@ -32,11 +32,13 @@ let rafId = 0;
 
 function paint() {
     const sheet = SHEETS[anim];
-    el.style.backgroundImage = `url(${sheet.src})`;
-    el.style.backgroundSize = `${sheet.frames * 100}% 100%`;
-    // Percentage-position across an N-frame sheet: 0% = frame 0, 100% = last.
-    const pct = sheet.frames > 1 ? (frame / (sheet.frames - 1)) * 100 : 0;
-    el.style.backgroundPosition = `${pct}% center`;
+    els.forEach((el) => {
+        el.style.backgroundImage = `url(${sheet.src})`;
+        el.style.backgroundSize = `${sheet.frames * 100}% 100%`;
+        // Percentage-position across an N-frame sheet: 0% = frame 0, 100% = last.
+        const pct = sheet.frames > 1 ? (frame / (sheet.frames - 1)) * 100 : 0;
+        el.style.backgroundPosition = `${pct}% center`;
+    });
 }
 
 function tick(now) {
@@ -76,22 +78,24 @@ function applySkin(skin) {
         walk: skin.anims.walk ?? skin.anims.idle,
         attack: skin.anims.attack ?? skin.anims.idle,
     };
-    if (el && skin.mascot) {
-        el.style.setProperty('--mw', `${skin.mascot.w}px`);
-        el.style.setProperty('--mh', `${skin.mascot.h}px`);
-    }
+    els.forEach((el) => {
+        if (skin.mascot) {
+            el.style.setProperty('--mw', `${skin.mascot.w}px`);
+            el.style.setProperty('--mh', `${skin.mascot.h}px`);
+        }
+    });
     anim = 'idle';
     frame = 0;
-    if (el) paint();
+    if (els.length) paint();
 }
 
-/** Find the mascot element and start the idle loop. Safe to call once per page. */
-export function initMascot(id = 'reader-mascot') {
-    el = document.getElementById(id);
-    if (!el) return;
+/** Find every mascot mount and start the idle loop. Safe to call once per page. */
+export function initMascot() {
+    els = [...document.querySelectorAll('[data-mascot]')];
+    if (!els.length) return;
 
     try {
-        const skin = JSON.parse(el.dataset.skin ?? 'null');
+        const skin = JSON.parse(els[0].dataset.skin ?? 'null');
         if (skin) applySkin(skin);
     } catch {
         // keep stock sheets
@@ -99,7 +103,7 @@ export function initMascot(id = 'reader-mascot') {
 
     // The Field Journal wardrobe equips live: swap without a reload.
     document.addEventListener('alice:equip', (event) => {
-        if (!el) return;
+        if (!els.length) return;
         applySkin(event.detail?.skin);
     });
 
@@ -116,7 +120,7 @@ export function initMascot(id = 'reader-mascot') {
  * settles back to idle.
  */
 export function mascotReact(name) {
-    if (!el || !SHEETS[name] || SHEETS[name].loop) return;
+    if (!els.length || !SHEETS[name] || SHEETS[name].loop) return;
     if (anim === name) return;
 
     anim = name;

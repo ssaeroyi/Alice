@@ -582,12 +582,12 @@ body[data-game-mode="on"] .tap-word-saved {
    she stands beside the status line on every screen size, reacting to
    matches and misses. Decorative: no pointer events, aria-hidden markup. */
 #game-mascot {
-    width: 44px;
-    height: 44px;
+    --mscale: 0.2; /* skin box (config/skins.php mascot entry) scaled down */
+    width: calc(var(--mw, 200px) * var(--mscale));
+    height: calc(var(--mh, 200px) * var(--mscale));
     flex-shrink: 0;
     background-repeat: no-repeat;
     background-position: 0% center;
-    background-size: 600% 100%;
     image-rendering: pixelated;
 }
 

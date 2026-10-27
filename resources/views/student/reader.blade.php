@@ -1,4 +1,4 @@
-﻿@extends('layouts.authenticated')
+@extends('layouts.authenticated')
 
 @section('page', 'reader')
 
@@ -98,7 +98,7 @@
          flow and never affects layout â€” on desktop she sits in the left
          margin outside the card, on narrow/mobile she overlays the control
          bar. pointer-events:none keeps every control tappable. --}}
-<div id="reader-mascot" data-anim="idle" data-skin='@json($equippedAlice)' aria-hidden="true"></div>
+    <div id="reader-mascot" data-mascot data-anim="idle" data-skin='@json($equippedAlice)' aria-hidden="true"></div>
 
     {{-- Milestone + event bubble: fixed, out of flow, never tappable. --}}
     <div id="reader-mascot-bubble" role="status" aria-live="polite"></div>
@@ -141,7 +141,10 @@
                         aria-pressed="false"
                         aria-label="LISTEN"
                         class="min-h-[40px] px-3 inline-flex items-center gap-1.5 font-pixel text-[9px] font-bold uppercase text-white bg-emerald-600 hover:bg-emerald-700 border-2 border-[#2D231E] rounded-xl shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
-                    ><span data-narr-icon>â–¶</span></button>
+                    ><span data-narr-icon class="inline-flex">
+                        <svg data-icon-play class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+                        <svg data-icon-pause class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+                    </span></button>
                     <div class="relative" data-narr-menu-wrap>
                         <button
                             type="button"
@@ -160,6 +163,7 @@
                             <button type="button" data-narr-replay class="w-full min-h-[36px] px-2 rounded-lg text-xs font-bold text-[#2D231E] bg-white hover:bg-[#FAF6EE] transition-colors text-left">Replay narration</button>
                         </div>
                     </div>
+                    <span data-mascot data-skin='@json($equippedAlice)' aria-hidden="true" class="reader-mascot-bar xl:hidden"></span>
                 </div>
             @else
                 <span></span>
@@ -334,6 +338,10 @@
                     <p><span class="font-extrabold">1.</span> Read to the end.</p>
                     <p><span class="font-extrabold">2.</span> Open the Field Journal and defeat the boss. Do the actions in the ACTIONS list. Every action damages the boss.</p>
                     <p><span class="font-extrabold">3.</span> Tap FINISH. That marks the story beaten and pays your reward.</p>
+                </div>
+                <div class="bg-[#FAF6EE] border-2 border-[#2D231E] rounded-2xl p-3 space-y-1">
+                    <p class="font-pixel text-[10px] font-bold text-amber-600 uppercase">WORDS</p>
+                    <p>Tap or press and hold any word to see its meaning, hear it, or save it. Saved words feed your study drills and the word games.</p>
                 </div>
                 <div class="bg-[#FAF6EE] border-2 border-[#2D231E] rounded-2xl p-3 space-y-1">
                     <p class="font-pixel text-[10px] font-bold text-amber-600 uppercase">THE JOURNAL</p>

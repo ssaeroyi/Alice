@@ -70,7 +70,7 @@ export default function init() {
         }
     } catch { /* storage off */ }
 
-    initMascot('game-mascot');
+    initMascot();
 }
 
 function setupGame() {

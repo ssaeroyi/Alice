@@ -116,7 +116,7 @@
     <!-- Status -->
     <!-- Status + Alice companion -->
     <div class="flex items-center justify-center gap-3 lg:pr-[19rem]">
-        <div id="game-mascot" data-skin='@json($equippedAlice)' aria-hidden="true"></div>
+        <div id="game-mascot" data-mascot data-skin='@json($equippedAlice)' aria-hidden="true"></div>
         <p id="game-status" class="text-center text-sm font-bold text-[#2D231E] uppercase">
             Swipe across letters to find words
         </p>

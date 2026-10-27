@@ -86,26 +86,20 @@
 }
 
 
-/* ============ mobile Alice: she lives at the bar's left end ==============
-   Desktop keeps her in the left margin (base rule above). Below 1280px the
-   reader has no margin, so she docks into the control bar instead: the bar
-   reserves her slot via [data-reader-bar] padding so she never covers the
-   play controls. Fixed position = zero layout impact on the bar. */
-@media (max-width: 1279px) {
-    #reader-mascot {
-        display: block;
-        position: fixed;
-        top: auto;
-        bottom: 8px;
-        left: 6px;
-        transform: none;
-        --mscale: 0.21;
-        z-index: 5;
-    }
-
-    [data-reader-bar] {
-        padding-left: 52px;
-    }
+/* ============ mobile Alice: she lives IN the control bar ==================
+   Below 1280px the reader has no left margin, so the bar renders its own
+   in-flow mascot slot (reader-mascot-bar, placed after the narration menu).
+   In-flow = the bar's real layout keeps her aligned on every phone; the old
+   fixed-position hack (which floated outside the bar on mobile browsers)
+   is gone. The desktop margin slot (#reader-mascot) stays hidden <1280px. */
+.reader-mascot-bar {
+    --mscale: 0.2;
+    width: calc(var(--mw, 200px) * var(--mscale));
+    height: calc(var(--mh, 200px) * var(--mscale));
+    flex-shrink: 0;
+    background-repeat: no-repeat;
+    background-position: 0% center;
+    image-rendering: pixelated;
 }
 
 /* Milestone + event bubble. Fixed, out of flow, pointer-events none, so it

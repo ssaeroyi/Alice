@@ -1126,11 +1126,22 @@ function initNarration(scope) {
     menuPanel?.querySelector('[data-narr-replay]')?.addEventListener('click', () => {
         closeNarrMenu();
         if (!narrationAudio) return;
+        // Replay must actually narrate: reset to segment 0, load it, play it.
         narrationAudio.pause();
         currentSegmentIdx = 0;
         lastSentIdx = -1;
         setNarrationState(toggle, icon, true);
+        toggle?.setAttribute('aria-busy', 'true');
         loadSegment(0, toggle, icon, speedButton, offsets);
+        narrationAudio.play()
+            .then(() => toggle?.removeAttribute('aria-busy'))
+            .catch(() => {
+                toggle?.removeAttribute('aria-busy');
+                setNarrationState(toggle, icon, false);
+                stopTracking();
+            });
+        startTracking();
+        mascotReact('walk');
     });
 
     let currentSegmentIdx = 0;
@@ -1282,7 +1293,12 @@ function applyNarrSpeed(speedButton) {
 
 function setNarrationState(toggle, icon, playing) {
     toggle?.setAttribute('aria-pressed', String(playing));
-    if (icon) icon.textContent = playing ? '❚❚' : '▶';
+    if (!icon) return;
+    const playIcon = icon.querySelector('[data-icon-play]');
+    const pauseIcon = icon.querySelector('[data-icon-pause]');
+    if (!playIcon || !pauseIcon) return;
+    playIcon.classList.toggle('hidden', playing);
+    pauseIcon.classList.toggle('hidden', !playing);
 }
 
 /* =================------------- word popup ============================== */
