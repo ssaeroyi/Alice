@@ -10,7 +10,7 @@
             <div class="divide-y divide-[#F0E9DD]">
                 <div class="flex flex-wrap items-center justify-between gap-3 pb-4">
                     <div class="min-w-0">
-                        <p class="text-xs font-bold text-[#2D231E]">Display name</p>
+                        <p class="text-xs font-bold text-[#2D231E]">Username</p>
                         <p class="text-sm font-semibold text-[#2D231E] truncate">{{ $user->nickname }}</p>
                     </div>
                     <button
@@ -87,14 +87,14 @@
     </div>
 
     <!-- DISPLAY NAME MODAL -->
-    <x-modal id="nickname-modal" title="Edit display name">
+    <x-modal id="nickname-modal" title="Edit username">
         <form method="POST" action="{{ route('teacher.settings.profile') }}" class="space-y-4">
             @csrf
             @method('PUT')
             <input type="hidden" name="modal" value="nickname-modal">
 
             <div>
-                <label for="nickname" class="block text-xs font-bold text-[#2D231E] mb-1.5">Display name</label>
+                <label for="nickname" class="block text-xs font-bold text-[#2D231E] mb-1.5">Username</label>
                 <input
                     id="nickname"
                     type="text"
@@ -116,7 +116,7 @@
                 data-submit-guard
                 class="w-full inline-flex items-center justify-center min-h-[44px] px-5 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors cursor-pointer"
             >
-                <span data-submit-idle>Save display name</span>
+                <span data-submit-idle>Save username</span>
                 <span data-submit-active class="hidden"><x-spinner label="Saving..." /></span>
             </button>
         </form>
@@ -292,7 +292,7 @@
                 required
                 class="w-full min-h-[44px] px-4 py-2.5 bg-[#FAF6EE] border-2 border-[#2D231E] rounded-xl text-sm font-bold text-[#2D231E] placeholder-[#8C7B70] focus:outline-none focus:ring-2 focus:ring-amber-400 transition-all"
             >
-            <p class="text-[11px] font-semibold text-[#2D231E]">Must match your display name ({{ $user->nickname }}).</p>
+            <p class="text-[11px] font-semibold text-[#2D231E]">Must match your username ({{ $user->nickname }}).</p>
             <x-input-error field="nickname_confirm" />
         </div>
 

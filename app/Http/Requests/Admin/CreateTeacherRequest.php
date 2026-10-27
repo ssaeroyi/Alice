@@ -52,6 +52,8 @@ class CreateTeacherRequest extends FormRequest
                 },
             ],
             'password' => ['required', 'string', Password::min(8), 'max:255', 'not_regex:/\s/', 'regex:/[a-z]/', 'regex:/[A-Z]/', 'regex:/[0-9]/', 'regex:/[^a-zA-Z0-9]/'],
+            'first_name' => ['required', 'string', 'max:60'],
+            'last_name' => ['required', 'string', 'max:60'],
         ];
     }
 
@@ -73,6 +75,8 @@ class CreateTeacherRequest extends FormRequest
             'password.min' => 'The temporary password must be at least 8 characters.',
             'password.not_regex' => 'Password must not contain spaces.',
             'password.regex' => 'Password must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 special character.',
+            'first_name.required' => 'Please enter a first name.',
+            'last_name.required' => 'Please enter a last name.',
         ];
     }
 }

@@ -27,6 +27,41 @@
                     @enderror
                 </div>
 
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label for="first_name" class="block text-xs font-bold text-[#2D231E] mb-1.5">First name</label>
+                        <input
+                            id="first_name"
+                            type="text"
+                            name="first_name"
+                            value="{{ old('first_name') }}"
+                            required
+                            maxlength="60"
+                            autocomplete="given-name"
+                            class="w-full h-11 px-3 bg-[#FAF6EE] border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-[#2D231E] @error('first_name') border-rose-400 @enderror"
+                        >
+                        @error('first_name')
+                            <p class="mt-1 text-[11px] font-semibold text-rose-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label for="last_name" class="block text-xs font-bold text-[#2D231E] mb-1.5">Last name</label>
+                        <input
+                            id="last_name"
+                            type="text"
+                            name="last_name"
+                            value="{{ old('last_name') }}"
+                            required
+                            maxlength="60"
+                            autocomplete="family-name"
+                            class="w-full h-11 px-3 bg-[#FAF6EE] border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-[#2D231E] @error('last_name') border-rose-400 @enderror"
+                        >
+                        @error('last_name')
+                            <p class="mt-1 text-[11px] font-semibold text-rose-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
                 <div>
                     <label for="email" class="block text-xs font-bold text-[#2D231E] mb-1.5">Email address</label>
                     <input

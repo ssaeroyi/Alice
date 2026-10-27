@@ -31,7 +31,7 @@
             </a>
             <span class="inline-flex items-center gap-1.5 text-xs font-bold text-[#8C7B70]">
                 From
-                <span class="font-pixel text-[10px] uppercase text-[#2D231E]">{{ $assignment->teacher?->first_name ?: 'Your teacher' }}</span>
+                <span class="font-pixel text-[10px] uppercase text-[#2D231E]">{{ trim($assignment->teacher?->first_name.' '.$assignment->teacher?->last_name) ?: ($assignment->teacher?->nickname ?: 'Your teacher') }}</span>
             </span>
         </div>
 

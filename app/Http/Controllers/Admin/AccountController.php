@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -137,8 +138,11 @@ class AccountController extends Controller
     {
         $user = User::create([
             'nickname' => $request->nickname,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
             'email' => $request->email,
             'password' => $request->password,
+            'avatar' => Arr::random(array_column(config('avatars'), 'file')),
             'role' => Role::Teacher,
             'email_verified_at' => now(),
             'is_setup_complete' => true,

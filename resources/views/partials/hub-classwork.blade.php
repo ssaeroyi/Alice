@@ -1,4 +1,7 @@
 @php
+    // One display-name rule everywhere: real name, else username, else a safe
+    // word. No surface can ever render a blank person again.
+    $displayName = fn ($u) => $u ? (trim($u->first_name.' '.$u->last_name) ?: ($u->nickname ?: 'Classmate')) : 'Teacher';
     // One merged, sorted assignment list per surface: not-done first (by due
     // date, undated last), done sinks to the bottom. Work never disappears —
     // it just stops leading. Status pills live in hub-assignment-row.
@@ -49,28 +52,13 @@
                 @if ($joinedClasses->isNotEmpty())
                     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                         @foreach ($joinedClasses as $class)
-                            @php
-                                $t = $class->teacher;
-                                $teacherName = $t ? (trim($t->first_name.' '.$t->last_name) ?: ($t->nickname ?: 'Teacher')) : 'Teacher';
-                            @endphp
                             <div class="flex flex-col bg-white border-2 border-[#2D231E] rounded-2xl overflow-hidden shadow-[3px_3px_0px_0px_rgba(45,35,30,1)]">
                                 <div class="bg-amber-400 border-b-2 border-[#2D231E] px-4 py-3">
                                     <h3 class="font-pixel text-sm font-bold text-[#2D231E] leading-snug">{{ $class->name }}</h3>
-                                    <p class="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#2D231E]/80 truncate">Teacher · {{ $teacherName }}</p>
+                                    <p class="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#2D231E]/80 truncate">{{ $displayName($class->teacher) }}</p>
                                 </div>
 
-                                <div class="px-4 pt-3 flex-1 space-y-3">
-                                    <div class="flex items-center justify-between gap-2 text-[11px] font-bold text-[#2D231E]">
-                                        <span>{{ $class->members_count }} {{ $class->members_count === 1 ? 'student' : 'students' }}</span>
-                                        <span>{{ $class->active_assignments->count() + $class->finished_assignments->count() }} {{ $class->active_assignments->count() + $class->finished_assignments->count() === 1 ? 'assignment' : 'assignments' }}</span>
-                                    </div>
-                                    <div class="flex items-center justify-between gap-2">
-                                        <span class="text-[10px] font-bold uppercase tracking-wide text-[#8C7B70]">Join code</span>
-                                        <span class="font-mono text-xs font-bold text-sky-700 bg-[#FAF6EE] border border-[#2D231E]/20 rounded-lg px-2 py-0.5">{{ $class->join_code }}</span>
-                                    </div>
-                                </div>
-
-                                <div class="px-4 pb-4 pt-3">
+                                <div class="px-4 pb-4 pt-4 mt-auto">
                                     <button
                                         type="button"
                                         data-cw-open="class-{{ $class->id }}"
@@ -95,8 +83,6 @@
     {{-- One drill-down view per joined class --}}
     @foreach ($joinedClasses as $class)
         @php
-            $t = $class->teacher;
-            $teacherName = $t ? (trim($t->first_name.' '.$t->last_name) ?: ($t->nickname ?: 'Teacher')) : 'Teacher';
             $classAssignments = $class->active_assignments->merge($class->finished_assignments)
                 ->sortBy(fn ($a) => [
                     ($assignmentCompletion[$a->id] ?? false) ? 1 : 0,
@@ -121,7 +107,7 @@
                     <p class="mt-0.5 text-xs font-bold uppercase tracking-wider text-[#2D231E]/80">{{ $class->section_label }}</p>
                 @endif
                 <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-bold text-[#2D231E]">
-                    <span>TEACHER <span class="font-extrabold">{{ $teacherName }}</span></span>
+                    <span class="font-extrabold">{{ $displayName($class->teacher) }}</span>
                     <span class="font-extrabold bg-[#2D231E] text-amber-300 px-2 py-0.5 rounded-md">{{ $class->members_count }} {{ $class->members_count === 1 ? 'STUDENT' : 'STUDENTS' }}</span>
                     <span class="font-mono">{{ $class->join_code }}</span>
                 </div>
@@ -179,33 +165,12 @@
                     </div>
 
                     <div role="tabpanel" data-cw-panel="class-{{ $class->id }}-details" class="space-y-4">
-                        <div>
-                            <p class="font-pixel text-[9px] font-bold uppercase tracking-wider text-[#8C7B70] mb-1.5">About this class</p>
-                            @if ($class->description)
-                                <p class="text-sm font-semibold text-[#2D231E] leading-relaxed whitespace-pre-wrap">{{ $class->description }}</p>
-                            @else
-                                <p class="text-sm font-semibold text-[#8C7B70] italic">No description yet. Your teacher can add one from the teacher portal.</p>
-                            @endif
-                        </div>
-
-                        <div class="rounded-xl border-2 border-[#2D231E]/15 bg-[#FAF6EE] p-4 space-y-2">
-                            <div class="flex items-center justify-between gap-3 text-sm">
-                                <span class="font-pixel text-[8px] font-bold uppercase tracking-wider text-[#8C7B70]">Teacher</span>
-                                <span class="font-extrabold text-[#2D231E]">{{ $teacherName }}</span>
-                            </div>
-                            <div class="flex items-center justify-between gap-3 text-sm">
-                                <span class="font-pixel text-[8px] font-bold uppercase tracking-wider text-[#8C7B70]">Students</span>
-                                <span class="font-extrabold text-[#2D231E]">{{ $class->members_count }}</span>
-                            </div>
-                            <div class="flex items-center justify-between gap-3 text-sm">
-                                <span class="font-pixel text-[8px] font-bold uppercase tracking-wider text-[#8C7B70]">Assignments</span>
-                                <span class="font-extrabold text-[#2D231E]">{{ $classAssignments->count() }}</span>
-                            </div>
-                            <div class="flex items-center justify-between gap-3 text-sm">
-                                <span class="font-pixel text-[8px] font-bold uppercase tracking-wider text-[#8C7B70]">Join code</span>
-                                <span class="font-mono font-extrabold text-sky-700">{{ $class->join_code }}</span>
-                            </div>
-                        </div>
+                        <p class="font-pixel text-[9px] font-bold uppercase tracking-wider text-[#8C7B70]">About this class</p>
+                        @if ($class->description)
+                            <p class="text-sm font-semibold text-[#2D231E] leading-relaxed whitespace-pre-wrap">{{ $class->description }}</p>
+                        @else
+                            <p class="text-sm font-semibold text-[#8C7B70] italic">No description yet. Your teacher can add one from the teacher portal.</p>
+                        @endif
                     </div>
 
                     <div role="tabpanel" data-cw-panel="class-{{ $class->id }}-assignments" hidden>
@@ -227,8 +192,10 @@
     {{-- Per-class people drawers: rendered at root level so an open drawer never hides with its view --}}
     @foreach ($joinedClasses as $class)
         @php
-            $t = $class->teacher;
-            $teacherName = $t ? (trim($t->first_name.' '.$t->last_name) ?: ($t->nickname ?: 'Teacher')) : 'Teacher';
+            $mates = $class->members
+                ->map(fn ($m) => ['user' => $m, 'name' => $displayName($m)])
+                ->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)
+                ->values();
         @endphp
         <div
             id="cw-people-{{ $class->id }}"
@@ -264,7 +231,7 @@
                                 <span class="w-10 h-10 shrink-0 rounded-full bg-white border-2 border-[#2D231E] flex items-center justify-center font-pixel text-xs font-bold text-[#2D231E]">?</span>
                             @endif
                             <span class="min-w-0">
-                                <span class="block text-sm font-extrabold text-[#2D231E] truncate">{{ $teacherName }}</span>
+                                <span class="block text-sm font-extrabold text-[#2D231E] truncate">{{ $displayName($class->teacher) }}</span>
                                 <span class="inline-flex items-center mt-0.5 px-2 py-0.5 rounded-md bg-amber-100 border border-[#2D231E] font-pixel text-[8px] font-bold uppercase text-[#2D231E]">Teacher</span>
                             </span>
                         </div>
@@ -283,11 +250,11 @@
                             </div>
                         @else
                             <div class="space-y-1.5">
-                                @foreach ($class->members->sortBy('first_name')->values() as $classmate)
+                                @foreach ($mates as $mate)
                                     <div class="flex items-center gap-3 px-3 py-2 rounded-xl bg-[#FAF6EE] border-2 border-[#2D231E]/15">
-                                        <x-avatar :user="$classmate" :size="32" />
+                                        <x-avatar :user="$mate['user']" :size="32" />
                                         <span class="text-sm font-bold text-[#2D231E] truncate">
-                                            {{ $classmate->first_name }} {{ $classmate->last_name }}@if ($classmate->id === auth()->id())<span class="font-semibold text-[#8C7B70] ml-1">(you)</span>@endif
+                                            {{ $mate['name'] }}@if ($mate['user']->id === auth()->id())<span class="font-semibold text-[#8C7B70] ml-1">(you)</span>@endif
                                         </span>
                                     </div>
                                 @endforeach
