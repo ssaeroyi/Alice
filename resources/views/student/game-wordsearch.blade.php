@@ -107,7 +107,7 @@
                 @endif
             </div>
 
-            <div id="word-list" class="flex flex-wrap gap-2 flex-1 lg:flex-col lg:gap-2">
+            <div id="word-list" class="flex flex-wrap justify-center gap-2 flex-1 lg:flex-col lg:items-center lg:gap-2">
                 <!-- Word badges injected by JS -->
             </div>
         </div>

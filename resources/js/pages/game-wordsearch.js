@@ -215,8 +215,8 @@ function renderWordList() {
     container.innerHTML = '';
 
     for (const w of words) {
-        const badge = document.createElement('span');
-        badge.className = 'font-pixel text-[10px] px-2 py-1 border border-[#2D231E]/30 rounded-lg text-[#2D231E]';
+const badge = document.createElement('span');
+badge.className = 'inline-flex items-center justify-center font-pixel text-[10px] px-3 py-1 border-2 border-[#2D231E]/25 rounded-lg text-[#2D231E]';
         badge.dataset.word = w.word.toUpperCase();
         badge.textContent = w.word.toUpperCase();
         container.appendChild(badge);

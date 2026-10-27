@@ -23,9 +23,18 @@
     {{-- Landing view --}}
     <div data-cw-view="classes" class="space-y-5">
         @if (! $hasAny)
-            <div class="bg-white border-2 border-[#2D231E] rounded-2xl p-8 text-center shadow-[3px_3px_0px_0px_rgba(45,35,30,1)]">
-                <p class="text-sm font-semibold text-[#2D231E]">Nothing here yet.</p>
-                <p class="mt-1 text-xs font-semibold text-[#2D231E]">Join a class with your teacher's code to see assignments here.</p>
+            <div class="bg-white border-2 border-[#2D231E] rounded-2xl p-8 text-center shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] space-y-4">
+                <div>
+                    <p class="text-sm font-semibold text-[#2D231E]">Nothing here yet.</p>
+                    <p class="mt-1 text-xs font-semibold text-[#2D231E]">Join a class with your teacher's code to see assignments here.</p>
+                </div>
+                <button
+                    type="button"
+                    data-modal-open="hub-join-class"
+                    class="inline-flex items-center gap-1.5 min-h-[44px] px-5 rounded-2xl bg-amber-400 border-2 border-[#2D231E] text-[#2D231E] font-pixel text-[10px] font-bold uppercase shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] hover:bg-amber-300 active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] transition-all"
+                >
+                    Join class
+                </button>
             </div>
         @else
             @if ($schoolWide->isNotEmpty())
