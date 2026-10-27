@@ -16,7 +16,7 @@
                     <span class="text-[#D8CBB9]">/</span>
                     <span class="text-[#2D231E] truncate">{{ $group->name }}</span>
                 </nav>
-                <p class="text-sm font-bold text-[#2D231E]">{{ $group->displayLabel() }} · {{ $group->members->count() }} student{{ $group->members->count() === 1 ? '' : 's' }} · {{ $group->assignments->count() }} assignment{{ $group->assignments->count() === 1 ? '' : 's' }}</p>
+                <p class="text-sm font-bold text-[#2D231E]">{{ $group->displayLabel() }} — {{ $group->members->count() }} student{{ $group->members->count() === 1 ? '' : 's' }}, {{ $group->assignments->count() }} assignment{{ $group->assignments->count() === 1 ? '' : 's' }}</p>
             </div>
             <form method="POST" action="{{ route('teacher.classes.destroy', $group) }}" data-submit-guard>
                 @csrf

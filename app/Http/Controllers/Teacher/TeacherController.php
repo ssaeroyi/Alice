@@ -14,7 +14,6 @@ use App\Models\StoryProgress;
 use App\Models\TestAttempt;
 use App\Models\User;
 use App\Models\UserDailyActivity;
-use App\Support\BloomLevels;
 use App\Support\DashboardRange;
 use App\Support\IntegritySignals;
 use App\Support\SchoolYear;
@@ -36,8 +35,7 @@ class TeacherController extends Controller
      * from data students already produce — no admin powers involved.
      *
      * The page carries one shared date range (DashboardRange) that feeds the
-     * explorer tiles and the skill-mastery panel; everything else is
-     * lifetime or point-in-time counts.
+     * explorer tiles; everything else is lifetime or point-in-time counts.
      */
     public function index(Request $request): View
     {
@@ -56,9 +54,6 @@ class TeacherController extends Controller
 
         $metricMeta = static::explorerMetrics()[$activeMetric];
         $studentIds = (clone $students)->pluck('id');
-
-        $thinkingGrade = $request->string('thinking_grade')->toString();
-        $thinking = static::thinkingDistribution($studentIds, $range, $thinkingGrade);
 
         $counts = [
             'students' => (clone $students)->count(),
@@ -93,16 +88,11 @@ class TeacherController extends Controller
                 ])
                 ->all(),
             'tileBase' => $request->query(),
-            'thinking' => $thinking,
-            'thinkingGrade' => $thinkingGrade,
             'gradeBreakdown' => static::gradeBreakdown(),
             'comprehensionLevels' => static::comprehensionDistribution(),
             'placementOnlyCount' => static::placementOnlyCount(),
             'growthTrends' => static::growthTrends($studentIds),
             'growthLine' => static::growthHistorySeries($studentIds),
-            'growthCompare' => static::growthCompare($studentIds),
-            'goodFit' => static::goodFitRate($studentIds),
-            'masteryPyramid' => static::masteryPyramid($studentIds),
             'readingNow' => static::whatTheyRead($range, $studentIds),
             'textDifficulty' => static::textDifficulty($studentIds),
             'struggling' => static::struggling(),
@@ -705,33 +695,6 @@ class TeacherController extends Controller
     }
 
     /**
-     * Class-wide thinking-level distribution for the shared window, filtered
-     * to one grade when the panel's dropdown asks for it. Grade filter uses
-     * effective grade (the advancing one), matching the grade panel.
-     *
-     * @param  Collection<int, int>  $studentIds
-     * @return array{levels: array<string, array{pct: int, strong: int, scored: int}>, scored: int}
-     */
-    private static function thinkingDistribution(Collection $studentIds, DashboardRange $range, string $grade): array
-    {
-        if ($grade !== '') {
-            // Raw reported grade, same rule as the roster's grade filter, so
-            // the "See students" link lands on the exact set shown here.
-            $studentIds = User::query()
-                ->whereIn('id', $studentIds)
-                ->where('grade_level', $grade)
-                ->pluck('id');
-        }
-
-        $levels = BloomLevels::classDistribution($studentIds, $range->start(), $range->end());
-
-        return [
-            'levels' => $levels,
-            'scored' => max(array_map(fn (array $level) => $level['scored'], $levels)),
-        ];
-    }
-
-    /**
      * Stories where the class struggles: lowest average score first, only
      * stories with at least 3 real attempts so one bad quiz never brands a
      * story. Links to the story list, not a per-story page.
@@ -770,21 +733,6 @@ class TeacherController extends Controller
      */
     public function roster(Request $request): View
     {
-        $skill = $request->string('skill')->toString();
-        $band = $request->string('band')->toString();
-
-        $skillIds = null;
-
-        if (in_array($skill, BloomLevels::ORDER, true) && in_array($band, ['strong', 'practice'], true)) {
-            $skillIds = BloomLevels::userIdsAtLevel(
-                $skill,
-                $band,
-                static::studentQuery()->pluck('id'),
-                now()->subDays(90)->startOfDay(),
-                now()->endOfDay(),
-            );
-        }
-
         $students = static::studentQuery()
             ->with(['placementAttempt', 'readingProgress'])
             ->when($request->filled('q'), function ($query) use ($request) {
@@ -814,7 +762,6 @@ class TeacherController extends Controller
                     });
                 }
             })
-            ->when($skillIds !== null, fn ($query) => $query->whereIn('users.id', $skillIds))
             ->when($request->filled('trend'), function ($query) use ($request) {
                 $trend = $request->string('trend')->toString();
                 $trend === 'none'
@@ -898,7 +845,6 @@ class TeacherController extends Controller
             'fromAssignment' => $fromAssignment,
             'recentActivity' => StudentActivity::recentFor($user),
             'flaggedAttempts' => $flaggedAttempts,
-            'thinking' => BloomLevels::userAccuracy($user->id),
             'quizHistory' => $attempts
                 ->map(fn ($a) => [
                     'date' => $a->created_at->format('Y-m-d'),
@@ -1084,68 +1030,6 @@ class TeacherController extends Controller
         }
 
         return collect($weeks)->map(fn ($b, $week) => ['date' => $week, 'count' => round($b['sum'] / $b['n'], 1)])->values()->all();
-    }
-
-    /** Average quiz score, last 30 days vs the previous 30. */
-    private static function growthCompare(Collection $studentIds): ?array
-    {
-        if ($studentIds->isEmpty()) {
-            return null;
-        }
-
-        $avg = fn (Carbon $from, Carbon $to) => (float) (TestAttempt::query()
-            ->whereIn('user_id', $studentIds)
-            ->whereBetween('created_at', [$from, $to])
-            ->avg('score_pct') ?? 0);
-
-        $now = Carbon::now();
-        $current = $avg($now->copy()->subDays(30), $now);
-        $previous = $avg($now->copy()->subDays(60), $now->copy()->subDays(30));
-
-        return ['current' => round($current, 1), 'previous' => round($previous, 1), 'delta' => round($current - $previous, 1)];
-    }
-
-    /** Share of finished books within ±1 grade of the student's own level. */
-    private static function goodFitRate(Collection $studentIds): ?array
-    {
-        if ($studentIds->isEmpty()) {
-            return null;
-        }
-
-        $rows = StoryProgress::query()
-            ->whereIn('story_progress.user_id', $studentIds)
-            ->whereNotNull('story_progress.completed_at')
-            ->join('stories', 'stories.id', '=', 'story_progress.story_id')
-            ->join('users', 'users.id', '=', 'story_progress.user_id')
-            ->whereNotNull('users.reading_level')
-            ->selectRaw('SUM(ABS(CAST(stories.reading_level AS SIGNED) - CAST(users.reading_level AS SIGNED)) <= 1) AS fit, COUNT(*) AS total')
-            ->first();
-
-        if (! $rows || (int) $rows->total === 0) {
-            return null;
-        }
-
-        return ['fit' => (int) $rows->fit, 'total' => (int) $rows->total, 'pct' => round($rows->fit / $rows->total * 100)];
-    }
-
-    /** Saved words grouped by flashcard mastery level (0=not studied .. 4). */
-    private static function masteryPyramid(Collection $studentIds): array
-    {
-        if ($studentIds->isEmpty()) {
-            return [];
-        }
-
-        $rows = \App\Models\SavedWord::query()
-            ->whereIn('user_id', $studentIds)
-            ->selectRaw('mastery_level, COUNT(*) AS total')
-            ->groupBy('mastery_level')
-            ->pluck('total', 'mastery_level');
-
-        return collect(range(0, 4))->map(fn ($level) => [
-            'level' => $level,
-            'label' => ['Not studied', 'Just saved', 'Learning', 'Reviewing', 'Strong'][$level] ?? (string) $level,
-            'total' => (int) ($rows[$level] ?? 0),
-        ])->all();
     }
 
     /** Stories finished in the range: finish counts + avg quiz score per story. */

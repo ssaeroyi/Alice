@@ -18,7 +18,7 @@
                 </h1>
                 <p class="text-xs font-semibold text-[#2D231E] mt-0.5">
                     @if ($story)
-                        {{ $story->title }} &middot;
+                        {{ $story->title }},
                     @endif
                     Drafts are fine. The meter shows what publishing still needs.
                 </p>
@@ -276,7 +276,7 @@ class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-5 py-2 b
                                     </span>
                                     @if ($story->difficulty_label)
                                         <span class="text-[11px] font-semibold text-[#2D231E]">
-                                            Band {{ $story->difficulty_label }} = app grade {{ $story->reading_level }} (7 Easy · 8 Intermediate · 9 Hard · 10 Very Hard, mapped from the text's readability score). The band is computed from the story text; length and quiz load are shown separately.
+                                            Band {{ $story->difficulty_label }} = app grade {{ $story->reading_level }} (7 Easy, 8 Intermediate, 9 Hard, 10 Very Hard, mapped from the text's readability score). The band is computed from the story text; length and quiz load are shown separately.
                                         </span>
                                     @else
                                         <span class="text-[11px] font-semibold text-[#2D231E]">
@@ -341,7 +341,7 @@ class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-5 py-2 b
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.9A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                             </svg>
                             <span class="mt-2 block text-xs font-bold text-[#2D231E]">Drop an image here, or click to browse</span>
-                            <span class="mt-0.5 block text-[11px] font-semibold text-[#2D231E]">JPEG, PNG or WebP &middot; up to 2 MB</span>
+                            <span class="mt-0.5 block text-[11px] font-semibold text-[#2D231E]">JPEG, PNG or WebP, up to 2 MB</span>
                         </label>
                         <input id="cover_image" type="file" name="cover_image" accept="image/jpeg,image/png,image/webp" data-cover-file class="hidden">
 
@@ -427,7 +427,7 @@ class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-5 py-2 b
                     >{{ old('content', $story?->content) }}</textarea>
                     <div class="mt-1.5 flex flex-wrap items-center justify-between gap-2">
                         <p class="text-[11px] font-semibold text-[#2D231E]">
-                            <span data-word-count="content">0 words</span> &middot;
+                            <span data-word-count="content">0 words</span>,
                             <span data-char-count="content">0 characters</span>
                             <span data-read-time="content" class="hidden"></span>
                         </p>
@@ -655,8 +655,8 @@ class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-5 py-2 b
                                 >
                                     <div class="rounded-lg border border-[#E6DCCF] bg-white px-2.5 py-2">
                                         <div class="flex items-center justify-between gap-2">
-                                            <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#2D231E]">Hear narration · saved text</p>
-                                            <span class="shrink-0 text-[10px] font-semibold text-[#2D231E] tabular-nums" data-hear-meta>Page {{ $hearTracks[0]['page'] ?? 1 }} of {{ count($hearTracks) }} · {{ sprintf('%d:%02d', intdiv($hearSeconds, 60), $hearSeconds % 60) }} total</span>
+                                            <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#2D231E]">Hear narration (saved text)</p>
+                                            <span class="shrink-0 text-[10px] font-semibold text-[#2D231E] tabular-nums" data-hear-meta>Page {{ $hearTracks[0]['page'] ?? 1 }} of {{ count($hearTracks) }}, {{ sprintf('%d:%02d', intdiv($hearSeconds, 60), $hearSeconds % 60) }} total</span>
                                         </div>
                                         <audio controls preload="none" class="h-9 w-full mt-2" data-hear-audio src="{{ $hearTracks[0]['url'] ?? '' }}"></audio>
                                     </div>
@@ -1167,10 +1167,10 @@ class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-5 py-2 b
                                                 $questionNumber++;
                                                 $answerLine = match ($question->type) {
                                                     \App\Enums\QuestionType::TrueFalse => $question->correct_option?->value === 'a' ? 'True' : 'False',
-                                                    \App\Enums\QuestionType::Identification => collect($question->acceptable_answers)->map(fn ($a) => '"'.$a.'"')->implode(' · '),
-                                                    \App\Enums\QuestionType::Matching => collect($question->match_pairs)->map(fn ($p) => $p['left'].' → '.$p['right'])->implode(' · '),
+                                                    \App\Enums\QuestionType::Identification => collect($question->acceptable_answers)->map(fn ($a) => '"'.$a.'"')->implode(', '),
+                                                    \App\Enums\QuestionType::Matching => collect($question->match_pairs)->map(fn ($p) => $p['left'].' → '.$p['right'])->implode(', '),
                                                     \App\Enums\QuestionType::Sequence => collect($question->sequence_items)->implode(' → '),
-                                                    default => $question->correct_option?->letter().' · '.$question->{'option_'.$question->correct_option?->value},
+                                                    default => $question->correct_option?->letter().', '.$question->{'option_'.$question->correct_option?->value},
                                                 };
                                             @endphp
                                             <div class="group p-4 bg-white border border-[#E6DCCF] rounded-lg" data-question-card="{{ $question->id }}">

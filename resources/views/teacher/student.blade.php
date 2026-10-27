@@ -35,8 +35,8 @@
                     </div>
                     <p class="text-sm font-semibold text-[#2D231E] mt-0.5 truncate">{{ $student->email }}</p>
                     <p class="text-[11px] font-semibold text-[#2D231E] mt-1">
-                        Joined {{ $student->created_at->format('M j, Y') }} &middot;
-                        Last login {{ $student->last_login_at?->format('M j, Y g:i A') ?? 'Never' }}
+                        Joined {{ $student->created_at->format('M j, Y') }}.
+                        Last login {{ $student->last_login_at?->format('M j, Y g:i A') ?? 'Never' }}.
                     </p>
                 </div>
             </div>
@@ -303,64 +303,6 @@
             @endif
         </x-admin.panel>
 
-        <!-- THINKING PROFILE -->
-        <x-admin.panel
-            title="Thinking profile"
-            subtitle="This student's accuracy per thinking level, across all their quiz answers."
-            info="Shows quiz accuracy per thinking level: Identification is Remember, choice and true/false are Understand, Matching is Apply, sequencing is Analyze."
-        >
-            @if (! empty($thinking))
-                @php
-                    $strongLevels = collect($thinking)
-                        ->filter(fn (array $row) => $row['pct'] >= \App\Support\BloomLevels::STRONG_THRESHOLD)
-                        ->keys()
-                        ->map(fn (string $level) => \App\Support\BloomLevels::label($level))
-                        ->values();
-                    $practiceLevels = collect($thinking)
-                        ->filter(fn (array $row) => $row['pct'] < \App\Support\BloomLevels::STRONG_THRESHOLD)
-                        ->keys()
-                        ->map(fn (string $level) => \App\Support\BloomLevels::label($level))
-                        ->values();
-
-                    $join = fn ($levels) => $levels->count() === 1
-                        ? $levels[0]
-                        : $levels->slice(0, -1)->implode(', ').' and '.$levels->last();
-                @endphp
-
-                <div class="space-y-3">
-                    @foreach (\App\Support\BloomLevels::ORDER as $level)
-                        @if (isset($thinking[$level]))
-                            @php $row = $thinking[$level]; @endphp
-                            <div>
-                                <div class="flex items-center justify-between gap-3 mb-1.5">
-                                    <span class="text-xs font-bold text-[#2D231E]">{{ \App\Support\BloomLevels::label($level) }}</span>
-                                    <span class="text-[11px] font-semibold text-[#2D231E]">
-                                        <span class="font-extrabold tabular-nums">{{ $row['pct'] }}%</span>
-                                        <span class="text-[#8C7B70]">&middot; {{ (int) $row['earned'] }} of {{ (int) $row['worth'] }} items</span>
-                                    </span>
-                                </div>
-                                <div class="h-3 bg-[#F3ECE0] rounded-full overflow-hidden" title="{{ \App\Support\BloomLevels::description($level) }}">
-                                    <div class="h-full rounded-full {{ $row['pct'] >= 70 ? 'bg-emerald-400' : ($row['pct'] >= 40 ? 'bg-amber-400' : 'bg-rose-400') }}" style="width: {{ min(100, max(0, $row['pct'])) }}%"></div>
-                                </div>
-                            </div>
-                        @endif
-                    @endforeach
-                </div>
-
-                <p class="mt-4 text-xs font-semibold text-[#2D231E]">
-                    @if ($strongLevels->isNotEmpty() && $practiceLevels->isNotEmpty())
-                        Strong at {{ $join($strongLevels) }}. Practice with {{ $join($practiceLevels) }}.
-                    @elseif ($strongLevels->isNotEmpty())
-                        Strong at {{ $join($strongLevels) }} across every level with answers.
-                    @else
-                        Still building {{ $join($practiceLevels) }}. Easier short stories and a second pass usually move this up.
-                    @endif
-                </p>
-            @else
-                <p class="text-sm font-semibold text-[#2D231E]">No quiz answers yet. This fills in as this student takes quizzes.</p>
-            @endif
-        </x-admin.panel>
-
         <!-- RECENT ACTIVITY -->
         <x-admin.panel
             title="Recent activity"
@@ -376,7 +318,7 @@
                             <p class="text-xs font-bold text-[#2D231E]">
                                 {{ $item['label'] }}
                                 @if ($item['count'] > 1)
-                                    <span class="text-[11px] font-semibold text-[#2D231E]">· {{ $item['count'] }} times</span>
+                                    <span class="text-[11px] font-semibold text-[#2D231E]">({{ $item['count'] }} times)</span>
                                 @endif
                             </p>
                             <span class="shrink-0 text-[11px] font-semibold text-[#2D231E]">

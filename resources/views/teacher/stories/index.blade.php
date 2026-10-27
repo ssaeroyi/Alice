@@ -238,9 +238,8 @@ in the library the moment you publish.
                                                     <span class="text-[#2D231E] group-hover:text-sky-700 transition-colors text-xs" aria-hidden="true">›</span>
                                                 </span>
                                                 <span class="block text-[11px] font-semibold text-[#2D231E] truncate max-w-[200px] sm:max-w-[280px]">
-                                                    {{ $story->author ?: 'No author' }}
-                                                    @if ($story->word_count) &middot; {{ number_format($story->word_count) }} words @endif
-                                                    @if ($story->quiz_difficulty) &middot; <span class="text-[#2D231E]">{{ ucfirst($story->quiz_difficulty) }} quiz</span> @endif
+                                                    {{ $story->author ?: 'No author' }}@if ($story->word_count), {{ number_format($story->word_count) }} words @endif
+                                                    @if ($story->quiz_difficulty), <span class="text-[#2D231E]">{{ ucfirst($story->quiz_difficulty) }} quiz</span> @endif
                                                 </span>
                                             </button>
                                         </td>
@@ -451,7 +450,7 @@ class="inline-flex items-center justify-center min-h-[44px] px-4 py-1.5 bg-[#F3E
                                                         <dd class="font-bold text-[#2D231E] mt-0.5">
                                                             {{ $story->questions_count }} question{{ $story->questions_count === 1 ? '' : 's' }}
                                                             @if ($story->quiz_difficulty)
-                                                                <span class="text-[#2D231E]">· {{ ucfirst($story->quiz_difficulty) }}</span>
+                                                                <span class="text-[#2D231E]">({{ ucfirst($story->quiz_difficulty) }})</span>
                                                             @endif
                                                         </dd>
                                                     </div>

@@ -106,89 +106,6 @@
             </p>
         </x-admin.panel>
 
-        <!-- SKILL MASTERY -->
-        <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#2D231E] flex items-center gap-1.5">
-            <x-icons.compass class="w-3.5 h-3.5" /> Skill mastery
-        </p>
-
-        <x-admin.panel
-            title="Thinking levels"
-            icon="compass"
-            subtitle="Share of students scoring 70% or higher on quiz questions at each level, for the selected range."
-            info="This is how the class handles each kind of thinking, read straight from quiz answers: Identification counts as Remember, multiple choice and true/false as Understand, Matching as Apply and sequencing as Analyze. Evaluate and Create are not measured because they need written answers. Students with no answers in the range are left out."
-        >
-            <form method="GET" action="{{ route('teacher.dashboard') }}" class="flex flex-wrap items-center gap-3 mb-4">
-                @foreach ($tileBase as $param => $value)
-                    @if ($param !== 'thinking_grade')
-                        <input type="hidden" name="{{ $param }}" value="{{ $value }}">
-                    @endif
-                @endforeach
-                <label class="flex items-center gap-2">
-                    <span class="text-[11px] font-bold uppercase tracking-wide text-[#2D231E]">Grade</span>
-                    <select
-                        name="thinking_grade"
-                        onchange="this.form.submit()"
-                        class="h-10 px-3 bg-[#FAF6EE] border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-[#2D231E] cursor-pointer"
-                    >
-                        <option value="">All grades</option>
-                        @foreach (\App\Enums\GradeLevel::cases() as $gradeOption)
-                            <option value="{{ $gradeOption->value }}" @selected($thinkingGrade === $gradeOption->value)>
-                                {{ $gradeOption->label() }}
-                            </option>
-                        @endforeach
-                    </select>
-                </label>
-            </form>
-
-            @if ($thinking['scored'] > 0)
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    @foreach (\App\Support\BloomLevels::ORDER as $level)
-                        @php
-                            $data = $thinking['levels'][$level];
-                            $ringRadius = 18;
-                            $ringCircumference = 2 * pi() * $ringRadius;
-                            $ringOffset = $ringCircumference * (1 - min($data['pct'], 100) / 100);
-                            $ringColor = $data['pct'] >= 70 ? '#34D399' : ($data['pct'] >= 40 ? '#FBBF24' : '#FB7185');
-                        @endphp
-                        <div class="rounded-xl border border-[#E6DCCF] bg-[#FAF6EE] px-4 py-3.5 flex items-start gap-3.5">
-                            <svg class="w-12 h-12 shrink-0" viewBox="0 0 44 44" aria-hidden="true">
-                                <circle cx="22" cy="22" r="{{ $ringRadius }}" fill="none" stroke="#F3ECE0" stroke-width="5" />
-                                <circle
-                                    cx="22" cy="22" r="{{ $ringRadius }}"
-                                    fill="none"
-                                    stroke="{{ $ringColor }}"
-                                    stroke-width="5"
-                                    stroke-linecap="round"
-                                    stroke-dasharray="{{ $ringCircumference }}"
-                                    stroke-dashoffset="{{ $ringOffset }}"
-                                    transform="rotate(-90 22 22)"
-                                />
-                                <text x="22" y="23" text-anchor="middle" dominant-baseline="middle" font-size="12" font-weight="800" fill="#2D231E">{{ $data['pct'] }}%</text>
-                            </svg>
-                            <div class="min-w-0 flex-1">
-                                <p class="text-xs font-extrabold text-[#2D231E]">{{ \App\Support\BloomLevels::label($level) }}</p>
-                                <p class="mt-1 text-[11px] font-semibold text-[#2D231E] leading-snug">
-                                    Measures students who {{ \Illuminate\Support\Str::lcfirst(rtrim(\App\Support\BloomLevels::description($level), '.')) }}.
-                                </p>
-                                <p class="mt-1.5 text-[11px] font-bold text-[#2D231E]">
-                                    {{ $data['strong'] }} of {{ $data['scored'] }} scored 70% or higher.
-                                </p>
-                                <a
-                                    href="{{ route('teacher.roster', array_filter(['skill' => $level, 'band' => 'strong', 'grade' => $thinkingGrade], fn ($v) => $v !== '')) }}"
-                                    class="mt-2 inline-flex items-center text-[11px] font-bold text-sky-600 hover:text-sky-700 transition-colors"
-                                >See students</a>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-                <p class="mt-3 text-[11px] font-semibold text-[#2D231E]">
-                    Evaluate and Create are not measured: they need written-answer questions, which quizzes do not have.
-                </p>
-            @else
-                <p class="text-sm font-semibold text-[#2D231E]">No quiz answers in this range yet. The tiles fill in as students take quizzes.</p>
-            @endif
-        </x-admin.panel>
-
         <!-- READING LEVELS -->
         <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#2D231E] flex items-center gap-1.5">
             <x-icons.book-open class="w-3.5 h-3.5" /> Reading levels
@@ -293,31 +210,18 @@
             </div>
         </x-admin.panel>
 
-        <!-- READING GROWTH (the trend line + compare) -->
+        <!-- READING GROWTH (the trend line) -->
         <x-admin.panel
             title="Reading growth"
             icon="chart-line"
             subtitle="Average quiz score per week, full history, school-wide."
-            info="This is the big-picture line: the average score on every story quiz, week by week, since the first record. The compare statement averages the last 30 days against the previous 30. Rising line and a positive delta = comprehension is improving."
+            info="This is the big-picture line: the average score on every story quiz, week by week, since the first record. A rising line means quiz scores are climbing."
         >
-            @php
-                $delta = $growthCompare;
-                $deltaLabel = $delta === null ? null : ($delta['delta'] > 0
-                    ? 'up ' . $delta['delta'] . ' points'
-                    : ($delta['delta'] < 0 ? 'down ' . abs($delta['delta']) . ' points' : 'flat'));
-            @endphp
-            <div class="flex flex-wrap items-center gap-x-6 gap-y-2 mb-3">
-                <span class="text-sm font-extrabold text-[#2D231E]">
-                    @if ($delta !== null && $delta['previous'] > 0)
-                        Last 30 days: {{ $delta['current'] }}% avg,
-                        <span class="{{ $delta['delta'] >= 0 ? 'text-emerald-700' : 'text-rose-600' }}">{{ $deltaLabel }}</span> vs previous 30.
-                    @elseif ($delta !== null)
-                        Last 30 days: {{ $delta['current'] }}% avg. Not enough history yet for a comparison.
-                    @else
-                        No quiz data yet.
-                    @endif
-                </span>
-            </div>
+            @if (count($growthLine) > 0)
+                <p class="text-sm font-extrabold text-[#2D231E] mb-3">
+                    Latest: {{ $growthLine[count($growthLine) - 1]['count'] }}% avg this week so far.
+                </p>
+            @endif
             <div class="relative h-52">
                 <canvas
                     data-growth-line-canvas
@@ -329,58 +233,6 @@
                 @endif
             </div>
         </x-admin.panel>
-
-        <!-- WORDS & FIT -->
-        <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#2D231E] flex items-center gap-1.5">
-            <x-icons.book-open class="w-3.5 h-3.5" /> Words & fit
-        </p>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            <!-- VOCAB MASTERY PYRAMID -->
-            <x-admin.panel
-                title="Word mastery"
-                icon="book"
-                subtitle="Every saved word by flashcard strength."
-                info="Depth of vocabulary: a word counts as mastered once flashcard reviews grade it Strong. Words saved is the count collected; this shows how many have stuck."
-            >
-                @if (! empty($masteryPyramid) && array_sum(array_column($masteryPyramid, 'total')) > 0)
-                    @php $maxMastery = max(1, max(array_column($masteryPyramid, 'total'))); @endphp
-                    <div class="space-y-2">
-                        @foreach ($masteryPyramid as $tier)
-                            <div class="flex items-center gap-3">
-                                <span class="shrink-0 w-24 text-[11px] font-bold text-[#2D231E]">{{ $tier['label'] }}</span>
-                                <div class="flex-1 h-3 rounded-full bg-[#F3ECE0] overflow-hidden">
-                                    <div class="h-full rounded-full {{ $tier['level'] >= 3 ? 'bg-emerald-500' : ($tier['level'] >= 1 ? 'bg-amber-400' : 'bg-stone-400') }}" style="width: {{ round($tier['total'] / $maxMastery * 100) }}%"></div>
-                                </div>
-                                <span class="shrink-0 w-10 text-right text-[11px] font-extrabold text-[#2D231E] tabular-nums">{{ $tier['total'] }}</span>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <p class="text-sm font-semibold text-[#2D231E]">No saved words yet. Students save words while reading.</p>
-                @endif
-            </x-admin.panel>
-
-            <!-- GOOD FIT RATE -->
-            <x-admin.panel
-                title="Reading the right books"
-                icon="compass"
-                subtitle="Finished books within one grade of the reader's own level."
-                info="A good-fit book sits within one grade of the student's reading level: easy enough to understand, hard enough to grow. Too easy means coasting; too hard means frustration. Computed over all finished books."
-            >
-                @if ($goodFit !== null)
-                    <div class="flex items-center gap-5">
-                        <span class="text-5xl font-extrabold text-[#2D231E] tabular-nums">{{ $goodFit['pct'] }}%</span>
-                        <p class="text-xs font-semibold text-[#2D231E] leading-relaxed">
-                            {{ $goodFit['fit'] }} of {{ $goodFit['total'] }} finished books were a good fit
-                            for the student's reading level.
-                        </p>
-                    </div>
-                @else
-                    <p class="text-sm font-semibold text-[#2D231E]">No finished books yet.</p>
-                @endif
-            </x-admin.panel>
-        </div>
 
         <!-- CLASSWORK -->
         <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#2D231E] flex items-center gap-1.5">
@@ -420,11 +272,11 @@
                                 <a href="{{ route('teacher.assignments.show', $assignment) }}" class="min-w-0 flex-1 group">
                                     <p class="text-sm font-bold text-[#2D231E] truncate group-hover:text-sky-600 transition-colors">{{ $assignment->title }}</p>
                                     <p class="text-[11px] font-semibold text-[#2D231E]">
-                                        {{ $assignment->group?->name ?? 'Whole class' }}
+                                        {{ $assignment->group?->name ?? 'Whole class' }},
                                         @if ($assignment->due_at)
-                                            &middot; {{ $assignment->isOverdue() ? 'was due '.$assignment->due_at->format('M j') : 'due '.$assignment->due_at->format('M j') }}
+                                            {{ $assignment->isOverdue() ? 'was due '.$assignment->due_at->format('M j') : 'due '.$assignment->due_at->format('M j') }}
                                         @else
-                                            &middot; no due date
+                                            no due date
                                         @endif
                                     </p>
                                 </a>
@@ -562,7 +414,7 @@
                                     <p class="text-[11px] font-semibold text-[#2D231E]">
                                         Grade {{ $row->reading_level }} text
                                         @if ($row->avg_score !== null)
-                                            · {{ round($row->avg_score) }}% avg quiz
+                                            ({{ round($row->avg_score) }}% average on quizzes)
                                         @endif
                                     </p>
                                 </div>

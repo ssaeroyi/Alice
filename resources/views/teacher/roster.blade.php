@@ -13,7 +13,6 @@
                 request('status') ? 1 : 0,
                 request('setup') ? 1 : 0,
                 request('attention') ? 1 : 0,
-                request('skill') ? 1 : 0,
             ])->sum();
         @endphp
 
@@ -77,26 +76,6 @@
                         <option value="">Any setup</option>
                         <option value="done" @selected(request('setup') === 'done')>Setup done</option>
                         <option value="pending" @selected(request('setup') === 'pending')>Setup pending</option>
-                    </select>
-                </label>
-
-                <label class="block">
-                    <span class="text-[11px] font-bold uppercase tracking-wide text-[#2D231E]">Thinking level</span>
-                    <select name="skill" class="mt-1 w-full h-11 px-3 bg-[#FAF6EE] border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-[#2D231E] cursor-pointer">
-                        <option value="">Any thinking level</option>
-                        @foreach (\App\Support\BloomLevels::ORDER as $levelOption)
-                            <option value="{{ $levelOption }}" @selected(request('skill') === $levelOption)>
-                                {{ \App\Support\BloomLevels::label($levelOption) }}
-                            </option>
-                        @endforeach
-                    </select>
-                </label>
-
-                <label class="block">
-                    <span class="text-[11px] font-bold uppercase tracking-wide text-[#2D231E]">Level band</span>
-                    <select name="band" class="mt-1 w-full h-11 px-3 bg-[#FAF6EE] border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-[#2D231E] cursor-pointer">
-                        <option value="strong" @selected(request('band', 'strong') === 'strong')>Strong (70% or higher, last 90 days)</option>
-                        <option value="practice" @selected(request('band') === 'practice')>Still practicing (under 70%, last 90 days)</option>
                     </select>
                 </label>
 

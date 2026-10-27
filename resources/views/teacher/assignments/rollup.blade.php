@@ -85,7 +85,6 @@
                         <a href="{{ route('teacher.stories.edit', $assignment->story) }}" class="text-xs font-bold text-sky-700 hover:underline">
                             View story
                         </a>
-                        <span class="text-xs text-[#2D231E]">·</span>
                         <form method="POST" action="{{ route('teacher.stories.duplicate', $assignment->story) }}" class="inline">
                             @csrf
                             <button type="submit" class="text-xs font-bold text-sky-700 hover:underline">Make a copy</button>
@@ -358,13 +357,13 @@
                                                         @if ($progress['completed'])
                                                             <p class="text-xs font-bold text-emerald-700">Done</p>
                                                             @if ($drawerMark)
-                                                                <p class="text-[11px] font-semibold text-[#2D231E] mt-0.5">Marked by {{ $drawerMark->teacher?->nickname ?? 'teacher' }} · {{ $drawerMark->created_at->format('M j, g:i A') }}</p>
+                                                                <p class="text-[11px] font-semibold text-[#2D231E] mt-0.5">Marked by {{ $drawerMark->teacher?->nickname ?? 'teacher' }} on {{ $drawerMark->created_at->format('M j, g:i A') }}</p>
                                                             @elseif ($progress['read'] || $progress['quiz'])
                                                                 <p class="text-[11px] font-semibold text-[#2D231E] mt-0.5">Evidence-based completion.</p>
                                                             @endif
                                                         @elseif ($drawerMark)
                                                             <p class="text-xs font-bold text-emerald-700">Done (teacher)</p>
-                                                            <p class="text-[11px] font-semibold text-[#2D231E] mt-0.5">Marked by {{ $drawerMark->teacher?->nickname ?? 'teacher' }} · {{ $drawerMark->created_at->format('M j, g:i A') }}</p>
+                                                            <p class="text-[11px] font-semibold text-[#2D231E] mt-0.5">Marked by {{ $drawerMark->teacher?->nickname ?? 'teacher' }} on {{ $drawerMark->created_at->format('M j, g:i A') }}</p>
                                                         @elseif ($progress['read'] || $progress['quiz'])
                                                             <p class="text-xs font-bold text-amber-700">In progress</p>
                                                         @else
@@ -379,7 +378,7 @@
                                                             <div class="rounded-xl bg-[#FAF6EE] border border-[#E6DCCF] px-4 py-3 mb-2 last:mb-0">
                                                                 <div class="flex flex-wrap items-center gap-2">
                                                                     <span class="inline-flex items-center min-w-[52px] justify-center rounded-full px-2.5 py-1 text-xs font-extrabold tabular-nums {{ $row['passed'] ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-600' }}">{{ $row['score'] }}%</span>
-                                                                    <span class="text-[11px] font-semibold text-[#2D231E]">{{ $row['at']->diffForHumans() }} · {{ $row['at']->format('M j, g:i A') }}</span>
+                                                                    <span class="text-[11px] font-semibold text-[#2D231E]">{{ $row['at']->diffForHumans() }} ({{ $row['at']->format('M j, g:i A') }})</span>
                                                                 </div>
                                                                 <div class="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-semibold text-[#2D231E]">
                                                                     <span>{{ $row['correct'] }} / {{ $row['total'] }} correct</span>
