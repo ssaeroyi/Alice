@@ -224,10 +224,10 @@
                     <button
                         type="button"
                         data-cw-people-close
-                        class="min-w-[44px] min-h-[44px] font-pixel text-xs font-bold text-[#2D231E] bg-white border-2 border-[#2D231E] rounded-xl flex items-center justify-center px-2 shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] transition-all"
+                        class="w-9 h-9 font-bold text-[#2D231E] rounded-lg flex items-center justify-center hover:bg-[#FAF6EE] transition-colors cursor-pointer"
                         aria-label="Close people list"
                     >
-                        [X]
+                        ✕
                     </button>
                 </div>
 

@@ -484,7 +484,7 @@
             type="button"
             data-aa-close
             aria-label="Close settings"
-            class="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-[#2D231E] text-[#2D231E] font-bold text-sm hover:bg-[#FAF6EE] transition-colors cursor-pointer"
+            class="w-8 h-8 flex items-center justify-center rounded-lg text-[#2D231E] font-bold text-sm hover:bg-[#FAF6EE] transition-colors cursor-pointer"
         >✕</button>
     </div>
 
@@ -533,7 +533,7 @@
             type="button"
             data-menu-close
             aria-label="Close menu"
-            class="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-[#2D231E] text-[#2D231E] font-bold text-sm hover:bg-[#FAF6EE] transition-colors cursor-pointer"
+            class="w-8 h-8 flex items-center justify-center rounded-lg text-[#2D231E] font-bold text-sm hover:bg-[#FAF6EE] transition-colors cursor-pointer"
         >✕</button>
     </div>
 

@@ -318,9 +318,10 @@ function showHint() {
    voice and her text land together. */
 
 let voiceConfig = null;      // { voice, model, lines: { key: {mp3, duration_ms, ...} } }
-// Voice follows the app-wide sound preference (localStorage 'alice-sound-mute',
-// owned by game/sfx.js) so the tour shares ONE switch with Settings instead of
-// keeping a private mute that reset on every page change.
+// Tour-only voice mute (localStorage 'alice-tour-voice-mute'). Deliberately
+// PRIVATE: muting Alice's tour narration must not touch the app-wide sound
+// switch that games and the reader share (game/sfx.js owns that one).
+let tourVoiceMuted = false;
 let manifestPromise = null;  // cached fetch
 let voiceAudio = null;       // one shared <audio>
 
@@ -366,12 +367,32 @@ function voiceUrl(meta) {
     return '/audio/tour/' + meta.mp3;
 }
 
-/** The glyph button itself is owned by components/sound.js (it writes role,
- *  aria-pressed and title); the tour only decides whether it is shown at all. */
+/** The tour's private voice mute: shown when tour audio ships. Toggling it
+ *  touches ONLY the tour narration — the app-wide sound switch (games,
+ *  reader) is owned by components/sound.js and stays untouched. */
 function renderVoiceButton() {
     const btn = shell?.querySelector('[data-tour="mute"]');
     if (!btn) return;
     btn.hidden = !voiceConfig;
+
+    const on = btn.querySelector('[data-tour-voice-on]');
+    const off = btn.querySelector('[data-tour-voice-off]');
+    if (on && off) {
+        on.classList.toggle('hidden', tourVoiceMuted);
+        off.classList.toggle('hidden', !tourVoiceMuted);
+    }
+    btn.title = tourVoiceMuted ? "Alice's voice: muted. Tap to unmute" : "Alice's voice: on. Tap to mute";
+    btn.setAttribute('aria-pressed', String(tourVoiceMuted));
+}
+
+function bindTourMute() {
+    const btn = shell?.querySelector('[data-tour="mute"]');
+    btn?.addEventListener('click', () => {
+        tourVoiceMuted = !tourVoiceMuted;
+        try { localStorage.setItem('alice-tour-voice-mute', tourVoiceMuted ? '1' : '0'); } catch { /* storage off */ }
+        renderVoiceButton();
+        if (tourVoiceMuted) stopVoice();
+    });
 }
 
 /** Browsers block unmuted autoplay without a gesture. Prime playback with a
@@ -418,7 +439,7 @@ function say(text, key) {
             if (typingToken === token) resolve();
         };
 
-        const meta = (key && voiceConfig) ? voiceConfig.lines[key] : null;
+        const meta = (key && voiceConfig && !tourVoiceMuted) ? voiceConfig.lines[key] : null;
 
         if (meta && !getMuted()) {
             const dur = Number(meta.duration_ms) || 0;
@@ -539,8 +560,8 @@ async function runLoop() {
     try {
         await entry.run();
     } catch (error) {
-        // A failed beat must never leave a frozen screen: treat as done.
-        endTour(true);
+        // A failed beat must never kill the tour: pause instead (resumable).
+        showPaused();
         return;
     }
 
@@ -602,6 +623,9 @@ export function initTourDriver() {
 
     cacheElements();
     if (!shell) return;
+
+    try { tourVoiceMuted = localStorage.getItem('alice-tour-voice-mute') === '1'; } catch { /* storage off */ }
+    bindTourMute();
 
     box.addEventListener('click', (event) => {
         if (event.target.closest('[data-tour="quit"], [data-tour="resume"], [data-tour="end"], [data-tour="mute"]')) {
