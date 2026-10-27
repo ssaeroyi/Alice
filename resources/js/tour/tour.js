@@ -322,6 +322,7 @@ let voiceConfig = null;      // { voice, model, lines: { key: {mp3, duration_ms,
 // PRIVATE: muting Alice's tour narration must not touch the app-wide sound
 // switch that games and the reader share (game/sfx.js owns that one).
 let tourVoiceMuted = false;
+let tourPaused = false;      // pause/play state: interruptions land here
 let manifestPromise = null;  // cached fetch
 let voiceAudio = null;       // one shared <audio>
 
@@ -505,17 +506,6 @@ function say(text, key) {
     });
 }
 
-/* --------------------------- pause / resume --------------------------- */
-
-function showPaused() {
-    if (disposed) return;
-    active = true;
-    arrow.style.opacity = '0';
-    progress.textContent = '';
-    pausedRow.classList.remove('hidden');
-    textEl.textContent = "We went somewhere new. No problem. Keep going, or end here?";
-}
-
 /* --------------------------- lifecycle --------------------------- */
 
 function startTour() {
@@ -548,7 +538,7 @@ async function runLoop() {
     if (!entry) { endTour(true); return; }
 
     if (!entry.url.test(location.pathname)) {
-        showPaused();
+        setPaused(true); // interruption: land in the paused state, play resumes
         return;
     }
 
@@ -561,7 +551,7 @@ async function runLoop() {
         await entry.run();
     } catch (error) {
         // A failed beat must never kill the tour: pause instead (resumable).
-        showPaused();
+        setPaused(true);
         return;
     }
 
@@ -578,6 +568,44 @@ async function runLoop() {
         return;
     }
     location.assign(nextEntry.canonical);
+}
+
+/** Pause / play: the single control for interruptions AND manual pause.
+ *  Pausing freezes voice + typing; playing continues (navigating back to the
+ *  step's page first if the student wandered off). */
+function setPaused(paused) {
+    if (disposed) return;
+    tourPaused = paused;
+
+    const btn = shell?.querySelector('[data-tour="pause"]');
+    if (btn) {
+        btn.setAttribute('aria-pressed', String(paused));
+        btn.title = paused ? 'Play: continue the tour' : 'Pause the tour';
+        const p = btn.querySelector('[data-tour-pause-icon]');
+        const pl = btn.querySelector('[data-tour-play-icon]');
+        if (p) p.classList.toggle('hidden', paused);
+        if (pl) pl.classList.toggle('hidden', !paused);
+    }
+
+    if (paused) {
+        stopVoice();
+        typingStop?.();
+        active = false;
+        arrow.style.opacity = '0';
+        pausedRow.classList.remove('hidden');
+        textEl.textContent = 'Paused. Tap play to continue.';
+    } else {
+        pausedRow.classList.add('hidden');
+        const state = getState();
+        const entry = state && STEPS[state.step];
+        if (!entry) { endTour(false); return; }
+        if (!entry.url.test(location.pathname)) {
+            location.assign(entry.canonical);
+            return;
+        }
+        active = true;
+        runLoop();
+    }
 }
 
 function endTour(finished) {
@@ -628,7 +656,8 @@ export function initTourDriver() {
     bindTourMute();
 
     box.addEventListener('click', (event) => {
-        if (event.target.closest('[data-tour="quit"], [data-tour="resume"], [data-tour="end"], [data-tour="mute"]')) {
+        if (tourPaused) return; // paused: only the play button continues
+        if (event.target.closest('[data-tour="quit"], [data-tour="pause"], [data-tour="end"], [data-tour="mute"]')) {
             return; // controls handle themselves
         }
         typingStop?.(); // tap anywhere else advances (skip typing + hold + clip)
@@ -638,12 +667,7 @@ export function initTourDriver() {
     quiet(pick('[data-tour="progress"]'));
 
     shell.querySelector('[data-tour="quit"]').addEventListener('click', () => endTour(false));
-    shell.querySelector('[data-tour="resume"]').addEventListener('click', () => {
-        const state = getState();
-        const entry = state && STEPS[state.step];
-        if (entry) location.assign(entry.canonical);
-        else endTour(false);
-    });
+    shell.querySelector('[data-tour="pause"]').addEventListener('click', () => setPaused(!tourPaused));
     shell.querySelector('[data-tour="end"]').addEventListener('click', () => endTour(false));
 
     // The button click is handled by components/sound.js (it owns the

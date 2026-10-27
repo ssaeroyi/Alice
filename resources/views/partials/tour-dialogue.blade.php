@@ -21,7 +21,7 @@
                 <span class="font-pixel text-[9px] font-bold text-[#2D231E]">ALICE</span>
             </div>
 
-            {{-- Top-right controls: step counter, tour-only voice mute, QUIT --}}
+            {{-- Top-right controls: counter, tour voice mute, pause/play, QUIT --}}
             <div class="flex items-center justify-end gap-1.5 pb-1 pt-0.5">
                 <span class="font-pixel text-[8px] text-[#2D231E]" data-tour="progress"></span>
 
@@ -32,24 +32,36 @@
                     type="button"
                     hidden
                     data-tour="mute"
-                    class="w-[30px] h-[30px] bg-white text-[#2D231E] rounded-md flex items-center justify-center cursor-pointer"
+                    class="w-[30px] h-[30px] bg-white border-2 border-[#2D231E] text-[#2D231E] rounded-md flex items-center justify-center cursor-pointer shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
                     title="Alice's voice: on. Tap to mute"
                 >
                     <span class="w-4 h-4 [&>svg]:h-full [&>svg]:w-full" data-tour-voice-on>{!! \App\Support\LibraryPresentation::iconGlyph('ui', 'sound-on') !!}</span>
                     <span class="w-4 h-4 [&>svg]:h-full [&>svg]:w-full hidden" data-tour-voice-off>{!! \App\Support\LibraryPresentation::iconGlyph('ui', 'sound-off') !!}</span>
                 </button>
 
+                {{-- Pause / play: any interruption lands here; play continues --}}
+                <button
+                    type="button"
+                    data-tour="pause"
+                    aria-pressed="false"
+                    class="w-[30px] h-[30px] bg-white border-2 border-[#2D231E] text-[#2D231E] rounded-md flex items-center justify-center cursor-pointer shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                    title="Pause the tour"
+                >
+                    <span class="w-3.5 h-3.5" data-tour-pause-icon><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></span>
+                    <span class="w-3.5 h-3.5 hidden" data-tour-play-icon><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+                </button>
+
                 <button
                     type="button"
                     data-tour="quit"
                     aria-label="End the tour"
-                    class="h-[30px] font-pixel text-[8px] font-bold text-[#2D231E] bg-white rounded-md flex items-center justify-center px-2.5 cursor-pointer hover:bg-[#FAF6EE] transition-colors"
+                    class="h-[30px] font-pixel text-[8px] font-bold text-[#2D231E] bg-white border-2 border-[#2D231E] rounded-md flex items-center justify-center px-2.5 shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
                 >QUIT</button>
             </div>
 
-            {{-- Portrait centered on its own row; caption centered below --}}
-            <div class="flex flex-col items-center gap-2 text-center">
-                <div class="w-14 h-14 shrink-0 bg-amber-400 border-2 border-[#2D231E] rounded-lg overflow-hidden flex items-center justify-center">
+            {{-- Portrait LEFT + caption right: classic RPG dialogue --}}
+            <div class="flex items-center gap-3">
+                <div class="w-16 h-16 shrink-0 bg-amber-400 border-2 border-[#2D231E] rounded-lg overflow-hidden flex items-center justify-center">
                     <img
                         class="w-full h-full object-cover"
                         src="{{ asset('image/Alice/Light mode/alice-lt-casual.png') }}"
@@ -57,23 +69,19 @@
                     >
                 </div>
 
-                <div class="w-full min-w-0">
+                <div class="min-w-0 flex-1">
                     <p
                         class="text-xs sm:text-sm font-semibold text-[#2D231E] leading-relaxed min-h-[2.75rem] sm:min-h-[3.25rem]"
                         data-tour="text"
                     ></p>
 
-                    {{-- Pause / resume + end, shown when the student lands somewhere unexpected. --}}
-                    <div class="hidden flex items-center justify-center gap-2 mt-1" data-tour="paused">
-                        <button
-                            type="button"
-                            data-tour="resume"
-                            class="min-h-[34px] font-pixel text-[9px] font-bold text-[#2D231E] bg-emerald-400 border-2 border-[#2D231E] rounded-lg px-3 shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
-                        >RESUME</button>
+                    {{-- Pause note + end, shown while the tour is paused. --}}
+                    <div class="hidden flex items-center gap-2 mt-1" data-tour="paused">
+                        <span class="font-pixel text-[8px] font-bold text-[#8C7B70] uppercase">Paused</span>
                         <button
                             type="button"
                             data-tour="end"
-                            class="min-h-[34px] font-pixel text-[9px] font-bold text-[#2D231E] bg-white border-2 border-[#2D231E] rounded-lg px-3 shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
+                            class="min-h-[30px] font-pixel text-[8px] font-bold text-[#2D231E] bg-white border-2 border-[#2D231E] rounded-lg px-2.5 shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
                         >END TOUR</button>
                     </div>
                 </div>
