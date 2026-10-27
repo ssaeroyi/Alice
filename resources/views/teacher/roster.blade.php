@@ -106,17 +106,49 @@
             </p>
         </x-admin.panel>
 
-        <x-admin.panel>
-            <div class="overflow-x-auto">
+        {{-- Mobile: stacked card list replaces the table entirely. --}}
+        <x-admin.panel class="md:hidden">
+            @forelse ($students as $student)
+                <a href="{{ route('teacher.student', $student) }}" class="block py-3 border-b border-[#F0E9DD] last:border-b-0 hover:bg-[#FAF6EE] transition-colors -mx-2 px-2 rounded-lg">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <x-avatar :user="$student" :size="40" />
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-bold text-[#2D231E] truncate">
+                                {{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}
+                            </p>
+                            <p class="text-[11px] font-semibold text-[#2D231E] truncate">{{ $student->email }}</p>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex flex-wrap items-center gap-1.5">
+                        <x-presence-dot :at="$student->lastActiveAt()" compact />
+                        @if ($student->grade_level)
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#F3ECE0] text-[#2D231E]">Grade {{ $student->effectiveGrade() }}</span>
+                        @endif
+                        @if ($student->suspended_at)
+                            <x-admin.pill tone="crit">Suspended</x-admin.pill>
+                        @elseif ($student->is_setup_complete)
+                            <x-admin.pill tone="ok">Active</x-admin.pill>
+                        @else
+                            <x-admin.pill>Setup pending</x-admin.pill>
+                        @endif
+                    </div>
+                </a>
+            @empty
+                <p class="text-sm font-bold text-[#2D231E] py-8 text-center">No students match these filters.</p>
+            @endforelse
+            <div class="pt-4">
+                {{ $students->links('pagination::teacher') }}
+            </div>
+        </x-admin.panel>
+
+        <x-admin.panel class="hidden md:block">
                 <table class="w-full text-left text-sm">
                     <thead>
                         <tr class="border-b border-[#E6DCCF] text-[11px] uppercase tracking-wider text-[#2D231E]">
                             <th class="px-4 py-3 font-extrabold">Student</th>
-                            <th class="px-4 py-3 font-extrabold hidden sm:table-cell">Grade</th>
-                            <th class="px-4 py-3 font-extrabold hidden md:table-cell">Reading grade</th>
-                            <th class="px-4 py-3 font-extrabold hidden lg:table-cell">Comprehension</th>
-                            <th class="px-4 py-3 font-extrabold hidden xl:table-cell">Presence</th>
-                            <th class="px-4 py-3 font-extrabold hidden lg:table-cell">Last login</th>
+                            <th class="px-4 py-3 font-extrabold whitespace-nowrap">Grade</th>
+                            <th class="px-4 py-3 font-extrabold whitespace-nowrap">Reading grade</th>
+                            <th class="px-4 py-3 font-extrabold whitespace-nowrap">Activity</th>
                             <th class="px-4 py-3 font-extrabold">Status</th>
                         </tr>
                     </thead>
@@ -127,63 +159,24 @@
                                     <div class="flex items-center gap-3 min-w-0">
                                         <x-avatar :user="$student" :size="36" />
                                         <div class="min-w-0">
-                                            <a href="{{ route('teacher.student', $student) }}" class="block font-bold text-sky-700 hover:text-sky-800 hover:underline underline-offset-2 truncate">
+                                            <a href="{{ route('teacher.student', $student) }}" class="block font-bold text-sky-700 hover:text-sky-800 hover:underline underline-offset-2 truncate max-w-[220px]">
                                                 {{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}
                                             </a>
-                                            <p class="text-[11px] font-semibold text-[#2D231E] truncate">{{ $student->email }}</p>
+                                            <p class="text-[11px] font-semibold text-[#2D231E] truncate max-w-[220px]">{{ $student->email }}</p>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-4 py-3 hidden sm:table-cell text-xs font-bold text-[#2D231E]">
+                                <td class="px-4 py-3 whitespace-nowrap text-xs font-bold text-[#2D231E]">
                                     {{ $student->grade_level ? 'Grade '.$student->effectiveGrade() : '—' }}
                                 </td>
-                                <td class="px-4 py-3 hidden md:table-cell text-xs font-bold text-[#2D231E]">
+                                <td class="px-4 py-3 whitespace-nowrap text-xs font-bold text-[#2D231E]">
                                         @php $served = $student->readingProgress?->reading_grade ?? $student->reading_level; @endphp
                                         {{ $served ? 'Grade '.$served : '—' }}
                                 </td>
-                                <td class="px-4 py-3 hidden lg:table-cell">
-                                    @php $rp = $student->readingProgress; @endphp
-                                    @if ($rp?->comprehension_level)
-                                        <div class="flex items-center gap-1.5">
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold {{ match ($rp->comprehension_level) {
-                                                \App\Enums\ComprehensionLevel::Independent => 'bg-emerald-100 text-emerald-700',
-                                                \App\Enums\ComprehensionLevel::Instructional => 'bg-amber-100 text-amber-700',
-                                                \App\Enums\ComprehensionLevel::Frustration => 'bg-orange-100 text-orange-700',
-                                                \App\Enums\ComprehensionLevel::Critical => 'bg-rose-100 text-rose-700',
-                                            } }}">
-                                                {{ $rp->comprehension_level->label() }}
-                                            </span>
-                                            @if ($rp->trend === 'up')
-                                                <span class="text-emerald-600 font-bold" title="Moving up">▲</span>
-                                            @elseif ($rp->trend === 'down')
-                                                <span class="text-rose-500 font-bold" title="Moving down">▼</span>
-                                            @endif
-                                            @if ($rp->slipping)
-                                                <x-admin.pill tone="crit">Slipping</x-admin.pill>
-                                            @endif
-                                        </div>
-                                        @if ($rp->sample_count > 0)
-                                            @php $basis = \App\Services\ReadingProgressService::basisFor($rp); @endphp
-                                            @if ($basis !== 'from placement only')
-                                                <p class="mt-1 text-[10px] font-semibold text-[#2D231E]">
-                                                    {{ $basis }}
-                                                </p>
-                                            @endif
-                                        @endif
-                                    @elseif ($student->comprehension_level && $student->is_setup_complete)
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#F3ECE0] text-[#2D231E] border border-[#E6DCCF]">{{ $student->comprehension_level->label() }}</span>
-                                        <p class="mt-1 text-[10px] font-semibold text-[#2D231E]">From placement, no quiz results yet</p>
-                                    @else
-                                        <span class="text-xs font-semibold text-[#2D231E]">No live result yet</span>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-3 hidden xl:table-cell">
+                                <td class="px-4 py-3 whitespace-nowrap">
                                     <x-presence-dot :at="$student->lastActiveAt()" compact />
                                 </td>
-                                <td class="px-4 py-3 hidden lg:table-cell text-xs font-semibold text-[#2D231E]">
-                                    {{ $student->last_login_at?->diffForHumans() ?? 'Never' }}
-                                </td>
-                                <td class="px-4 py-3">
+                                <td class="px-4 py-3 whitespace-nowrap">
                                     @if ($student->suspended_at)
                                         <x-admin.pill tone="crit">Suspended</x-admin.pill>
                                     @elseif ($student->is_setup_complete)
@@ -195,14 +188,13 @@
                             </tr>
                         @empty
                             <tr>
-                                    <td colspan="7" class="px-4 py-10 text-center">
+                                <td colspan="5" class="px-4 py-10 text-center">
                                     <p class="text-sm font-bold text-[#2D231E]">No students match these filters.</p>
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
-            </div>
 
             <div class="pt-4">
                 {{ $students->links('pagination::teacher') }}

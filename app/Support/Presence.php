@@ -48,4 +48,27 @@ class Presence
             default => 'bg-stone-300',
         };
     }
+
+    /**
+     * Compact time token for tight list rows: 5m, 2h, 3d, 1w, then the date.
+     * "Online now" keeps its words — the green dot alone is not clear enough.
+     */
+    public static function token(?CarbonInterface $lastActiveAt): string
+    {
+        if ($lastActiveAt === null) {
+            return '—';
+        }
+
+        if ($lastActiveAt->gt(now()->subMinutes(5))) {
+            return 'Now';
+        }
+
+        return match (true) {
+            $lastActiveAt->gt(now()->subHour()) => $lastActiveAt->diffInMinutes(now()).'m ago',
+            $lastActiveAt->gt(now()->subDay()) => $lastActiveAt->diffInHours(now()).'h ago',
+            $lastActiveAt->gt(now()->subWeek()) => floor($lastActiveAt->diffInHours(now()) / 24).'d ago',
+            $lastActiveAt->gt(now()->subDays(14)) => floor($lastActiveAt->diffInDays(now()) / 7).'w ago',
+            default => $lastActiveAt->format('M j'),
+        };
+    }
 }

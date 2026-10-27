@@ -135,17 +135,53 @@
             </p>
         </x-admin.panel>
 
-        <x-admin.panel>
-            <div class="overflow-x-auto table-scroll">
+        {{-- Mobile: stacked card list replaces the table entirely. --}}
+        <x-admin.panel class="lg:hidden">
+            @forelse ($users as $account)
+                <a href="{{ route('admin.accounts.show', $account) }}" class="block py-3 border-b border-[#F0E9DD] last:border-b-0 hover:bg-[#FAF6EE] transition-colors -mx-2 px-2 rounded-lg">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <x-avatar :user="$account" :size="40" />
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-bold text-[#2D231E] truncate">
+                                {{ trim(($account->first_name ?? '').' '.($account->last_name ?? '')) ?: ($account->nickname ?? strtok($account->email, '@')) }}
+                            </p>
+                            <p class="text-[11px] font-semibold text-[#2D231E] truncate">{{ $account->email }}</p>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex flex-wrap items-center gap-1.5">
+                        <x-presence-dot :at="$account->lastActiveAt()" compact />
+                        <x-admin.pill :tone="$account->role === \App\Enums\Role::Admin ? 'warn' : ($account->role === \App\Enums\Role::Teacher ? 'ok' : 'neutral')">
+                            {{ $account->role->value }}
+                        </x-admin.pill>
+                        @if ($account->deleted_at)
+                            <x-admin.pill tone="crit" title="Expires {{ $account->deletionExpiresAt()?->format('M j, Y') }}">Deletion pending</x-admin.pill>
+                        @elseif ($account->suspended_at)
+                            <x-admin.pill tone="crit">Suspended</x-admin.pill>
+                        @elseif ($account->is_setup_complete)
+                            <x-admin.pill tone="ok">Active</x-admin.pill>
+                        @else
+                            <x-admin.pill>Setup pending</x-admin.pill>
+                        @endif
+                    </div>
+                </a>
+            @empty
+                <p class="text-sm font-bold text-[#2D231E] py-8 text-center">No accounts match these filters.</p>
+            @endforelse
+            <div class="pt-4">
+                {{ $users->links('pagination::admin') }}
+            </div>
+        </x-admin.panel>
+
+        <x-admin.panel class="hidden lg:block">
+            <div class="table-scroll">
                 <table class="w-full text-left text-sm">
                     <thead>
                         <tr class="border-b border-[#E6DCCF] text-[11px] uppercase tracking-wider text-[#2D231E]">
                             <th class="px-4 py-3 font-extrabold">Account</th>
-                            <th class="px-4 py-3 font-extrabold hidden sm:table-cell">Grade</th>
-                            <th class="px-4 py-3 font-extrabold hidden lg:table-cell">Joined</th>
-                            <th class="px-4 py-3 font-extrabold hidden xl:table-cell">Presence</th>
-                            <th class="px-4 py-3 font-extrabold hidden lg:table-cell">Last login</th>
-                            <th class="px-4 py-3 font-extrabold">Status</th>
+                            <th class="px-4 py-3 font-extrabold whitespace-nowrap">Grade</th>
+                            <th class="px-4 py-3 font-extrabold whitespace-nowrap">Joined</th>
+                            <th class="px-4 py-3 font-extrabold whitespace-nowrap">Activity</th>
+                            <th class="px-4 py-3 font-extrabold whitespace-nowrap">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-[#F0E9DD]">
@@ -155,10 +191,10 @@
                                     <div class="flex items-center gap-3 min-w-0">
                                         <x-avatar :user="$account" :size="36" />
                                         <div class="min-w-0">
-                                            <a href="{{ route('admin.accounts.show', $account) }}" class="block font-bold text-amber-700 hover:text-amber-800 hover:underline underline-offset-2 truncate">
+                                            <a href="{{ route('admin.accounts.show', $account) }}" class="block font-bold text-amber-700 hover:text-amber-800 hover:underline underline-offset-2 truncate max-w-[220px]">
                                                 {{ $account->nickname ?? strtok($account->email, '@') }}
                                             </a>
-                                            <p class="text-[11px] font-semibold text-[#2D231E] truncate">
+                                            <p class="text-[11px] font-semibold text-[#2D231E] truncate max-w-[220px]">
                                                 @if ($account->deleted_at)
                                                     Deletion expires {{ $account->deletionExpiresAt()?->format('M j, Y') }}
                                                 @else
@@ -168,24 +204,19 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-4 py-3 hidden sm:table-cell text-xs font-bold text-[#2D231E]">
+                                <td class="px-4 py-3 whitespace-nowrap text-xs font-bold text-[#2D231E]">
                                     {{ $account->grade_level ? 'Grade '.$account->effectiveGrade() : '—' }}
                                 </td>
-                                <td class="px-4 py-3 hidden lg:table-cell text-xs font-semibold text-[#2D231E]">
+                                <td class="px-4 py-3 whitespace-nowrap text-xs font-semibold text-[#2D231E]">
                                     {{ $account->created_at->format('M j, Y') }}
                                 </td>
-                                <td class="px-4 py-3 hidden xl:table-cell">
+                                <td class="px-4 py-3 whitespace-nowrap">
                                     <x-presence-dot :at="$account->lastActiveAt()" compact />
                                 </td>
-                                <td class="px-4 py-3 hidden lg:table-cell text-xs font-semibold text-[#2D231E]">
-                                    {{ $account->last_login_at?->format('M j, Y') ?? 'Never' }}
-                                </td>
-                                <td class="px-4 py-3">
+                                <td class="px-4 py-3 whitespace-nowrap">
                                     <div class="flex items-center gap-1.5">
                                         @if ($account->deleted_at)
-                                            <x-admin.pill tone="crit" title="Expires {{ $account->deletionExpiresAt()?->format('M j, Y') }}">
-                                                Deletion pending
-                                            </x-admin.pill>
+                                            <x-admin.pill tone="crit" title="Expires {{ $account->deletionExpiresAt()?->format('M j, Y') }}">Deletion pending</x-admin.pill>
                                         @elseif ($account->suspended_at)
                                             <x-admin.pill tone="crit">Suspended</x-admin.pill>
                                         @elseif ($account->is_setup_complete)
@@ -201,7 +232,7 @@
                             </tr>
                         @empty
                             <tr>
-                                    <td colspan="6" class="px-4 py-10 text-center">
+                                <td colspan="5" class="px-4 py-10 text-center">
                                     <p class="text-sm font-bold text-[#2D231E]">No accounts match these filters.</p>
                                 </td>
                             </tr>
@@ -211,7 +242,7 @@
             </div>
 
             <div class="pt-4">
-                {{ $users->links('pagination::teacher') }}
+                {{ $users->links('pagination::admin') }}
             </div>
         </x-admin.panel>
 

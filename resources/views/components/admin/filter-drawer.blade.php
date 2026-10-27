@@ -39,7 +39,7 @@
                 type="button"
                 data-filter-drawer-close
                 aria-label="Close {{ $label }}"
-                class="min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-lg bg-white border border-[#E6DCCF] text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                class="min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-lg text-[#2D231E] hover:bg-white/70 transition-colors cursor-pointer"
             >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>

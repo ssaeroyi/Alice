@@ -1,42 +1,43 @@
 @extends('layouts.teacher')
 
 @section('page', 'teacher-student')
-@section('title', $student->nickname ?? strtok($student->email, '@'))
+
+@php
+    $fullName = trim($student->first_name.' '.$student->last_name);
+    $displayName = $fullName ?: ($student->nickname ?? strtok($student->email, '@'));
+    $backUrl = $fromAssignment
+        ? route('teacher.assignments.show', $fromAssignment)
+        : route('teacher.roster', request()->query());
+@endphp
+
+@section('title', $displayName)
 @section('eyebrow', 'Students')
+@section('back', $backUrl)
 
 @section('content')
     <div class="space-y-5">
 
-        @if ($fromAssignment)
-            <a href="{{ route('teacher.assignments.show', $fromAssignment) }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-sky-700 hover:text-sky-800 transition-colors">
-                <x-icons.core.arrow-left class="w-3.5 h-3.5" />
-                Back to “{{ $fromAssignment->title }}”
-            </a>
-        @else
-            <a href="{{ route('teacher.roster', request()->query()) }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#2D231E] transition-colors">
-                <x-icons.core.arrow-left class="w-3.5 h-3.5" />
-                Back to students
-            </a>
-        @endif
-
         <!-- HEADER -->
         <div class="bg-white border border-[#E6DCCF] rounded-xl p-5 sm:p-6">
             <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-                <x-avatar :user="$student" :alt="$student->nickname ?? 'Student'" :size="56" />
+                <x-avatar :user="$student" :alt="$displayName" :size="56" />
                 <div class="min-w-0 flex-1">
                     <div class="flex flex-wrap items-center gap-2">
                         <h1 class="text-base font-extrabold text-[#2D231E] truncate">
-                            {{ $student->nickname ?? strtok($student->email, '@') }}
+                            {{ $displayName }}
                         </h1>
+                        @if ($student->nickname && $fullName)
+                            <x-admin.pill>{{ $student->nickname }}</x-admin.pill>
+                        @endif
                         <x-admin.pill>Student</x-admin.pill>
                         @if ($student->suspended_at)
                             <x-admin.pill tone="crit">Suspended</x-admin.pill>
                         @endif
                     </div>
                     <p class="text-sm font-semibold text-[#2D231E] mt-0.5 truncate">{{ $student->email }}</p>
-                    <p class="text-[11px] font-semibold text-[#2D231E] mt-1">
-                        Joined {{ $student->created_at->format('M j, Y') }}.
-                        Last login {{ $student->last_login_at?->format('M j, Y g:i A') ?? 'Never' }}.
+                    <p class="text-[11px] font-semibold text-[#2D231E] mt-1 flex items-center flex-wrap gap-x-2 gap-y-1">
+                        <x-presence-dot :at="$student->lastActiveAt()" />
+                        <span>Joined {{ $student->created_at->format('M j, Y') }}.</span>
                     </p>
                 </div>
             </div>
@@ -78,14 +79,20 @@
             </x-admin.panel>
         @endif
 
-        <!-- ACCOUNT FACTS -->
-        <x-admin.panel title="Account facts">
-            <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- ACCOUNT DETAILS -->
+        <x-admin.panel title="Account details">
+            <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div>
-                    <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Full name</dt>
-                    <dd class="mt-1 text-sm font-bold text-[#2D231E]">
-                        {{ $student->first_name || $student->last_name ? trim($student->first_name.' '.$student->last_name) : ($student->nickname ?? strtok($student->email, '@')) }}
-                    </dd>
+                    <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">First name</dt>
+                    <dd class="mt-1 text-sm font-bold text-[#2D231E]">{{ $student->first_name ?: 'Not set' }}</dd>
+                </div>
+                <div>
+                    <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Last name</dt>
+                    <dd class="mt-1 text-sm font-bold text-[#2D231E]">{{ $student->last_name ?: 'Not set' }}</dd>
+                </div>
+                <div>
+                    <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Username</dt>
+                    <dd class="mt-1 text-sm font-bold text-[#2D231E]">{{ $student->nickname ?? 'Not set' }}</dd>
                 </div>
                 <div>
                     <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Grade</dt>
@@ -94,13 +101,7 @@
                     </dd>
                 </div>
                 <div>
-                    <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Reading grade</dt>
-                    <dd class="mt-1 text-sm font-bold text-[#2D231E]">
-                        {{ $student->reading_level ? 'Grade '.$student->reading_level : 'Not set' }}
-                    </dd>
-                </div>
-                <div>
-                    <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Quick check</dt>
+                    <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Placement</dt>
                     <dd class="mt-1">
                         @if ($student->is_setup_complete)
                             <x-admin.pill tone="ok">Complete</x-admin.pill>
@@ -181,9 +182,9 @@
 
         <!-- PLACEMENT RESULT -->
         <x-admin.panel
-            title="Quick check result"
-            subtitle="The placement result that set this student's level."
-            info="Shows the placement score that set this student's band and reading level."
+            title="Placement result"
+            subtitle="The level check that set this student's starting level."
+            info="Shows the placement score that set this student's band and reading level. Live quizzes keep adjusting their level from here."
         >
             @if ($student->comprehension_level && $student->reading_level)
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">

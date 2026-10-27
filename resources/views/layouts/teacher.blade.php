@@ -124,6 +124,17 @@
             <div class="flex items-center justify-between gap-4 px-4 sm:px-6 h-14">
 
                 <div class="flex items-center gap-3 min-w-0">
+                    <!-- Back button (only on pages that yield a back target) -->
+                    @hasSection('back')
+                        <a
+                            href="@yield('back')"
+                            aria-label="Back"
+                            class="w-10 h-10 shrink-0 bg-white border border-[#E6DCCF] rounded-lg flex items-center justify-center text-[#2D231E] hover:border-[#2D231E] transition-colors"
+                        >
+                            <x-icons.core.arrow-left class="w-5 h-5" />
+                        </a>
+                    @endif
+
                     <!-- Hamburger (mobile only) -->
                     <button
                         type="button"

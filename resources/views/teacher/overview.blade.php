@@ -501,8 +501,9 @@
                     <p class="text-sm font-semibold text-[#2D231E]">No students need attention right now.</p>
                 @endif
             </x-admin.panel>
+        </div>
 
-            <!-- RECENT ACTIVITY (two columns) -->
+        <!-- RECENT ACTIVITY (two columns, full-width below the attention panels) -->
             <x-admin.panel title="Recent activity" icon="eye">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-5">
                     <div>
@@ -516,10 +517,8 @@
                                     <li class="py-2.5 flex items-center justify-between gap-3">
                                         <a href="{{ route('teacher.student', $student) }}" class="min-w-0 flex items-center gap-2.5 group">
                                             <x-avatar :user="$student" :size="32" />
-                                            <span class="min-w-0">
-                                                <p class="text-xs font-bold text-[#2D231E] truncate group-hover:text-sky-600 transition-colors">
-                                                    {{ $student->nickname ?? strtok($student->email, '@') }}
-                                                </p>
+                                            <span class="text-xs font-bold text-[#2D231E] truncate group-hover:text-sky-600 transition-colors">
+                                                {{ $student->first_name ? trim($student->first_name.' '.$student->last_name) : ($student->nickname ?? strtok($student->email, '@')) }}
                                             </span>
                                         </a>
                                         <x-presence-dot :at="$student->lastActiveAt()" compact />
@@ -541,10 +540,8 @@
                                     <li class="py-2.5 flex items-center justify-between gap-3">
                                         <a href="{{ route('teacher.student', $student) }}" class="min-w-0 flex items-center gap-2.5 group">
                                             <x-avatar :user="$student" :size="32" />
-                                            <span class="min-w-0">
-                                                <p class="text-xs font-bold text-[#2D231E] truncate group-hover:text-sky-600 transition-colors">
-                                                    {{ $student->nickname ?? strtok($student->email, '@') }}
-                                                </p>
+                                            <span class="text-xs font-bold text-[#2D231E] truncate group-hover:text-sky-600 transition-colors">
+                                                {{ $student->first_name ? trim($student->first_name.' '.$student->last_name) : ($student->nickname ?? strtok($student->email, '@')) }}
                                             </span>
                                         </a>
                                         <x-presence-dot :at="$student->lastActiveAt()" compact />
@@ -557,8 +554,6 @@
                     </div>
                 </div>
             </x-admin.panel>
-
-        </div>
 
     </div>
 @endsection

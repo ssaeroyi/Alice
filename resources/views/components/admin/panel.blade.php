@@ -3,7 +3,7 @@
 @php
     $tag = $href !== null ? 'a' : 'div';
 @endphp
-<{{ $tag }}@if ($href !== null) href="{{ $href }}" @endif class="bg-white border border-[#E6DCCF] rounded-xl {{ $overflow }} {{ $href !== null ? 'group relative block hover:border-amber-300 transition-colors' : '' }}">
+<{{ $tag }}@if ($href !== null) href="{{ $href }}" @endif {{ $attributes->merge(['class' => 'bg-white border border-[#E6DCCF] rounded-xl '.$overflow.($href !== null ? ' group relative block hover:border-amber-300 transition-colors' : '')]) }}>
     @if ($title || $subtitle || $info)
         <div class="flex items-start justify-between gap-4 px-4 sm:px-5 pt-4 sm:pt-5 pb-4 border-b border-[#E6DCCF]">
             <div class="min-w-0">

@@ -13,9 +13,13 @@
                 <x-avatar :user="$account" :alt="$account->nickname ?? 'Account'" :size="56" />
                 <div class="min-w-0 flex-1">
                     <div class="flex flex-wrap items-center gap-2">
+                        @php $adminFullName = trim(($account->first_name ?? '').' '.($account->last_name ?? '')); @endphp
                         <h1 class="text-base font-extrabold text-[#2D231E] truncate">
-                            {{ $account->nickname ?? strtok($account->email, '@') }}
+                            {{ $adminFullName ?: ($account->nickname ?? strtok($account->email, '@')) }}
                         </h1>
+                        @if ($account->nickname && $adminFullName)
+                            <x-admin.pill>{{ $account->nickname }}</x-admin.pill>
+                        @endif
                         <x-admin.pill :tone="$account->role === \App\Enums\Role::Admin ? 'warn' : ($account->role === \App\Enums\Role::Teacher ? 'ok' : 'neutral')">
                             {{ $account->role->value }}
                         </x-admin.pill>
@@ -30,15 +34,15 @@
                     </div>
                     <p class="text-sm font-semibold text-[#2D231E] mt-0.5 truncate">{{ $account->email }}</p>
                     <p class="text-[11px] font-semibold text-[#2D231E] mt-1">
-                        Joined {{ $account->created_at->format('M j, Y') }} &middot;
-                        Last login {{ $account->last_login_at?->format('M j, Y g:i A') ?? 'Never' }}
+                        Joined {{ $account->created_at->format('M j, Y') }},
+                        last login {{ $account->last_login_at?->format('M j, Y g:i A') ?? 'never' }}.
                     </p>
                 </div>
             </div>
         </div>
 
-        <!-- ACCOUNT FACTS -->
-        <x-admin.panel title="Account facts" subtitle="Setup and placement data only.">
+        <!-- ACCOUNT DETAILS -->
+        <x-admin.panel title="Account details" subtitle="Setup and placement data only.">
             <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
                     <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Full name</dt>
@@ -47,13 +51,17 @@
                     </dd>
                 </div>
                 <div>
+                    <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Username</dt>
+                    <dd class="mt-1 text-sm font-bold text-[#2D231E]">{{ $account->nickname ?? 'Not set' }}</dd>
+                </div>
+                <div>
                     <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Grade</dt>
                     <dd class="mt-1 text-sm font-bold text-[#2D231E]">
                         {{ $account->grade_level ? 'Grade '.$account->effectiveGrade() : 'Not set' }}
                     </dd>
                 </div>
                 <div>
-                    <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Setup</dt>
+                    <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Placement</dt>
                     <dd class="mt-1">
                         @if ($account->is_setup_complete)
                             <x-admin.pill tone="ok">Complete</x-admin.pill>
