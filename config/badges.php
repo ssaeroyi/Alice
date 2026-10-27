@@ -39,11 +39,27 @@ return [
         'quiz' => 'Quizzes',
         'words' => 'Words',
         'games' => 'Mini-Games',
+        'battles' => 'Field Journal',
         'stamps' => 'Stamps & Streaks',
         'focus' => 'Focus',
     ],
 
     'badges' => [
+
+        // ---- Field Journal battles (win ladders / performance / variety) --
+        ['key' => 'battle_first', 'name' => 'First Blood', 'description' => 'Win your first Field Journal battle.', 'category' => 'battles', 'rarity' => 'common', 'icon' => 'flame'],
+        ['key' => 'battle_5', 'name' => 'Boss Slayer', 'description' => 'Win 5 Field Journal battles.', 'category' => 'battles', 'rarity' => 'common', 'icon' => 'spell-book'],
+        ['key' => 'battle_10', 'name' => 'Boss Nightmare', 'description' => 'Win 10 Field Journal battles.', 'category' => 'battles', 'rarity' => 'rare', 'icon' => 'book-storm'],
+        ['key' => 'battle_25', 'name' => 'Boss Legend', 'description' => 'Win 25 Field Journal battles.', 'category' => 'battles', 'rarity' => 'epic', 'icon' => 'crown'],
+        ['key' => 'battle_flawless', 'name' => 'Flawless Victory', 'description' => 'Win a battle without losing a single heart.', 'category' => 'battles', 'rarity' => 'rare', 'icon' => 'laurel-crown'],
+        ['key' => 'battle_flawless_5', 'name' => 'Untouchable', 'description' => 'Win 5 battles without losing a single heart.', 'category' => 'battles', 'rarity' => 'epic', 'icon' => 'queen-crown'],
+        ['key' => 'journal_25', 'name' => 'Journal Keeper', 'description' => 'Complete 25 Field Journal actions.', 'category' => 'battles', 'rarity' => 'common', 'icon' => 'scroll-quill'],
+        ['key' => 'journal_100', 'name' => 'Chronicler', 'description' => 'Complete 100 Field Journal actions.', 'category' => 'battles', 'rarity' => 'epic', 'icon' => 'book-pile'],
+        ['key' => 'journal_all_kinds', 'name' => 'Well-Rounded', 'description' => 'Complete every kind of Field Journal action.', 'category' => 'battles', 'rarity' => 'rare', 'icon' => 'compass'],
+        ['key' => 'battle_days_3', 'name' => 'Regular', 'description' => 'Win Field Journal battles on 3 different days.', 'category' => 'battles', 'rarity' => 'rare', 'icon' => 'calendar'],
+        ['key' => 'battle_variety_5', 'name' => 'Boss Collector', 'description' => 'Defeat bosses in 5 different stories.', 'category' => 'battles', 'rarity' => 'epic', 'icon' => 'map'],
+        ['key' => 'battle_dawn', 'name' => 'Dawn Raider', 'description' => 'Win a Field Journal battle before 8 AM.', 'category' => 'battles', 'rarity' => 'rare', 'icon' => 'lantern'],
+        ['key' => 'battle_owl', 'name' => 'Night Stalker', 'description' => 'Win a Field Journal battle after 9 PM.', 'category' => 'battles', 'rarity' => 'rare', 'icon' => 'lantern'],
 
         // ---- Titles (rank-ladder milestones, from PointsRank tiers) ------
         ['key' => 'title_bookworm', 'name' => 'Title: Bookworm', 'description' => 'Earn the Bookworm title.', 'category' => 'titles', 'rarity' => 'common', 'icon' => 'magnifying-glass'],

@@ -7,6 +7,8 @@ use App\Enums\StoryProgressStatus;
 use App\Models\Badge;
 use App\Models\GameRound;
 use App\Models\SavedWord;
+use App\Models\StoryBattle;
+use App\Models\StoryBattleAction;
 use App\Models\StoryProgress;
 use App\Models\TestAttempt;
 use App\Models\User;
@@ -61,6 +63,7 @@ class BadgeService
         'freeze_buy' => ['freeze_buy_1'],
         'read_stamp' => ['early_bird', 'night_owl'],
         'drill' => ['drill_10', 'drill_50', 'drill_200'],
+        'battle' => ['battle_first', 'battle_5', 'battle_10', 'battle_25', 'battle_flawless', 'battle_flawless_5', 'journal_25', 'journal_100', 'journal_all_kinds', 'battle_days_3', 'battle_variety_5', 'battle_dawn', 'battle_owl'],
     ];
 
     /**
@@ -242,6 +245,20 @@ class BadgeService
             'early_bird' => self::hasStampAtHour($user->id, '<', 7),
             'night_owl' => self::hasStampAtHour($user->id, '>=', 21),
 
+            'battle_first' => self::battlesWon($user->id) >= 1,
+            'battle_5' => self::battlesWon($user->id) >= 5,
+            'battle_10' => self::battlesWon($user->id) >= 10,
+            'battle_25' => self::battlesWon($user->id) >= 25,
+            'battle_flawless' => self::battlesFlawless($user->id) >= 1,
+            'battle_flawless_5' => self::battlesFlawless($user->id) >= 5,
+            'journal_25' => self::battleActionsDone($user->id) >= 25,
+            'journal_100' => self::battleActionsDone($user->id) >= 100,
+            'journal_all_kinds' => self::battleActionKinds($user->id) >= 3,
+            'battle_days_3' => self::battleWinDays($user->id) >= 3,
+            'battle_variety_5' => self::battleStoryVariety($user->id) >= 5,
+            'battle_dawn' => self::battleWonAtHour($user->id, '<', 8),
+            'battle_owl' => self::battleWonAtHour($user->id, '>=', 21),
+
             default => false,
         };
     }
@@ -300,6 +317,15 @@ class BadgeService
             'drill_10' => $t['drills'][0] ?? 10,
             'drill_50' => $t['drills'][1] ?? 50,
             'drill_200' => $t['drills'][2] ?? 200,
+
+            'battle_5' => $t['battles'][0] ?? 5,
+            'battle_10' => $t['battles'][1] ?? 10,
+            'battle_25' => $t['battles'][2] ?? 25,
+            'battle_flawless_5' => $t['battle_flawless'] ?? 5,
+            'journal_25' => $t['journal_actions'][0] ?? 25,
+            'journal_100' => $t['journal_actions'][1] ?? 100,
+            'battle_days_3' => $t['battle_days'] ?? 3,
+            'battle_variety_5' => $t['battle_variety'] ?? 5,
         ];
 
         if (array_key_exists($key, $counts)) {
@@ -317,13 +343,18 @@ class BadgeService
                 str_starts_with($key, 'stamp_') => self::stampCount($user->id),
                 str_starts_with($key, 'freeze_') => self::freezeCount($user),
                 str_starts_with($key, 'drill_') => self::drillCount($user->id),
+                $key === 'battle_days_3' => self::battleWinDays($user->id),
+                $key === 'battle_variety_5' => self::battleStoryVariety($user->id),
+                $key === 'battle_flawless_5' => self::battlesFlawless($user->id),
+                str_starts_with($key, 'battle_') => self::battlesWon($user->id),
+                str_starts_with($key, 'journal_') => self::battleActionsDone($user->id),
                 default => 0,
             };
 
             return (int) min(100, round(($value / $counts[$key]) * 100));
         }
 
-        $booleans = ['first_story', 'genre_explorer', 'favorite_story', 'first_read', 'quiz_first', 'perfect_quiz', 'first_word', 'game_first', 'game_all_types', 'first_stamp', 'perfect_week', 'perfect_month', 'early_bird', 'night_owl', 'freeze_first', 'freeze_buy_1', 'title_bookworm', 'title_page_turner', 'title_story_explorer', 'title_chapter_master', 'title_bibliophile', 'title_word_sage', 'title_literary_ace', 'title_tale_weaver', 'title_benevolent'];
+        $booleans = ['first_story', 'genre_explorer', 'favorite_story', 'first_read', 'quiz_first', 'perfect_quiz', 'first_word', 'game_first', 'game_all_types', 'first_stamp', 'perfect_week', 'perfect_month', 'early_bird', 'night_owl', 'freeze_first', 'freeze_buy_1', 'title_bookworm', 'title_page_turner', 'title_story_explorer', 'title_chapter_master', 'title_bibliophile', 'title_word_sage', 'title_literary_ace', 'title_tale_weaver', 'title_benevolent', 'battle_first', 'battle_flawless', 'journal_all_kinds', 'battle_dawn', 'battle_owl'];
         if (in_array($key, $booleans, true)) {
             return self::eligible($user, $key, Carbon::now()) ? 100 : 0;
         }
@@ -746,6 +777,70 @@ class BadgeService
     private static function maxStreak(User $user): int
     {
         return max((int) $user->current_streak, (int) $user->longest_streak);
+    }
+
+    /* ---------------------- Field Journal battle counters ------------------ */
+
+    /** Battles won all-time (status = won). */
+    private static function battlesWon(int $userId): int
+    {
+        return self::cachedInt($userId, 'battles_won', fn () => StoryBattle::query()
+            ->where('user_id', $userId)
+            ->where('status', 'won')
+            ->count());
+    }
+
+    /** Battles won without losing a single heart. */
+    private static function battlesFlawless(int $userId): int
+    {
+        return self::cachedInt($userId, 'battles_flawless', fn () => StoryBattle::query()
+            ->where('user_id', $userId)
+            ->where('status', 'won')
+            ->where('hearts', '>=', 5)
+            ->count());
+    }
+
+    /** Journal actions finished, across every battle and story. */
+    private static function battleActionsDone(int $userId): int
+    {
+        return self::cachedInt($userId, 'battle_actions', fn () => StoryBattleAction::query()
+            ->where('status', 'done')
+            ->whereIn('story_battle_id', StoryBattle::query()->select('id')->where('user_id', $userId))
+            ->count());
+    }
+
+    /** Distinct action kinds the student has completed (find / fill / choice). */
+    private static function battleActionKinds(int $userId): int
+    {
+        return StoryBattleAction::query()
+            ->where('status', 'done')
+            ->whereIn('story_battle_id', StoryBattle::query()->select('id')->where('user_id', $userId))
+            ->distinct('kind')
+            ->count('kind');
+    }
+
+    /** Distinct days with at least one won battle. */
+    private static function battleWinDays(int $userId): int
+    {
+        return self::cachedInt($userId, 'battle_days', fn () => (int) DB::table('story_battles')
+            ->where('user_id', $userId)
+            ->where('status', 'won')
+            ->selectRaw('COUNT(DISTINCT DATE(updated_at)) as days')
+            ->value('days'));
+    }
+
+    /** Whether any won battle finished inside the given hour window. */
+    private static function battleWonAtHour(int $userId, string $op, int $hour): bool
+    {
+        $q = StoryBattle::query()
+            ->where('user_id', $userId)
+            ->where('status', 'won');
+
+        $cut = sprintf('%02d:00:00', $hour);
+
+        return $op === '<'
+            ? $q->whereTime('updated_at', '<', $cut)->exists()
+            : $q->whereTime('updated_at', '>=', $cut)->exists();
     }
 
     /** Streak freezes ever consumed (each shields one missed day). */

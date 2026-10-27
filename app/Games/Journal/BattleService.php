@@ -155,6 +155,10 @@ class BattleService
             $battle->status = $won ? 'won' : 'active';
             $battle->save();
 
+            // Battle badges (Journal Keeper tiers + win tiers + variety/time
+            // flavors). Idempotent: award() skips already-owned badges.
+            \App\Services\BadgeService::award($user, ['battle'], now());
+
             return [
                 'ok' => true,
                 'correct' => true,

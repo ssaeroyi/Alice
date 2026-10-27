@@ -9,6 +9,8 @@ enum DailyTaskType: string
     case LearnWords = 'learn_words';
     case GymDrill = 'gym_drill';
     case PlayGame = 'play_game';
+    case BattleAction = 'battle_action';
+    case WinBattle = 'win_battle';
 
     public function label(): string
     {
@@ -18,6 +20,8 @@ enum DailyTaskType: string
             self::LearnWords => 'Learn new words',
             self::GymDrill => 'Complete a drill',
             self::PlayGame => 'Play a mini-game',
+            self::BattleAction => 'Do a journal action',
+            self::WinBattle => 'Defeat a boss',
         };
     }
 
@@ -30,6 +34,8 @@ enum DailyTaskType: string
             self::LearnWords => 'spell-book',
             self::GymDrill => 'cards',
             self::PlayGame => 'maze',
+            self::BattleAction => 'scroll-quill',
+            self::WinBattle => 'flame',
         };
     }
 
@@ -37,7 +43,7 @@ enum DailyTaskType: string
     public function routeName(): string
     {
         return match ($this) {
-            self::ReadStory, self::ScoreQuiz => 'library',
+            self::ReadStory, self::ScoreQuiz, self::BattleAction, self::WinBattle => 'library',
             self::LearnWords => 'study',
             self::GymDrill => 'study.session',
             self::PlayGame => 'mini-game',

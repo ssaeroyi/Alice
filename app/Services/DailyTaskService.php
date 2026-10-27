@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\UserDailyTaskStatus;
 use App\Models\DailyTask;
 use App\Models\SavedWord;
+use App\Models\StoryBattle;
 use App\Models\TestAttempt;
 use App\Models\User;
 use App\Models\UserDailyActivity;
@@ -90,6 +91,19 @@ class DailyTaskService
             'learn_words' => SavedWord::query()
                 ->where('user_id', $assignment->user_id)
                 ->whereDate('created_at', $date)
+                ->count(),
+            // Field Journal: actions finished today (across every battle).
+            'battle_action' => StoryBattle::query()
+                ->where('story_battles.user_id', $assignment->user_id)
+                ->join('story_battle_actions', 'story_battle_actions.story_battle_id', '=', 'story_battles.id')
+                ->where('story_battle_actions.status', 'done')
+                ->whereDate('story_battle_actions.updated_at', $date)
+                ->count(),
+            // Field Journal: bosses defeated today.
+            'win_battle' => StoryBattle::query()
+                ->where('user_id', $assignment->user_id)
+                ->where('status', 'won')
+                ->whereDate('updated_at', $date)
                 ->count(),
             default => 0,
         };

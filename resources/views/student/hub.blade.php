@@ -656,7 +656,16 @@
                                     @endforeach
                                 @endforeach
                             </div>
-                            <p class="font-pixel text-[8px] text-[#B5A89C] uppercase">Tap a green or yellow day to peek what you did</p>
+                            {{-- GitHub-style intensity legend: the calendar's own scale --}}
+                            <div class="flex items-center justify-end gap-1" aria-hidden="true">
+                                <span class="font-pixel text-[8px] text-[#B5A89C] uppercase mr-1">Less</span>
+                                <span class="w-3 h-3 rounded-[4px] border-2 border-[#2D231E] bg-white"></span>
+                                <span class="w-3 h-3 rounded-[4px] border-2 border-[#2D231E] bg-emerald-400"></span>
+                                <span class="w-3 h-3 rounded-[4px] border-2 border-[#2D231E] bg-emerald-500"></span>
+                                <span class="w-3 h-3 rounded-[4px] border-2 border-[#2D231E] bg-emerald-600"></span>
+                                <span class="w-3 h-3 rounded-[4px] border-2 border-[#2D231E] bg-emerald-700"></span>
+                                <span class="font-pixel text-[8px] text-[#B5A89C] uppercase ml-1">More</span>
+                            </div>
                         </div>
 
                     <x-modal id="hub-day-detail" title="DAY DETAILS" :pixel="true">

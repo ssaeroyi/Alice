@@ -56,6 +56,20 @@ class DailyTaskSeeder extends Seeder
                 'keys' => 5,
                 'xp' => 10,
             ],
+            DailyTaskType::BattleAction->value => [
+                'title' => 'Do journal actions',
+                'description' => 'Complete 2 Field Journal actions against a boss.',
+                'target' => 2,
+                'keys' => 7,
+                'xp' => 14,
+            ],
+            DailyTaskType::WinBattle->value => [
+                'title' => 'Defeat a boss',
+                'description' => 'Empty the boss hearts in one Field Journal.',
+                'target' => 1,
+                'keys' => 8,
+                'xp' => 16,
+            ],
         ];
 
         foreach ($pool as $type => $def) {
