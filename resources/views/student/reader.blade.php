@@ -98,7 +98,7 @@
          flow and never affects layout â€” on desktop she sits in the left
          margin outside the card, on narrow/mobile she overlays the control
          bar. pointer-events:none keeps every control tappable. --}}
-    $1
+<div id="reader-mascot" data-anim="idle" data-skin='@json($equippedAlice)' aria-hidden="true"></div>
 
     {{-- Milestone + event bubble: fixed, out of flow, never tappable. --}}
     <div id="reader-mascot-bubble" role="status" aria-live="polite"></div>
