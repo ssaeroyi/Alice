@@ -47,7 +47,7 @@
                         aria-label="Scroll back"
                         class="w-9 h-9 bg-white border-2 border-[#2D231E] text-[#2D231E] rounded-xl font-bold flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
                     >
-                        <x-icons.arrow-left class="w-4 h-4" />
+                        <x-icons.arrow-right class="w-4 h-4 -scale-x-100" />
                     </button>
                     <button
                         type="button"
