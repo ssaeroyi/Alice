@@ -63,19 +63,26 @@ class LocalServices
 
         $ok = $generatorOk && $scriptOk;
 
+        // Feed mode (the hosted setup): the authoring machine generates the
+        // audio and pushes it here through the token'd feed routes. Nothing
+        // to configure on the server — not an error, so no scary red pill.
+        $feedMode = ! $ok && ! $generator
+            && filled(config('stories.narration.feed_token'));
+
         $detail = match (true) {
             $ok => 'Generator at `'.$generator.'` with `tools/narration/generate_narration.py` present.',
             $generator && ! $generatorOk => 'NARRATION_LOCAL_GENERATOR points at `'.$generator.'`, which is not a file'
                 .($scriptOk ? '' : ' (and the generate script `tools/narration/generate_narration.py` is missing)').'.',
             $generatorOk && ! $scriptOk => 'Generator at `'.$generator.'` is a valid interpreter, but `tools/narration/generate_narration.py` is missing.',
+            $feedMode => 'Feed mode: narration is generated on the authoring machine and pushed here. Nothing to configure on the server.',
             default => 'Offline TTS is disabled. Set `NARRATION_LOCAL_GENERATOR` to a Python interpreter on the authoring machine to enable "Generate narration".',
         };
 
         return [
             'name' => 'Kokoro (narration voice)',
             'ok' => $ok,
-            'tone' => $ok ? 'ok' : ($generator ? 'warn' : 'crit'),
-            'status' => $generatorOk ? 'Ready' : ($generator ? 'Path invalid' : 'Not configured'),
+            'tone' => $ok ? 'ok' : ($feedMode ? 'neutral' : ($generator ? 'warn' : 'crit')),
+            'status' => $generatorOk ? 'Ready' : ($feedMode ? 'Feed mode' : ($generator ? 'Path invalid' : 'Not configured')),
             'detail' => $detail,
         ];
     }

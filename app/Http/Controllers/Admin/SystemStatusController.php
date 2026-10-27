@@ -162,75 +162,6 @@ class SystemStatusController extends Controller
     }
 
     /**
-     * Bust the package-list cache so the Packages panel re-reads composer/npm
-     * on the next render. Read-only probe refresh, safe on every machine.
-     */
-    public function packagesRefresh(Request $request): RedirectResponse|JsonResponse
-    {
-        Maintenance::refreshManagers();
-
-        $toast = [
-            'type' => 'success',
-            'message' => 'Package list refreshed — composer and npm were re-read.',
-        ];
-
-        if ($request->expectsJson()) {
-            return response()->json(['html' => $this->packagesFragment(), 'toast' => $toast]);
-        }
-
-        return $this->toTab('dependencies')->with('toast', $toast);
-    }
-
-    /**
-     * Apply a within-range update to ONE direct dependency. Delegates to the
-     * package manager's everyday update command (composer.json /
-     * package.json are never rewritten), so a major-version jump is
-     * impossible. Single-flighted with the maintenance lock; npm updates also
-     * rebuild the prebuilt frontend bundle so the change is actually served.
-     */
-    public function packagesUpdate(Request $request): RedirectResponse|JsonResponse
-    {
-        $data = $request->validate([
-            'ecosystem' => ['required', 'in:composer,npm'],
-            'package' => ['required', 'string', 'max:120'],
-        ]);
-
-        set_time_limit(600);
-
-        $lock = Cache::lock('alice.maintenance', 300);
-
-        if (! $lock->get()) {
-            $toast = [
-                'type' => 'warn',
-                'message' => 'Another package action is already running — wait for it to finish, then try again.',
-            ];
-
-            if ($request->expectsJson()) {
-                return response()->json(['toast' => $toast]);
-            }
-
-            return $this->toTab('dependencies')->with('toast', $toast);
-        }
-
-        try {
-            $result = Maintenance::updatePackage($data['ecosystem'], $data['package']);
-        } finally {
-            $lock->release();
-        }
-
-        $toast = [
-            'type' => $result['ok'] ? 'success' : 'error',
-            'message' => $result['detail'],
-        ];
-
-        if ($request->expectsJson()) {
-            return response()->json(['html' => $this->packagesFragment(), 'toast' => $toast]);
-        }
-
-        return $this->toTab('dependencies')->with('toast', $toast);
-    }
-
-    /**
      * Redirect back to the status page on a specific tab. The browser's
      * Referer header never carries the URL fragment, so a plain `back()` after
      * a POST drops the admin onto the Overview tab; every status-page action
@@ -273,15 +204,6 @@ class SystemStatusController extends Controller
         ])->render();
     }
 
-    /**
-     * Re-render the Packages panel for an in-place AJAX swap.
-     */
-    private function packagesFragment(): string
-    {
-        return view('admin.partials.status-packages', [
-            'maintenance' => Maintenance::inventory(),
-        ])->render();
-    }
 
     /**
      * Re-render the Client errors panel for an in-place AJAX swap.

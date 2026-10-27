@@ -25,14 +25,14 @@
                     href="#{{ $key }}"
                     data-status-tab="{{ $key }}"
                     aria-current="{{ ($tab ?? 'overview') === $key ? 'true' : 'false' }}"
-                    class="shrink-0 px-4 py-2.5 text-xs font-bold uppercase tracking-wide rounded-t-lg transition-colors {{ ($tab ?? 'overview') === $key ? 'bg-[#2D231E] text-[#FAF6EE]' : 'bg-white text-[#2D231E]' }}"
+                    class="shrink-0 px-4 py-2.5 text-xs font-bold uppercase tracking-wide rounded-t-lg transition-colors {{ ($tab ?? 'overview') === $key ? 'bg-emerald-600 text-white' : 'bg-white text-[#2D231E]' }}"
                 >{{ $label }}</a>
             @endforeach
         </div>
 
         <!-- ERROR LOG NOTICE -->
         @if (($errorLogCount ?? 0) > 0)
-            <div class="flex flex-wrap items-center gap-2 px-4 py-3 bg-amber-50 border border-amber-300 rounded-xl">
+            <div class="flex flex-wrap items-center gap-2 px-3 py-3 sm:px-4 bg-amber-50 border border-amber-300 rounded-xl">
                 <p class="text-sm font-semibold text-[#2D231E]">
                     The server log recorded {{ $errorLogCount }} {{ \Illuminate\Support\Str::plural('error', $errorLogCount) }} since the last roll-up.
                 </p>
@@ -265,23 +265,23 @@
                     e($text)
                 );
             @endphp
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto table-scroll">
                 <table class="w-full text-left text-sm">
                     <thead>
                         <tr class="border-b border-[#E6DCCF] text-[11px] uppercase tracking-wider text-[#2D231E]">
-                            <th class="px-4 py-3 font-extrabold">Tool</th>
-                            <th class="px-4 py-3 font-extrabold">Status</th>
-                            <th class="px-4 py-3 font-extrabold hidden lg:table-cell">Detail</th>
+                            <th class="px-3 py-3 sm:px-4 font-extrabold">Tool</th>
+                            <th class="px-3 py-3 sm:px-4 font-extrabold">Status</th>
+                            <th class="px-3 py-3 sm:px-4 font-extrabold hidden lg:table-cell">Detail</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-[#F0E9DD]">
                         @foreach ($localTools as $tool)
                             <tr class="odd:bg-[#FAF6EE] hover:bg-[#F3ECE0] transition-colors">
-                                <td class="px-4 py-3 text-xs font-bold text-[#2D231E]">{{ $tool['name'] }}</td>
-                                <td class="px-4 py-3">
+                                <td class="px-3 py-3 sm:px-4 text-xs font-bold text-[#2D231E]">{{ $tool['name'] }}</td>
+                                <td class="px-3 py-3 sm:px-4">
                                     <x-admin.pill :tone="$tool['tone']">{{ $tool['status'] }}</x-admin.pill>
                                 </td>
-                                <td class="px-4 py-3 hidden lg:table-cell text-xs font-semibold text-[#2D231E]">
+                                <td class="px-3 py-3 sm:px-4 hidden lg:table-cell text-xs font-semibold text-[#2D231E]">
                                     {!! $detail($tool['detail']) !!}
                                     @if ($tool['name'] === 'Kokoro (narration voice)' && $tool['ok'])
                                         &middot; {{ count($narrationWanted) }} narration request{{ count($narrationWanted) === 1 ? '' : 's' }} queued.
@@ -304,19 +304,19 @@
                 subtitle="Offline models Alice ships with."
                 info="Real on-disk checks — the WordNet dump, the Kokoro narrator, the offline Vosk speech model and the cached audio stores. Nothing here makes a network call."
             >
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto table-scroll">
                     <table class="w-full text-left text-sm">
                         <thead>
                             <tr class="border-b border-[#E6DCCF] text-[11px] uppercase tracking-wider text-[#2D231E]">
-                                <th class="px-4 py-3 font-extrabold">Asset</th>
-                                <th class="px-4 py-3 font-extrabold">Status</th>
+                                <th class="px-3 py-3 sm:px-4 font-extrabold">Asset</th>
+                                <th class="px-3 py-3 sm:px-4 font-extrabold">Status</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-[#F0E9DD]">
                             @foreach ($maintenance['assets'] as $row)
                                 <tr class="odd:bg-[#FAF6EE] hover:bg-[#F3ECE0] transition-colors" title="{{ $row['detail'] }}">
-                                    <td class="px-4 py-3 text-xs font-bold text-[#2D231E]">{{ $row['name'] }}</td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-3 py-3 sm:px-4 text-xs font-bold text-[#2D231E]">{{ $row['name'] }}</td>
+                                    <td class="px-3 py-3 sm:px-4">
                                         <x-admin.pill :tone="$row['tone']">{{ $row['verdict'] }}</x-admin.pill>
                                     </td>
                                 </tr>
@@ -325,10 +325,6 @@
                     </table>
                 </div>
             </x-admin.panel>
-
-            <div data-swap-region="packages">
-                @include('admin.partials.status-packages')
-            </div>
 
         </div>
 
@@ -376,17 +372,17 @@
                     <table class="w-full text-left text-sm">
                         <thead>
                             <tr class="border-b border-[#E6DCCF] text-[11px] uppercase tracking-wider text-[#2D231E]">
-                                <th class="px-4 py-3 font-extrabold">IP</th>
-                                <th class="px-4 py-3 font-extrabold">403s</th>
-                                <th class="px-4 py-3 font-extrabold">Unique paths</th>
+                                <th class="px-3 py-3 sm:px-4 font-extrabold">IP</th>
+                                <th class="px-3 py-3 sm:px-4 font-extrabold">403s</th>
+                                <th class="px-3 py-3 sm:px-4 font-extrabold">Unique paths</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-[#F0E9DD]">
                             @foreach ($security['probeIps'] as $row)
                                 <tr>
-                                    <td class="px-4 py-3 text-xs font-semibold text-[#2D231E] font-mono">{{ $row['ip'] }}</td>
-                                    <td class="px-4 py-3 text-xs font-bold text-rose-600">{{ $row['count_403'] }}</td>
-                                    <td class="px-4 py-3 text-xs font-semibold text-[#2D231E]">{{ $row['paths'] }}</td>
+                                    <td class="px-3 py-3 sm:px-4 text-xs font-semibold text-[#2D231E] font-mono">{{ $row['ip'] }}</td>
+                                    <td class="px-3 py-3 sm:px-4 text-xs font-bold text-rose-600">{{ $row['count_403'] }}</td>
+                                    <td class="px-3 py-3 sm:px-4 text-xs font-semibold text-[#2D231E]">{{ $row['paths'] }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -403,19 +399,19 @@
                     <table class="w-full text-left text-sm">
                         <thead>
                             <tr class="border-b border-[#E6DCCF] text-[11px] uppercase tracking-wider text-[#2D231E]">
-                                <th class="px-4 py-3 font-extrabold">IP</th>
-                                <th class="px-4 py-3 font-extrabold">Requests</th>
-                                <th class="px-4 py-3 font-extrabold">Errors</th>
-                                <th class="px-4 py-3 font-extrabold">Last seen</th>
+                                <th class="px-3 py-3 sm:px-4 font-extrabold">IP</th>
+                                <th class="px-3 py-3 sm:px-4 font-extrabold">Requests</th>
+                                <th class="px-3 py-3 sm:px-4 font-extrabold">Errors</th>
+                                <th class="px-3 py-3 sm:px-4 font-extrabold">Last seen</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-[#F0E9DD]">
                             @foreach ($security['topIps'] as $row)
                                 <tr>
-                                    <td class="px-4 py-3 text-xs font-semibold text-[#2D231E] font-mono">{{ $row['ip'] }}</td>
-                                    <td class="px-4 py-3 text-xs font-semibold text-[#2D231E]">{{ number_format($row['total']) }}</td>
-                                    <td class="px-4 py-3 text-xs {{ $row['errors'] > 0 ? 'font-bold text-amber-700' : 'font-semibold text-[#2D231E]' }}">{{ $row['errors'] }}</td>
-                                    <td class="px-4 py-3 text-xs font-semibold text-[#8C7B70]">{{ \Carbon\Carbon::parse($row['last_seen'])->diffForHumans() }}</td>
+                                    <td class="px-3 py-3 sm:px-4 text-xs font-semibold text-[#2D231E] font-mono">{{ $row['ip'] }}</td>
+                                    <td class="px-3 py-3 sm:px-4 text-xs font-semibold text-[#2D231E]">{{ number_format($row['total']) }}</td>
+                                    <td class="px-3 py-3 sm:px-4 text-xs {{ $row['errors'] > 0 ? 'font-bold text-amber-700' : 'font-semibold text-[#2D231E]' }}">{{ $row['errors'] }}</td>
+                                    <td class="px-3 py-3 sm:px-4 text-xs font-semibold text-[#8C7B70]">{{ \Carbon\Carbon::parse($row['last_seen'])->diffForHumans() }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -434,27 +430,27 @@
                     <table class="w-full text-left text-sm">
                         <thead>
                             <tr class="border-b border-[#E6DCCF] text-[11px] uppercase tracking-wider text-[#2D231E]">
-                                <th class="px-4 py-3 font-extrabold">Email</th>
-                                <th class="px-4 py-3 font-extrabold">IP</th>
-                                <th class="px-4 py-3 font-extrabold">Result</th>
-                                <th class="px-4 py-3 font-extrabold">When</th>
+                                <th class="px-3 py-3 sm:px-4 font-extrabold">Email</th>
+                                <th class="px-3 py-3 sm:px-4 font-extrabold">IP</th>
+                                <th class="px-3 py-3 sm:px-4 font-extrabold">Result</th>
+                                <th class="px-3 py-3 sm:px-4 font-extrabold">When</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-[#F0E9DD]">
                             @foreach ($recentFailed as $row)
                                 <tr class="bg-rose-50">
-                                    <td class="px-4 py-3 text-xs font-semibold text-[#2D231E]">{{ $row['email'] }}</td>
-                                    <td class="px-4 py-3 text-xs font-semibold text-[#2D231E] font-mono">{{ $row['ip'] }}</td>
-                                    <td class="px-4 py-3"><x-admin.pill tone="crit">Fail</x-admin.pill></td>
-                                    <td class="px-4 py-3 text-xs font-semibold text-[#8C7B70]">{{ \Carbon\Carbon::parse($row['at'])->diffForHumans() }}</td>
+                                    <td class="px-3 py-3 sm:px-4 text-xs font-semibold text-[#2D231E]">{{ $row['email'] }}</td>
+                                    <td class="px-3 py-3 sm:px-4 text-xs font-semibold text-[#2D231E] font-mono">{{ $row['ip'] }}</td>
+                                    <td class="px-3 py-3 sm:px-4"><x-admin.pill tone="crit">Fail</x-admin.pill></td>
+                                    <td class="px-3 py-3 sm:px-4 text-xs font-semibold text-[#8C7B70]">{{ \Carbon\Carbon::parse($row['at'])->diffForHumans() }}</td>
                                 </tr>
                             @endforeach
                             @foreach ($recentOk as $row)
                                 <tr>
-                                    <td class="px-4 py-3 text-xs font-semibold text-[#8C7B70]">{{ $row['email'] }}</td>
-                                    <td class="px-4 py-3 text-xs font-semibold text-[#8C7B70] font-mono">{{ $row['ip'] }}</td>
-                                    <td class="px-4 py-3"><x-admin.pill tone="ok">OK</x-admin.pill></td>
-                                    <td class="px-4 py-3 text-xs font-semibold text-[#8C7B70]">{{ \Carbon\Carbon::parse($row['at'])->diffForHumans() }}</td>
+                                    <td class="px-3 py-3 sm:px-4 text-xs font-semibold text-[#8C7B70]">{{ $row['email'] }}</td>
+                                    <td class="px-3 py-3 sm:px-4 text-xs font-semibold text-[#8C7B70] font-mono">{{ $row['ip'] }}</td>
+                                    <td class="px-3 py-3 sm:px-4"><x-admin.pill tone="ok">OK</x-admin.pill></td>
+                                    <td class="px-3 py-3 sm:px-4 text-xs font-semibold text-[#8C7B70]">{{ \Carbon\Carbon::parse($row['at'])->diffForHumans() }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

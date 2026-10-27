@@ -32,7 +32,7 @@
             @foreach ($labels as $key => $label)
                 <a
                     href="{{ route('admin.inbox', ['filter' => $key]) }}"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors {{ $key === $filter ? 'bg-amber-600 text-white' : 'text-[#2D231E]' }}"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors {{ $key === $filter ? 'bg-emerald-600 text-white' : 'text-[#2D231E]' }}"
                     aria-current="{{ $key === $filter ? 'page' : 'false' }}"
                 >
                     {{ $label }}

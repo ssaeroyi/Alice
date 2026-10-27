@@ -109,3 +109,14 @@ form[data-search-clear-url] input[type="search"]::-webkit-search-cancel-button {
     appearance: none;
     display: none;
 }
+
+/* ============ admin tables: mobile scroll affordance ======================
+   Data tables scroll sideways on phones; a soft right-edge fade tells the
+   finger there is more off-screen (same affordance as the library rows).
+   Desktop (lg+) tables fit, so no mask. */
+@media (max-width: 1023px) {
+    .table-scroll {
+        -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+        mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+    }
+}

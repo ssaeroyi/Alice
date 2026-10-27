@@ -29,7 +29,7 @@
                 <a
                     href="{{ url()->current().'?range='.$hours }}"
                     data-traffic-tab
-                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors {{ $range === $hours ? 'bg-[#2D231E] text-[#FAF6EE]' : 'bg-[#F0E9DD] text-[#2D231E] hover:bg-[#E6DCCF]' }}"
+                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors {{ $range === $hours ? 'bg-emerald-600 text-white' : 'bg-[#F0E9DD] text-[#2D231E] hover:bg-[#E6DCCF]' }}"
                     @if ($range === $hours) aria-current="true" @endif
                 >{{ $label }}</a>
             @endforeach

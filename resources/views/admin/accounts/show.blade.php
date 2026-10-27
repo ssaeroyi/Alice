@@ -37,6 +37,48 @@
             </div>
         </div>
 
+        <!-- ACCOUNT FACTS -->
+        <x-admin.panel title="Account facts" subtitle="Setup and placement data only.">
+            <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                    <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Full name</dt>
+                    <dd class="mt-1 text-sm font-bold text-[#2D231E]">
+                        {{ trim(($account->first_name ?? '').' '.($account->last_name ?? '')) ?: ($account->nickname ?? strtok($account->email, '@')) }}
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Grade</dt>
+                    <dd class="mt-1 text-sm font-bold text-[#2D231E]">
+                        {{ $account->grade_level ? 'Grade '.$account->effectiveGrade() : 'Not set' }}
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Setup</dt>
+                    <dd class="mt-1">
+                        @if ($account->is_setup_complete)
+                            <x-admin.pill tone="ok">Complete</x-admin.pill>
+                        @else
+                            <x-admin.pill>Pending</x-admin.pill>
+                        @endif
+                    </dd>
+                </div>
+                @if ($account->suspended_at)
+                    <div>
+                        <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Suspended since</dt>
+                        <dd class="mt-1 text-sm font-bold text-rose-600">{{ $account->suspended_at->format('M j, Y g:i A') }}</dd>
+                    </div>
+                @endif
+                @if ($account->deleted_at)
+                    <div>
+                        <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Deletion expires</dt>
+                        <dd class="mt-1 text-sm font-bold text-rose-600">
+                            {{ $account->deletionExpiresAt()?->format('M j, Y g:i A') ?? 'Now' }}
+                        </dd>
+                    </div>
+                @endif
+            </dl>
+        </x-admin.panel>
+
         <!-- ACTIONS -->
         @if (auth()->id() === $account->id)
             <x-admin.panel title="Account actions">
@@ -50,18 +92,18 @@
             </x-admin.panel>
         @else
             <x-admin.panel title="Account actions">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="flex flex-wrap items-center gap-3">
                     @if ($account->suspended_at === null)
                     <form method="POST" action="{{ route('admin.accounts.suspend', $account) }}">
                         @csrf
-                        <x-admin.button tone="danger" type="button" data-modal-open="suspend-modal" class="w-full">
+                        <x-admin.button tone="danger" type="button" data-modal-open="suspend-modal">
                             Suspend account
                         </x-admin.button>
                     </form>
                 @else
                     <form method="POST" action="{{ route('admin.accounts.reactivate', $account) }}">
                         @csrf
-                        <x-admin.button tone="safe" type="button" data-confirm-open="reactivate-modal" class="w-full">
+                        <x-admin.button tone="safe" type="button" data-confirm-open="reactivate-modal">
                             Reactivate account
                         </x-admin.button>
                     </form>
@@ -69,19 +111,19 @@
 
                 <form method="POST" action="{{ route('admin.accounts.reset-link', $account) }}">
                     @csrf
-                    <x-admin.button tone="outline" type="button" data-confirm-open="reset-link-modal" class="w-full">
+                    <x-admin.button tone="outline" type="button" data-confirm-open="reset-link-modal">
                         Send reset link
                     </x-admin.button>
                 </form>
 
                 <form method="POST" action="{{ route('admin.accounts.sign-out', $account) }}">
                     @csrf
-                    <x-admin.button tone="outline" type="button" data-confirm-open="sign-out-modal" class="w-full">
+                    <x-admin.button tone="outline" type="button" data-confirm-open="sign-out-modal">
                         Sign out all sessions
                     </x-admin.button>
                 </form>
 
-                <x-admin.button tone="outline" type="button" data-modal-open="role-modal" class="w-full">
+                <x-admin.button tone="outline" type="button" data-modal-open="role-modal">
                     Change role
                 </x-admin.button>
             </div>
@@ -147,60 +189,14 @@
             </x-admin.panel>
         @endif
 
-        <!-- ACCOUNT FACTS -->
-        <x-admin.panel title="Account facts" subtitle="Setup and placement data only.">
-            <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div>
-                    <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Full name</dt>
-                    <dd class="mt-1 text-sm font-bold text-[#2D231E]">
-                        {{ trim(($account->first_name ?? '').' '.($account->last_name ?? '')) ?: ($account->nickname ?? strtok($account->email, '@')) }}
-                    </dd>
-                </div>
-                <div>
-                    <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Grade</dt>
-                    <dd class="mt-1 text-sm font-bold text-[#2D231E]">
-                        {{ $account->grade_level ? 'Grade '.$account->effectiveGrade() : 'Not set' }}
-                    </dd>
-                </div>
-                <div>
-                    <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Reading level</dt>
-                    <dd class="mt-1 text-sm font-bold text-[#2D231E]">
-                        {{ $account->reading_level ? 'Level '.$account->reading_level : 'Not set' }}
-                    </dd>
-                </div>
-                <div>
-                    <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Setup</dt>
-                    <dd class="mt-1">
-                        @if ($account->is_setup_complete)
-                            <x-admin.pill tone="ok">Complete</x-admin.pill>
-                        @else
-                            <x-admin.pill>Pending</x-admin.pill>
-                        @endif
-                    </dd>
-                </div>
-                @if ($account->suspended_at)
-                    <div>
-                        <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Suspended since</dt>
-                        <dd class="mt-1 text-sm font-bold text-rose-600">{{ $account->suspended_at->format('M j, Y g:i A') }}</dd>
-                    </div>
-                @endif
-                @if ($account->deleted_at)
-                    <div>
-                        <dt class="text-[11px] font-extrabold uppercase tracking-wider text-[#2D231E]">Deletion expires</dt>
-                        <dd class="mt-1 text-sm font-bold text-rose-600">
-                            {{ $account->deletionExpiresAt()?->format('M j, Y g:i A') ?? 'Now' }}
-                        </dd>
-                    </div>
-                @endif
-            </dl>
-        </x-admin.panel>
+
 
         <!-- SESSIONS -->
         <x-admin.panel title="Active sessions" subtitle="Sessions are revoked when the user signs out or when you sign them out here.">
             @if ($sessions->isEmpty())
                 <p class="text-sm font-semibold text-[#2D231E]">No active sessions.</p>
             @else
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto table-scroll">
                     <table class="w-full text-left text-sm">
                         <thead>
                             <tr class="border-b border-[#E6DCCF] text-[11px] uppercase tracking-wider text-[#2D231E]">
@@ -230,7 +226,7 @@
             @if ($consents->isEmpty())
                 <p class="text-sm font-semibold text-[#2D231E]">No consent records yet.</p>
             @else
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto table-scroll">
                     <table class="w-full text-left text-sm">
                         <thead>
                             <tr class="border-b border-[#E6DCCF] text-[11px] uppercase tracking-wider text-[#2D231E]">
@@ -260,7 +256,7 @@
             @if ($audit->isEmpty())
                 <p class="text-sm font-semibold text-[#2D231E]">No audit events for this account yet.</p>
             @else
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto table-scroll">
                     <table class="w-full text-left text-sm">
                         <thead>
                             <tr class="border-b border-[#E6DCCF] text-[11px] uppercase tracking-wider text-[#2D231E]">

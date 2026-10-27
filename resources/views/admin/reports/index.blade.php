@@ -72,7 +72,7 @@
                         formaction="{{ route('admin.reports.bulk-resolve') }}"
                         name="bulk-action"
                         value="resolve"
-                        class="min-h-[36px] px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
+                        class="hidden min-h-[36px] px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
                         disabled
                     >
                         Resolve selected
@@ -80,7 +80,7 @@
                     <button
                         type="button"
                         data-bulk-delete-open="bulk-delete-reports-modal"
-                        class="min-h-[36px] px-3 py-1.5 rounded-lg bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 transition-colors cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
+                        class="hidden min-h-[36px] px-3 py-1.5 rounded-lg bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 transition-colors cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
                         disabled
                     >
                         Delete selected
@@ -88,7 +88,7 @@
                 </div>
             </form>
 
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto table-scroll">
                 <table class="w-full text-left text-sm">
                     <thead>
                         <tr class="border-b border-[#E6DCCF] text-[11px] uppercase tracking-wider text-[#2D231E]">
@@ -240,8 +240,9 @@
                 var all = checks.length > 0 && n === checks.length;
                 toggleAll.checked = all;
             }
-            if (resolveBtn) { resolveBtn.disabled = n === 0; }
-            if (deleteBtn) { deleteBtn.disabled = n === 0; }
+            // Bulk actions stay invisible until something is ticked.
+            if (resolveBtn) { resolveBtn.disabled = n === 0; resolveBtn.classList.toggle('hidden', n === 0); }
+            if (deleteBtn) { deleteBtn.disabled = n === 0; deleteBtn.classList.toggle('hidden', n === 0); }
         }
 
         checks.forEach(function (el) { el.addEventListener('change', sync); });

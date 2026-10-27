@@ -90,18 +90,44 @@
                     </label>
                 </x-admin.filter-drawer>
 
-                <a
-                    href="{{ route('admin.accounts.export', request()->query()) }}"
-                    class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors"
-                >
-                    Export CSV
-                </a>
-                <a
-                    href="{{ route('admin.accounts.create') }}"
-                    class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors"
-                >
-                    Add teacher
-                </a>
+                <div class="hidden md:flex items-center gap-2">
+                    <a
+                        href="{{ route('admin.accounts.export', request()->query()) }}"
+                        class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors"
+                    >
+                        Export CSV
+                    </a>
+                    <a
+                        href="{{ route('admin.accounts.create') }}"
+                        class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors"
+                    >
+                        Add teacher
+                    </a>
+                </div>
+
+                {{-- Mobile: both actions folded into one menu button --}}
+                <div class="relative md:hidden">
+                    <button
+                        type="button"
+                        data-dropdown-toggle="account-actions-menu"
+                        class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors cursor-pointer"
+                    >
+                        Actions
+                    </button>
+                    <div
+                        id="account-actions-menu"
+                        data-dropdown
+                        hidden
+                        class="hidden right-0 w-48 bg-white border border-[#E6DCCF] rounded-lg shadow-[3px_3px_0px_0px_rgba(45,35,30,0.15)] z-20 p-1.5"
+                    >
+                        <a href="{{ route('admin.accounts.export', request()->query()) }}" class="block px-3 py-2.5 rounded-md text-xs font-bold text-[#2D231E] hover:bg-[#FAF6EE] transition-colors">
+                            Export CSV
+                        </a>
+                        <a href="{{ route('admin.accounts.create') }}" class="block px-3 py-2.5 rounded-md text-xs font-bold text-emerald-700 hover:bg-[#FAF6EE] transition-colors">
+                            Add teacher
+                        </a>
+                    </div>
+                </div>
                 </div>
             </div>
 
@@ -111,7 +137,7 @@
         </x-admin.panel>
 
         <x-admin.panel>
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto table-scroll">
                 <table class="w-full text-left text-sm">
                     <thead>
                         <tr class="border-b border-[#E6DCCF] text-[11px] uppercase tracking-wider text-[#2D231E]">

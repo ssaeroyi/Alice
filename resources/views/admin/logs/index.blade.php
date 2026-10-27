@@ -20,7 +20,7 @@
     @foreach ($tabs as $tabKey => $tabLabel)
         <a
             href="{{ route('admin.logs.index', array_merge($tabKey === 'audit' ? request()->only(['preset', 'from', 'to', 'actor', 'action', 'category']) : ['preset' => request('preset')], ['tab' => $tabKey])) }}"
-            class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors {{ $tab === $tabKey ? 'bg-[#2D231E] text-[#FAF6EE]' : 'bg-white border border-[#E6DCCF] text-[#2D231E] hover:border-amber-300' }}"
+            class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors {{ $tab === $tabKey ? 'bg-emerald-600 text-white' : 'bg-white border border-[#E6DCCF] text-[#2D231E] hover:border-amber-300' }}"
         >{{ $tabLabel }}</a>
         @endforeach
     </div>
@@ -92,7 +92,7 @@
                                 type="submit"
                                 name="preset"
                                 value="{{ $presetKey }}"
-                                class="px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-colors {{ ($range['preset'] ?? null) === $presetKey ? 'bg-[#2D231E] text-[#FAF6EE] border-[#2D231E]' : 'bg-white text-[#2D231E] border-[#E6DCCF] hover:border-amber-300' }}"
+                                class="px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-colors {{ ($range['preset'] ?? null) === $presetKey ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-[#2D231E] border-[#E6DCCF] hover:border-amber-300' }}"
                             >{{ $presetLabel }}</button>
                         @endforeach
                     </div>
@@ -113,7 +113,7 @@
     </div>
 
         <x-admin.panel>
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto table-scroll">
                 <table class="w-full text-left text-sm">
                     <thead>
                         <tr class="border-b border-[#E6DCCF] text-[11px] uppercase tracking-wider text-[#2D231E]">
@@ -197,14 +197,14 @@
             @foreach ($statusChips as $statusKey => $statusLabel)
                 <a
                     href="{{ route('admin.logs.index', array_merge($tabQueryBase, ['tab' => 'server', 'status' => $statusKey])) }}"
-                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors {{ $serverStatus === $statusKey ? ($statusKey === '5xx' ? 'bg-rose-600 text-white' : 'bg-[#2D231E] text-[#FAF6EE]') : 'bg-white border border-[#E6DCCF] text-[#2D231E] hover:border-amber-300' }}"
+                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors {{ $serverStatus === $statusKey ? ($statusKey === '5xx' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white') : 'bg-white border border-[#E6DCCF] text-[#2D231E] hover:border-amber-300' }}"
                 >{{ $statusLabel }}</a>
             @endforeach
             <span class="w-px h-5 bg-[#E6DCCF] mx-1"></span>
             @foreach ($chipPresets as $presetKey => $presetLabel)
                 <a
                     href="{{ route('admin.logs.index', array_merge($tabQueryBase, ['tab' => 'server', 'preset' => $presetKey])) }}"
-                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors {{ ($range['preset'] ?? null) === $presetKey ? 'bg-[#2D231E] text-[#FAF6EE]' : 'bg-white border border-[#E6DCCF] text-[#2D231E] hover:border-amber-300' }}"
+                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors {{ ($range['preset'] ?? null) === $presetKey ? 'bg-emerald-600 text-white' : 'bg-white border border-[#E6DCCF] text-[#2D231E] hover:border-amber-300' }}"
                 >{{ $presetLabel }}</a>
             @endforeach
         </div>
@@ -214,7 +214,7 @@
         </p>
 
         <x-admin.panel>
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto table-scroll">
                 <table class="w-full text-left text-sm">
                     <thead>
                         <tr class="border-b border-[#E6DCCF] text-[11px] uppercase tracking-wider text-[#2D231E]">

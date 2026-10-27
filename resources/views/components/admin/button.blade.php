@@ -2,7 +2,7 @@
 
 @php
     $tones = [
-        'neutral' => 'bg-[#2D231E] text-white hover:bg-[#3D3029]',
+        'neutral' => 'bg-emerald-600 text-white hover:bg-emerald-700',
         'safe' => 'bg-emerald-600 text-white hover:bg-emerald-700',
         'caution' => 'bg-amber-600 text-white hover:bg-amber-700',
         'danger' => 'bg-rose-600 text-white hover:bg-rose-700',

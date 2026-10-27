@@ -19,12 +19,8 @@
                 $seconds = $uptime % 60;
                 $uptimeLabel = "{$days}d {$hours}h {$minutes}m {$seconds}s";
             }
-            $storageBytes = $vitals['storage_bytes'];
-            $storageLabel = $storageBytes >= 1048576
-                ? number_format($storageBytes / 1048576, 2).' MB'
-                : number_format($storageBytes / 1024, 1).' KB';
         @endphp
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <x-admin.stat-card label="Total accounts" icon="users" href="{{ route('admin.accounts.index') }}" :value="$counts['users']" hint="This is every account on Alice, all three roles together. Opens the Accounts page." />
             <x-admin.stat-card label="Students" icon="user" href="{{ route('admin.accounts.index', ['role' => 'student']) }}" :value="$counts['students']" hint="This is every student account, including suspended ones. Opens the Accounts page filtered to students." />
             <x-admin.stat-card label="Teachers" icon="academic-cap" href="{{ route('admin.accounts.index', ['role' => 'teacher']) }}" :value="$counts['teachers']" hint="This is every teacher account. Admins are counted in the total above but have no card of their own." />
@@ -39,12 +35,6 @@
                 data-rendered-at="{{ time() }}"
                 hint="This is how long the server has been running since it last rebooted. A value that just reset means the machine restarted."
             />
-            <x-admin.stat-card
-                label="Storage used"
-                icon="storage"
-                :value="$storageLabel"
-                hint="This is everything Alice keeps under storage: uploads, narration audio, logs and cache. A sudden jump is worth a look."
-            />
         </div>
 
         <!-- DATE RANGE -->
@@ -53,7 +43,7 @@
                 @foreach (\App\Support\DashboardRange::PRESETS as $preset)
                     <a
                         href="{{ route('admin.dashboard', ['days' => $preset]) }}"
-                        class="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors {{ $activePreset === $preset ? 'bg-[#2D231E] text-[#FAF6EE]' : 'bg-white border border-[#E6DCCF] text-[#2D231E] hover:border-amber-300' }}"
+                        class="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors {{ $activePreset === $preset ? 'bg-emerald-600 text-white' : 'bg-white border border-[#E6DCCF] text-[#2D231E] hover:border-amber-300' }}"
                     >
                         {{ $preset }} days
                     </a>

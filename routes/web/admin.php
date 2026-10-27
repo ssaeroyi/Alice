@@ -24,9 +24,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/status/integrations/test-all', [SystemStatusController::class, 'testAllIntegrations'])->middleware('throttle:3,10')->name('status.integrations.test-all');
     Route::post('/status/client-errors/clear', [SystemStatusController::class, 'clearClientErrors'])->name('status.client-errors.clear');
     Route::post('/status/stt-debug', [SystemStatusController::class, 'toggleSttDebug'])->name('status.stt-debug');
-    Route::post('/status/packages/refresh', [SystemStatusController::class, 'packagesRefresh'])->name('status.packages.refresh');
-    Route::post('/status/packages/update', [SystemStatusController::class, 'packagesUpdate'])->middleware('throttle:4,10')->name('status.packages.update');
-    Route::get('/logs', [AuditLogController::class, 'index'])->name('logs.index');
+            Route::get('/logs', [AuditLogController::class, 'index'])->name('logs.index');
     Route::get('/logs/export', [AuditLogController::class, 'export'])->name('logs.export');
     Route::post('/logs/client-errors/clear', [AuditLogController::class, 'clearClientErrors'])->name('logs.client-errors.clear');
 
