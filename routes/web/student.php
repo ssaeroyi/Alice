@@ -62,6 +62,7 @@ Route::get('/inbox/unread.json', [InboxController::class, 'unread'])->name('inbo
         Route::delete('/classes/{group}/leave', [StudentClassController::class, 'leave'])->name('student.classes.leave');
 
         Route::get('/library', [StudentLibraryController::class, 'index'])->name('library');
+Route::get('/library/suggest', [StudentLibraryController::class, 'suggest'])->name('library.suggest');
         Route::get('/library/all/{row}', [StudentLibraryController::class, 'all'])->name('library.all');
         Route::get('/library/all/genre/{slug}', [StudentLibraryController::class, 'genre'])->name('library.genre');
         Route::get('/story/{story:slug}', [StudentLibraryController::class, 'preview'])->name('story.preview');
