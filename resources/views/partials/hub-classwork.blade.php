@@ -51,7 +51,7 @@
                         @foreach ($joinedClasses as $class)
                             @php
                                 $t = $class->teacher;
-                                $teacherName = $t ? (trim($t->first_name.' '.$t->last_name) ?: ($t->nickname ?? 'Teacher')) : 'Teacher';
+                                $teacherName = $t ? (trim($t->first_name.' '.$t->last_name) ?: ($t->nickname ?: 'Teacher')) : 'Teacher';
                             @endphp
                             <div class="flex flex-col bg-white border-2 border-[#2D231E] rounded-2xl overflow-hidden shadow-[3px_3px_0px_0px_rgba(45,35,30,1)]">
                                 <div class="bg-amber-400 border-b-2 border-[#2D231E] px-4 py-3">
@@ -96,7 +96,7 @@
     @foreach ($joinedClasses as $class)
         @php
             $t = $class->teacher;
-            $teacherName = $t ? (trim($t->first_name.' '.$t->last_name) ?: ($t->nickname ?? 'Teacher')) : 'Teacher';
+            $teacherName = $t ? (trim($t->first_name.' '.$t->last_name) ?: ($t->nickname ?: 'Teacher')) : 'Teacher';
             $classAssignments = $class->active_assignments->merge($class->finished_assignments)
                 ->sortBy(fn ($a) => [
                     ($assignmentCompletion[$a->id] ?? false) ? 1 : 0,
@@ -228,7 +228,7 @@
     @foreach ($joinedClasses as $class)
         @php
             $t = $class->teacher;
-            $teacherName = $t ? (trim($t->first_name.' '.$t->last_name) ?: ($t->nickname ?? 'Teacher')) : 'Teacher';
+            $teacherName = $t ? (trim($t->first_name.' '.$t->last_name) ?: ($t->nickname ?: 'Teacher')) : 'Teacher';
         @endphp
         <div
             id="cw-people-{{ $class->id }}"
