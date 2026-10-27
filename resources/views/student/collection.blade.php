@@ -45,7 +45,7 @@
 
     <!-- Search + Filter Drawer (universal filtering on the collection too) -->
     <div class="flex items-center gap-2">
-        <form method="GET" action="{{ route('collection') }}" data-auto-filter class="flex-1 relative">
+        <form method="GET" action="{{ route('collection') }}" data-auto-filter data-search-clear-url="{{ route('collection', ['tab' => $tab]) }}" class="flex-1 relative">
             <input type="hidden" name="tab" value="{{ $tab }}">
             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#8C7B70] pointer-events-none">
                 <x-icons.search class="w-4 h-4" />
@@ -55,8 +55,12 @@
                 name="q"
                 value="{{ $filters['q'] ?? '' }}"
                 placeholder="Search my collection..."
-                class="w-full bg-white border-2 border-[#2D231E] rounded-2xl pl-11 pr-4 py-3 font-bold text-xs sm:text-sm text-[#2D231E] focus:outline-none focus:ring-2 focus:ring-amber-400 placeholder-[#8C7B70] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)]"
+                class="w-full bg-white border-2 border-[#2D231E] rounded-2xl pl-11 pr-10 py-3 font-bold text-xs sm:text-sm text-[#2D231E] focus:outline-none focus:ring-2 focus:ring-amber-400 placeholder-[#8C7B70] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)]"
             >
+            <button type="button" data-search-clear aria-label="Clear search"
+                class="hidden absolute right-3 top-1/2 -translate-y-1/2 min-w-[28px] h-7 items-center justify-center rounded-md text-[#8C7B70] hover:text-[#2D231E] hover:bg-[#F3ECE0] transition-colors cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path></svg>
+            </button>
         </form>
 
         <x-filter-drawer

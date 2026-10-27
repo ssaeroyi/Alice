@@ -99,3 +99,13 @@
     }
 }
 
+
+/* ================ student search fields: no native X =====================
+   Student library/collection search forms render their own clear button
+   (data-search-clear, navigates home). Hide the browser's native search
+   cancel button inside those forms only, so two X marks never stack. */
+form[data-search-clear-url] input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+}

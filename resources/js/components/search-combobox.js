@@ -27,6 +27,14 @@ export function initSearchCombobox(root = document) {
         const open = (results) => {
             close();
             if (!results.length) {
+                // One non-tappable row so silence never reads as "broken".
+                box = document.createElement('div');
+                box.className = 'absolute left-0 right-0 top-full mt-1 z-40 bg-white border-2 border-[#2D231E] rounded-2xl shadow-[4px_4px_0px_0px_rgba(45,35,30,1)] overflow-hidden';
+                const empty = document.createElement('p');
+                empty.className = 'px-4 py-2.5 text-xs font-semibold text-[#8C7B70]';
+                empty.textContent = 'No stories found';
+                box.appendChild(empty);
+                form.appendChild(box);
                 return;
             }
 
@@ -35,7 +43,9 @@ export function initSearchCombobox(root = document) {
             box.className = 'absolute left-0 right-0 top-full mt-1 z-40 bg-white border-2 border-[#2D231E] rounded-2xl shadow-[4px_4px_0px_0px_rgba(45,35,30,1)] overflow-hidden';
             results.forEach((item) => {
                 const row = document.createElement('a');
-                row.href = item.url;
+                // Tapping a suggestion STARTS the search: All Stories results
+                // for that title. It never opens the story directly.
+                row.href = `${form.action.split('?')[0]}?q=${encodeURIComponent(item.title)}`;
                 row.className = 'flex items-baseline justify-between gap-3 px-4 py-2.5 bg-white text-xs font-bold text-[#2D231E] hover:bg-[#FAF6EE]';
                 const title = document.createElement('span');
                 title.className = 'truncate';
@@ -90,6 +100,10 @@ export function initSearchCombobox(root = document) {
         input.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
                 close();
+            }
+            if (event.key === 'Enter') {
+                // Search only moves via a tapped suggestion. Enter is inert.
+                event.preventDefault();
             }
         });
         input.addEventListener('blur', () => window.setTimeout(close, 100));
