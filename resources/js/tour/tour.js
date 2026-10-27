@@ -212,7 +212,6 @@ let box = null;
 let textEl = null;
 let arrow = null;
 let progress = null;
-let pausedRow = null;
 
 let active = false;
 let disposed = false;    // this page-level session is over (quit/end/error)
@@ -233,7 +232,6 @@ function cacheElements() {
     textEl = shell.querySelector('[data-tour="text"]');
     arrow = shell.querySelector('[data-tour="arrow"]');
     progress = shell.querySelector('[data-tour="progress"]');
-    pausedRow = shell.querySelector('[data-tour="paused"]');
 }
 
 function showShell() {
@@ -592,10 +590,8 @@ function setPaused(paused) {
         typingStop?.();
         active = false;
         arrow.style.opacity = '0';
-        pausedRow.classList.remove('hidden');
         textEl.textContent = 'Paused. Tap play to continue.';
     } else {
-        pausedRow.classList.add('hidden');
         const state = getState();
         const entry = state && STEPS[state.step];
         if (!entry) { endTour(false); return; }
@@ -657,7 +653,7 @@ export function initTourDriver() {
 
     box.addEventListener('click', (event) => {
         if (tourPaused) return; // paused: only the play button continues
-        if (event.target.closest('[data-tour="quit"], [data-tour="pause"], [data-tour="end"], [data-tour="mute"]')) {
+        if (event.target.closest('[data-tour="quit"], [data-tour="pause"], [data-tour="mute"]')) {
             return; // controls handle themselves
         }
         typingStop?.(); // tap anywhere else advances (skip typing + hold + clip)
@@ -668,7 +664,6 @@ export function initTourDriver() {
 
     shell.querySelector('[data-tour="quit"]').addEventListener('click', () => endTour(false));
     shell.querySelector('[data-tour="pause"]').addEventListener('click', () => setPaused(!tourPaused));
-    shell.querySelector('[data-tour="end"]').addEventListener('click', () => endTour(false));
 
     // The button click is handled by components/sound.js (it owns the
     // [data-sound-toggle] contract). All the tour does is react: a clip that

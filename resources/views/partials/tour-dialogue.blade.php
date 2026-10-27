@@ -74,16 +74,6 @@
                         class="text-xs sm:text-sm font-semibold text-[#2D231E] leading-relaxed min-h-[2.75rem] sm:min-h-[3.25rem]"
                         data-tour="text"
                     ></p>
-
-                    {{-- Pause note + end, shown while the tour is paused. --}}
-                    <div class="hidden flex items-center gap-2 mt-1" data-tour="paused">
-                        <span class="font-pixel text-[8px] font-bold text-[#8C7B70] uppercase">Paused</span>
-                        <button
-                            type="button"
-                            data-tour="end"
-                            class="min-h-[30px] font-pixel text-[8px] font-bold text-[#2D231E] bg-white border-2 border-[#2D231E] rounded-lg px-2.5 shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
-                        >END TOUR</button>
-                    </div>
                 </div>
             </div>
 
