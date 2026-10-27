@@ -47,8 +47,9 @@
             <input
                 type="search"
                 name="q"
+                data-combobox="{{ route('library.suggest') }}"
                 value="{{ $filters['q'] ?? '' }}"
-                placeholder="Search titles, authors or topics..."
+                placeholder="Search titles or authors..."
                 class="w-full bg-white border-2 border-[#2D231E] rounded-2xl pl-11 pr-4 py-3 font-bold text-xs sm:text-sm text-[#2D231E] focus:outline-none focus:ring-2 focus:ring-amber-400 placeholder-[#8C7B70] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)]"
             >
         </form>

@@ -14,13 +14,9 @@ export function initAutoFilters(root = document) {
             select.addEventListener('change', submit);
         });
 
-        let timer;
-        form.querySelectorAll('input[type="search"], input[type="text"]').forEach((input) => {
-            input.addEventListener('input', () => {
-                window.clearTimeout(timer);
-                timer = window.setTimeout(submit, DEBOUNCE_MS);
-            });
-        });
+        // Free-text search no longer auto-submits: typing used to jump the
+        // user to a results page mid-thought. Selects and the explicit
+        // clear button still submit; search fields submit on Enter only.
 
         form.querySelectorAll('[data-search-clear]').forEach((clear) => {
             clear.addEventListener('click', () => {

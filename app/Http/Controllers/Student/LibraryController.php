@@ -14,6 +14,7 @@ use App\Services\ReadingProgressService;
 use App\Support\AliceLibrary;
 use App\Support\LibraryPresentation;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -378,6 +379,36 @@ class LibraryController extends Controller
     }
 
     /**
+     * JSON suggestions for the library search combobox: title/author matches
+     * only, a handful of rows, no navigation. Never errors on short input —
+     * returns an empty list so the dropdown just stays shut.
+     */
+    public function suggest(Request $request): JsonResponse
+    {
+        $q = trim((string) $request->string('q'));
+
+        if (mb_strlen($q) < 2) {
+            return response()->json(['results' => []]);
+        }
+
+        $needle = "%{$q}%";
+
+        $results = $this->baseQuery()
+            ->where(fn (Builder $query) => $query->where('title', 'like', $needle)->orWhere('author', 'like', $needle))
+            ->orderBy('title')
+            ->limit(6)
+            ->get(['title', 'author', 'slug'])
+            ->map(fn (Story $story) => [
+                'title' => $story->title,
+                'author' => $story->author,
+                'url' => route('story.preview', $story->slug),
+            ])
+            ->all();
+
+        return response()->json(['results' => $results]);
+    }
+
+    /**
      * Apply the shared filter criteria (search / grade / genre) to any story
      * query — used by landings and (minus search) by collection shelves. Sort
      * is intentionally not applied here so the caller chooses.
@@ -385,26 +416,21 @@ class LibraryController extends Controller
     private function applyFilterCriteria(Builder $query, array $filters): void
     {
         if (($filters['q'] ?? null) !== null) {
-            // Every whitespace-separated term must match somewhere (title,
-            // author or genre name), so multi-word queries like "space
-            // adventure" stay useful instead of dying as one substring. The
-            // synopsis is searched too, but only for terms of 3+ characters —
-            // a short noise term such as "an" otherwise floods the results.
+            // Every whitespace-separated term must match the title or the
+            // author, so multi-word queries like "hans andersen" stay useful
+            // instead of dying as one substring.
             $terms = preg_split('/\s+/', trim($filters['q']), -1, PREG_SPLIT_NO_EMPTY) ?: [];
 
+            // Titles and authors only: genre names and synopsis text are too
+            // noisy as search hits (students searching "fairy" want a title,
+            // not every fairy-tale synopsis).
             $query->where(function (Builder $inner) use ($terms) {
                 foreach ($terms as $term) {
                     $needle = "%{$term}%";
-                    $short = mb_strlen($term) < 3;
 
-                    $inner->where(function (Builder $row) use ($needle, $short) {
+                    $inner->where(function (Builder $row) use ($needle) {
                         $row->where('title', 'like', $needle)
-                            ->orWhere('author', 'like', $needle)
-                            ->orWhereHas('genres', fn (Builder $genre) => $genre->where('name', 'like', $needle));
-
-                        if (! $short) {
-                            $row->orWhere('synopsis', 'like', $needle);
-                        }
+                            ->orWhere('author', 'like', $needle);
                     });
                 }
             });
