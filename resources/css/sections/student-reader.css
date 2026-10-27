@@ -95,8 +95,10 @@
     #reader-mascot {
         display: block;
         position: fixed;
+        top: auto;
         bottom: 8px;
         left: 6px;
+        transform: none;
         --mscale: 0.21;
         z-index: 5;
     }
