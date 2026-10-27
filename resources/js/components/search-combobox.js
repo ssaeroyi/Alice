@@ -54,8 +54,11 @@ export function initSearchCombobox(root = document) {
                 author.className = 'shrink-0 text-[10px] font-semibold text-[#8C7B70]';
                 author.textContent = item.author;
                 row.append(title, author);
-                // Fetching the row must beat the blur that closes the dropdown.
-                row.addEventListener('pointerdown', (event) => {
+                // A deliberate click starts the search. mousedown is only
+                // prevented (so the field keeps focus and the dropdown stays
+                // put); navigation happens on click, never on touch-down.
+                row.addEventListener('mousedown', (event) => event.preventDefault());
+                row.addEventListener('click', (event) => {
                     event.preventDefault();
                     window.location.assign(row.href);
                 });
@@ -96,7 +99,6 @@ export function initSearchCombobox(root = document) {
             window.clearTimeout(timer);
             timer = window.setTimeout(lookup, DEBOUNCE_MS);
         });
-        input.addEventListener('focus', lookup);
         input.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
                 close();
@@ -107,6 +109,12 @@ export function initSearchCombobox(root = document) {
             }
         });
         input.addEventListener('blur', () => window.setTimeout(close, 100));
+
+        // Nothing typed in a search field may navigate the page — ever. Block
+        // submits at the form level: this catches Enter paths where browser
+        // UI (Chrome's autofill history) swallows the keydown before the
+        // field-level handler above can.
+        form.addEventListener('submit', (event) => event.preventDefault());
     });
 }
 

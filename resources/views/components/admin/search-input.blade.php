@@ -12,6 +12,7 @@
     method="GET"
     action="{{ $action }}"
     data-auto-filter
+    autocomplete="off"
     class="{{ $formClass }} {{ $attributes->get('class') }}"
     @if ($formId) id="{{ $formId }}" @endif
 >
@@ -23,6 +24,7 @@
         id="{{ $name }}"
         type="search"
         name="{{ $name }}"
+        autocomplete="off"
         value="{{ $value }}"
         placeholder="{{ $placeholder }}"
         class="w-full h-11 pl-11 {{ $value ? 'pr-10' : 'pr-3' }} bg-[#FAF6EE] border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] placeholder:text-[#B5A89C] focus:outline-none focus:border-[#2D231E]"

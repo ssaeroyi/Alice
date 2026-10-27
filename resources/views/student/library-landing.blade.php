@@ -40,13 +40,14 @@
 
     <!-- Search + Filter Drawer -->
     <div class="flex items-center gap-2">
-        <form method="GET" action="{{ $row === 'genre' ? route('library.genre', \App\Support\LibraryPresentation::genreSlug($genre->name)) : route('library.all', $row) }}" data-auto-filter data-search-clear-url="{{ route('library') }}" class="flex-1 relative">
+        <form method="GET" action="{{ $row === 'genre' ? route('library.genre', \App\Support\LibraryPresentation::genreSlug($genre->name)) : route('library.all', $row) }}" data-auto-filter data-search-clear-url="{{ route('library') }}" autocomplete="off" class="flex-1 relative">
             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#8C7B70] pointer-events-none">
                 <x-icons.search class="w-4 h-4" />
             </span>
             <input
                 type="search"
                 name="q"
+                autocomplete="off"
                 data-combobox="{{ route('library.suggest') }}"
                 value="{{ $filters['q'] ?? '' }}"
                 placeholder="Search titles or authors..."
