@@ -608,7 +608,7 @@ class TeacherController extends Controller
      * @param  array<string, int>  $rows
      * @return array<int, array{date: string, count: int}>
      */
-    private static function zeroFill(DashboardRange $range, array $rows): array
+    private static function zeroFill(DashboardRange $range, array|Collection $rows): array
     {
         $daily = [];
 

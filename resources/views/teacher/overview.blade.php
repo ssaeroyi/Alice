@@ -46,7 +46,7 @@
         </form>
 
         <x-admin.panel
-            title="Class performance"
+            title="Student performance"
             icon="chart-bar"
             subtitle="School-wide, all students. Tap a metric to redraw the chart below it. The date range above applies to every tile."
             info="Each tile shows its own figure for the selected window while the chart shows how it moved."
