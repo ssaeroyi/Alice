@@ -1118,7 +1118,7 @@ class TeacherController extends Controller
             ->join('stories', 'stories.id', '=', 'story_progress.story_id')
             ->join('users', 'users.id', '=', 'story_progress.user_id')
             ->whereNotNull('users.reading_level')
-            ->selectRaw('SUM(ABS(stories.reading_level - users.reading_level) <= 1) AS fit, COUNT(*) AS total')
+            ->selectRaw('SUM(ABS(CAST(stories.reading_level AS SIGNED) - CAST(users.reading_level AS SIGNED)) <= 1) AS fit, COUNT(*) AS total')
             ->first();
 
         if (! $rows || (int) $rows->total === 0) {
