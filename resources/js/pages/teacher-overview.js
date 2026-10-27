@@ -415,6 +415,63 @@ function initReadingDonut(canvas) {
         });
 }
 
+const GRADE_COLORS = ['#34D399', '#38BDF8', '#FBBF24', '#A78BFA', '#FB7185', '#2DD4BF', '#F472B6'];
+
+/** Grade-distribution doughnut: same mechanics as the reading donut, click a
+ *  slice opens the roster filtered to that grade. */
+function initGradeDonut(canvas) {
+    const rows = parseJson(canvas.dataset.grade, []);
+
+    if (rows.length === 0) {
+        return;
+    }
+
+    loadCharts()
+        .then(({ Chart }) => {
+            new Chart(canvas, {
+                type: 'doughnut',
+                data: {
+                    labels: rows.map((row) => 'Grade ' + row.grade),
+                    datasets: [
+                        {
+                            data: rows.map((row) => row.total),
+                            backgroundColor: rows.map((row) => row.color),
+                            borderColor: '#FFFFFF',
+                            borderWidth: 2,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '62%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => {
+                                    const row = rows[ctx.dataIndex];
+                                    const total = rows.reduce((sum, item) => sum + item.total, 0);
+                                    const pct = total > 0 ? Math.round((row.total / total) * 100) : 0;
+
+                                    return `Grade ${row.grade}: ${row.total} students (${pct}%)`;
+                                },
+                            },
+                        },
+                    },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            window.location.href = rows[elements[0].index].href;
+                        }
+                    },
+                },
+            });
+        })
+        .catch(() => {
+            // Legend links still navigate without the chart.
+        });
+}
+
 export default function init() {
     // The page loader can run twice on a chunk retry, so a window flag keeps
     // a second init from stacking a second Chart on the same canvas.
@@ -433,5 +490,11 @@ export default function init() {
 
     if (readingCanvas && readingCanvas.dataset.reading) {
         initReadingDonut(readingCanvas);
+    }
+
+    const gradeCanvas = document.querySelector('[data-grade-canvas]');
+
+    if (gradeCanvas && gradeCanvas.dataset.grade) {
+        initGradeDonut(gradeCanvas);
     }
 }

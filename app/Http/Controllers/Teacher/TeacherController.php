@@ -7,6 +7,9 @@ use App\Enums\StoryStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Assignment;
 use App\Models\Group;
+use App\Models\ReadingProgress;
+use App\Models\SavedWord;
+use App\Models\StoryBattle;
 use App\Models\StoryProgress;
 use App\Models\TestAttempt;
 use App\Models\User;
@@ -95,6 +98,7 @@ class TeacherController extends Controller
             'gradeBreakdown' => static::gradeBreakdown(),
             'comprehensionLevels' => static::comprehensionDistribution(),
             'placementOnlyCount' => static::placementOnlyCount(),
+            'growthTrends' => static::growthTrends($studentIds),
             'textDifficulty' => static::textDifficulty($studentIds),
             'struggling' => static::struggling(),
             'activeAssignments' => static::activeAssignmentsQuery()
@@ -233,12 +237,32 @@ class TeacherController extends Controller
             'quiz.baseline_met' => [
                 'label' => 'Baseline met',
                 'unit' => 'students',
-                'hint' => 'This is the distinct students whose average quiz score that day met or beat their own placement bar. Students without a placement start at 70.',
+                'hint' => 'Students whose average quiz score that day met or beat their own placement bar. Students without a placement start at 70.',
                 'icon' => 'compass',
                 'kind' => 'sum',
                 'precision' => 0,
-                'detail_url' => route('teacher.roster'),
-                'detail_label' => 'Open the roster',
+                'detail_url' => null,
+                'detail_label' => null,
+            ],
+            'words.saved' => [
+                'label' => 'Words saved',
+                'unit' => 'words',
+                'hint' => 'New words students saved that day, across reading and the dictionary. Vocabulary growth, school-wide.',
+                'icon' => 'spell-book',
+                'kind' => 'sum',
+                'precision' => 0,
+                'detail_url' => null,
+                'detail_label' => null,
+            ],
+            'battles.won' => [
+                'label' => 'Battles won',
+                'unit' => 'battles',
+                'hint' => 'Field Journal bosses defeated that day. Engagement with the journal feature.',
+                'icon' => 'flame',
+                'kind' => 'sum',
+                'precision' => 0,
+                'detail_url' => null,
+                'detail_label' => null,
             ],
         ];
     }
@@ -265,6 +289,8 @@ class TeacherController extends Controller
                 'quiz.retake_gain' => static::retakeGainSeries($range, $studentIds),
                 'reading.minutes' => static::readingMinutesSeries($range, $studentIds),
                 'quiz.baseline_met' => static::baselineMetSeries($range, $studentIds),
+                'words.saved' => static::wordsSavedSeries($range, $studentIds),
+                'battles.won' => static::battlesWonSeries($range, $studentIds),
                 default => [],
             };
 
@@ -323,6 +349,33 @@ class TeacherController extends Controller
         }
 
         return $points;
+    }
+
+    /** New words saved per day (reading + dictionary), school-wide. */
+    private static function wordsSavedSeries(DashboardRange $range, Collection $studentIds): array
+    {
+        $rows = SavedWord::query()
+            ->whereIn('user_id', $studentIds)
+            ->whereBetween('created_at', [$range->start(), $range->end()])
+            ->selectRaw('DATE(created_at) AS day, COUNT(*) AS total')
+            ->groupBy('day')
+            ->pluck('total', 'day');
+
+        return static::zeroFill($range, $rows);
+    }
+
+    /** Field Journal bosses defeated per day, school-wide. */
+    private static function battlesWonSeries(DashboardRange $range, Collection $studentIds): array
+    {
+        $rows = StoryBattle::query()
+            ->whereIn('user_id', $studentIds)
+            ->where('status', 'won')
+            ->whereBetween('updated_at', [$range->start(), $range->end()])
+            ->selectRaw('DATE(updated_at) AS day, COUNT(*) AS total')
+            ->groupBy('day')
+            ->pluck('total', 'day');
+
+        return static::zeroFill($range, $rows);
     }
 
     /**
@@ -704,6 +757,12 @@ class TeacherController extends Controller
                 }
             })
             ->when($skillIds !== null, fn ($query) => $query->whereIn('users.id', $skillIds))
+            ->when($request->filled('trend'), function ($query) use ($request) {
+                $trend = $request->string('trend')->toString();
+                $trend === 'none'
+                    ? $query->whereDoesntHave('readingProgress')
+                    : $query->whereHas('readingProgress', fn ($p) => $p->where('trend', $trend));
+            })
             ->when($request->string('attention')->toString() === 'slipping', function ($query) {
                 $query->whereHas('readingProgress', fn ($q) => $q->where('slipping', true));
             })
@@ -925,6 +984,26 @@ class TeacherController extends Controller
             ->where('is_setup_complete', true)
             ->whereDoesntHave('readingProgress', fn ($q) => $q->whereNotNull('comprehension_level'))
             ->count();
+    }
+
+    /** Band movement since placement: up / steady / down / no live result yet. */
+    private static function growthTrends(Collection $studentIds): array
+    {
+        if ($studentIds->isEmpty()) {
+            return ['up' => 0, 'steady' => 0, 'down' => 0, 'none' => 0];
+        }
+
+        $rows = ReadingProgress::query()->whereIn('user_id', $studentIds)->pluck('trend', 'user_id');
+        $up = $rows->filter(fn ($t) => $t === 'up')->count();
+        $down = $rows->filter(fn ($t) => $t === 'down')->count();
+        $withRow = $rows->count();
+
+        return [
+            'up' => $up,
+            'down' => $down,
+            'steady' => $withRow - $up - $down,
+            'none' => $studentIds->count() - $withRow,
+        ];
     }
 
     /**

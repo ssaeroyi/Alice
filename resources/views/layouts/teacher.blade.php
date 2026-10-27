@@ -50,7 +50,7 @@
 
         $navGroups = [
             ['items' => [
-                ['label' => 'Overview', 'route' => 'teacher.dashboard', 'icon' => 'home'],
+                ['label' => 'Dashboard', 'route' => 'teacher.dashboard', 'icon' => 'home'],
             ]],
             ['label' => 'Manage', 'items' => [
                 ['label' => 'Students', 'route' => 'teacher.roster', 'icon' => 'users'],

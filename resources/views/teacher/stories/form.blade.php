@@ -54,7 +54,7 @@
                             data-story-tab="story"
                             role="tab"
                             aria-selected="true"
-                            class="inline-flex items-center justify-center min-h-[44px] px-4 rounded-lg text-xs font-bold transition-colors cursor-pointer shrink-0 whitespace-nowrap bg-[#2D231E] text-white"
+                            class="inline-flex items-center justify-center min-h-[44px] px-4 rounded-lg text-xs font-bold transition-colors cursor-pointer shrink-0 whitespace-nowrap bg-emerald-600 text-white"
                         >
                             Story
                             <span data-tab-dot="story" aria-label="Attention needed in the story details" class="ml-1 inline-block h-2 w-2 rounded-full hidden"></span>

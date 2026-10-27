@@ -18,7 +18,7 @@
                         <span>Share: </span>
                         <button type="button" data-copy-share data-share-url="{{ url('/a/'.$assignment->share_code) }}" class="font-bold hover:underline cursor-pointer">/a/{{ $assignment->share_code }}</button>
                     </span>
-                    <span class="text-xs font-bold px-3 py-1.5 rounded-full {{ $assignment->status === 'active' ? 'bg-emerald-100 text-emerald-700' : ($assignment->status === 'cancelled' ? 'bg-rose-100 text-rose-700' : ($assignment->status === 'archived' ? 'bg-[#2D231E] text-white' : 'bg-amber-100 text-amber-700')) }}">
+                    <span class="text-xs font-bold px-3 py-1.5 rounded-full {{ $assignment->status === 'active' ? 'bg-emerald-100 text-emerald-700' : ($assignment->status === 'cancelled' ? 'bg-rose-100 text-rose-700' : ($assignment->status === 'archived' ? 'bg-stone-200 text-stone-700' : 'bg-amber-100 text-amber-700')) }}">
                         {{ $assignment->status === 'archived' ? 'Finished' : $assignment->status }}
                     </span>
                 @if ($assignment->status === 'draft')
@@ -138,7 +138,7 @@
         </div>
 
         @if ($assignment->status === 'archived')
-            <div class="bg-[#2D231E] text-white rounded-xl p-4">
+            <div class="bg-emerald-600 text-white rounded-xl p-4">
                 <p class="text-sm font-bold">
                     This assignment is finished.
                     @if ($assignment->finished_at)

@@ -98,7 +98,7 @@
                                     {{ $assignment->audienceLabel() }}
                                 </p>
                             </div>
-                            <span class="shrink-0 {{ $assignment->status === 'active' ? 'bg-emerald-100 text-emerald-700' : ($assignment->status === 'cancelled' ? 'bg-rose-100 text-rose-700' : ($assignment->status === 'archived' ? 'bg-[#2D231E] text-white' : 'bg-amber-100 text-amber-700')) }} text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full">
+                            <span class="shrink-0 {{ $assignment->status === 'active' ? 'bg-emerald-100 text-emerald-700' : ($assignment->status === 'cancelled' ? 'bg-rose-100 text-rose-700' : ($assignment->status === 'archived' ? 'bg-stone-200 text-stone-700' : 'bg-amber-100 text-amber-700')) }} text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full">
                                 {{ $assignment->status === 'archived' ? 'Finished' : $assignment->status }}
                             </span>
                         </div>

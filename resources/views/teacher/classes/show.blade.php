@@ -59,7 +59,7 @@
                         class="w-full px-3 py-2.5 border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-sky-600"
                     >{{ old('description', $group->description) }}</textarea>
                     <div class="flex justify-end">
-                        <button type="submit" class="inline-flex items-center min-h-[36px] text-xs font-bold px-4 py-1.5 rounded-lg bg-[#2D231E] text-white hover:bg-black transition-colors cursor-pointer">
+                        <button type="submit" class="inline-flex items-center min-h-[36px] text-xs font-bold px-4 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors cursor-pointer">
                             <span data-submit-idle>Save description</span>
                             <span data-submit-active class="hidden"><x-spinner label="Saving..." /></span>
                         </button>
