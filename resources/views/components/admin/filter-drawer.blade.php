@@ -68,7 +68,7 @@
             <button
                 type="submit"
                 form="{{ $fid }}"
-                class="w-full min-h-[44px] rounded-xl bg-[#2D231E] text-[#FAF6EE] text-sm font-bold px-6 uppercase tracking-wide hover:bg-[#3D332C] transition-colors cursor-pointer"
+                class="w-full min-h-[44px] rounded-xl bg-emerald-600 text-white text-sm font-bold px-6 uppercase tracking-wide hover:bg-[#3D332C] transition-colors cursor-pointer"
             >
                 Apply Filters
             </button>

@@ -117,7 +117,6 @@
                     <div
                         id="account-actions-menu"
                         data-dropdown
-                        hidden
                         class="hidden right-0 w-48 bg-white border border-[#E6DCCF] rounded-lg shadow-[3px_3px_0px_0px_rgba(45,35,30,0.15)] z-20 p-1.5"
                     >
                         <a href="{{ route('admin.accounts.export', request()->query()) }}" class="block px-3 py-2.5 rounded-md text-xs font-bold text-[#2D231E] hover:bg-[#FAF6EE] transition-colors">
