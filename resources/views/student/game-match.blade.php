@@ -72,10 +72,13 @@
         </div>
     </div>
 
-    <!-- Status -->
-    <p id="game-status" class="text-center text-sm font-bold text-[#2D231E] uppercase">
-        Memorize the synonym pairs!
-    </p>
+    <!-- Status + Alice companion -->
+    <div class="flex items-center justify-center gap-3">
+        <div id="game-mascot" data-skin='@json($equippedAlice)' aria-hidden="true"></div>
+        <p id="game-status" class="text-center text-sm font-bold text-[#2D231E] uppercase">
+            Memorize the synonym pairs!
+        </p>
+    </div>
 
     <!-- Help Modal -->
     <x-modal id="game-help-modal" title="How to Play" :pixel="true" :closeable="false">

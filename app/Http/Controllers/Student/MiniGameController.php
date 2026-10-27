@@ -377,6 +377,11 @@ class MiniGameController extends Controller
         $source = $request->query('source', session('game_config.source', 'open'));
         $difficulty = $request->query('difficulty', session('game_config.difficulty', 'medium'));
 
+        // Equipped Alice skin for the game-page mascot (same slice the reader uses).
+        $skinsCatalog = config('skins');
+        $skinsState = SkinsController::state($user);
+        $equippedAlice = $skinsCatalog['alice'][$skinsState['equipped']['alice']];
+
         if (! in_array($source, self::VALID_SOURCES)) {
             $source = 'open';
         }
@@ -408,6 +413,7 @@ class MiniGameController extends Controller
                 'memorizeSeconds' => (int) config('gamification.match_memorize_seconds', 10),
                 'keys' => $keys,
                 'hintCost' => $hintCost,
+                'equippedAlice' => $equippedAlice,
             ]);
         }
 
@@ -428,6 +434,7 @@ class MiniGameController extends Controller
                 'savedWords' => $user->savedWords()->pluck('word'),
                 'keys' => $keys,
                 'hintCost' => $hintCost,
+                'equippedAlice' => $equippedAlice,
             ]);
         }
 
@@ -500,6 +507,7 @@ class MiniGameController extends Controller
             'storyTitle' => $storyTitle,
             'keys' => $keys,
             'hintCost' => $hintCost,
+                'equippedAlice' => $equippedAlice,
         ]);
     }
 

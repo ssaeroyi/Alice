@@ -576,3 +576,35 @@ body[data-game-mode="on"] .tap-word-saved {
     }
 }
 
+
+/* ===================== game mascot (Alice companion) ====================== */
+/* Same sprite mechanics as the reader mascot, sized for the game status row:
+   she stands beside the status line on every screen size, reacting to
+   matches and misses. Decorative: no pointer events, aria-hidden markup. */
+#game-mascot {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    background-repeat: no-repeat;
+    background-position: 0% center;
+    background-size: 600% 100%;
+    image-rendering: pixelated;
+}
+
+@media (min-width: 640px) {
+    #game-mascot { width: 60px; height: 60px; }
+}
+
+/* Timer urgency: the existing danger state (under 20%) now pulses too. */
+.game-timer-bar.danger {
+    animation: game-timer-pulse 1s ease-in-out infinite;
+}
+
+@keyframes game-timer-pulse {
+    0%, 100% { filter: saturate(1); }
+    50% { filter: saturate(2) brightness(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .game-timer-bar.danger { animation: none; }
+}

@@ -82,9 +82,13 @@
     </div>
 
     <!-- Status -->
-    <p id="game-status" class="text-center text-sm font-bold text-[#2D231E] uppercase">
-        Fill in the missing words
-    </p>
+    <!-- Status + Alice companion -->
+    <div class="flex items-center justify-center gap-3">
+        <div id="game-mascot" data-skin='@json($equippedAlice)' aria-hidden="true"></div>
+        <p id="game-status" class="text-center text-sm font-bold text-[#2D231E] uppercase">
+            Fill in the missing words
+        </p>
+    </div>
 
     <!-- Help Modal -->
     <x-modal id="game-help-modal" title="Sentence Builder" :pixel="true" :closeable="false">

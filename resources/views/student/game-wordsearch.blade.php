@@ -98,7 +98,7 @@
 
         <!-- Word List Card -->
         <div class="bg-white border-2 border-[#2D231E] rounded-2xl p-4 shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] flex flex-col">
-            <div class="hidden lg:block pb-3 mb-3 border-b-2 border-[#2D231E]/10">
+            <div class="pb-3 mb-3 border-b-2 border-[#2D231E]/10">
                 <span class="font-pixel text-[11px] font-bold uppercase tracking-wider text-[#2D231E]">Words</span>
                 @if($source === 'open' && ! empty($storyTitle))
                 <span class="block mt-1.5 font-pixel text-[8px] leading-relaxed uppercase tracking-wider text-[#2D231E]">
@@ -114,9 +114,13 @@
     </div>
 
     <!-- Status -->
-    <p id="game-status" class="text-center text-sm font-bold text-[#2D231E] uppercase lg:pr-[19rem]">
-        Swipe across letters to find words
-    </p>
+    <!-- Status + Alice companion -->
+    <div class="flex items-center justify-center gap-3 lg:pr-[19rem]">
+        <div id="game-mascot" data-skin='@json($equippedAlice)' aria-hidden="true"></div>
+        <p id="game-status" class="text-center text-sm font-bold text-[#2D231E] uppercase">
+            Swipe across letters to find words
+        </p>
+    </div>
 
     <!-- Help Modal -->
     <x-modal id="game-help-modal" title="How to Play" :pixel="true" :closeable="false">

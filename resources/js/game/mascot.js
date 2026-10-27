@@ -86,8 +86,8 @@ function applySkin(skin) {
 }
 
 /** Find the mascot element and start the idle loop. Safe to call once per page. */
-export function initMascot() {
-    el = document.getElementById('reader-mascot');
+export function initMascot(id = 'reader-mascot') {
+    el = document.getElementById(id);
     if (!el) return;
 
     try {

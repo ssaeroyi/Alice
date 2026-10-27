@@ -137,7 +137,7 @@
                     <span class="font-pixel text-xs font-bold text-sky-600">M</span>
                 </div>
                 <h3 class="font-pixel text-[10px] font-bold text-[#2D231E] uppercase">Medium</h3>
-                <p class="text-[10px] text-[#2D231E] font-semibold mt-1">Normal time</p>
+                <p class="text-[10px] text-[#2D231E] font-semibold mt-1">Normal</p>
             </button>
 
             <!-- Hard -->

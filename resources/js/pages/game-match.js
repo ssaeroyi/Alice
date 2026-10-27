@@ -7,6 +7,7 @@
 
 import { play } from '../game/sfx.js';
 import { shake, flash, comboFlash, scorePopup } from '../game/juice.js';
+import { initMascot, mascotReact } from '../game/mascot.js';
 import { burst, pips, clearPips, computeFinalScore } from '../game/arcade.js';
 import { openModal, closeModal } from '../components/modal.js';
 
@@ -58,6 +59,7 @@ export default function init() {
         }, { once: true });
     }
 
+    initMascot('game-mascot');
     wireEvents();
 }
 
@@ -389,6 +391,7 @@ function checkMatch() {
         flash(document.getElementById('game-board'), 'emerald');
         burst(a.el, 'star', 6);
         burst(b.el, 'coin', 4);
+        mascotReact('attack');
 
         if (combo >= COMBO_THRESHOLD) {
             comboFlash(document.getElementById('score-display'), combo);
@@ -409,6 +412,7 @@ function checkMatch() {
         shake(b.el);
         burst(a.el, 'cross', 4);
         burst(b.el, 'cross', 4);
+        mascotReact('walk');
 
         setTimeout(() => {
             a.el.classList.remove('flipped');

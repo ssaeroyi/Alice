@@ -9,6 +9,7 @@ import { play } from '../game/sfx.js';
 import { shake, flash, scorePopup } from '../game/juice.js';
 import { burst, pips, clearPips, computeFinalScore } from '../game/arcade.js';
 import { openModal, closeModal } from '../components/modal.js';
+import { initMascot, mascotReact } from '../game/mascot.js';
 
 let baseTime = 30;
 const MAX_WRONG = 3;
@@ -77,6 +78,22 @@ export default function init() {
     setupSentence();
     wireEvents();
     wireDictionary();
+
+    // First-time gate: pop the How to Play modal before play begins. The
+    // timer starts on the first tile tap, so nothing needs pausing here.
+    try {
+        if (localStorage.getItem('alice-sentence-help-seen') !== '1') {
+            const helpModal = document.getElementById('game-help-modal');
+            if (helpModal) {
+                openModal(helpModal);
+                helpModal.querySelector('[data-modal-close]')?.addEventListener('click', () => {
+                    try { localStorage.setItem('alice-sentence-help-seen', '1'); } catch { /* storage off */ }
+                }, { once: true });
+            }
+        }
+    } catch { /* storage off */ }
+
+    initMascot('game-mascot');
 }
 
 function setupSentence() {
@@ -390,6 +407,7 @@ function checkAnswer() {
         flash(document.getElementById('answer-slots'), 'emerald');
         pips(document.getElementById('combo-pips'), combo, Math.min(5, sentences.length));
         burst(document.getElementById('answer-slots'), 'star', 5);
+        mascotReact('attack');
         document.getElementById('game-status').textContent = 'Correct!';
         updateScore();
 
@@ -406,6 +424,7 @@ function checkAnswer() {
         shake(document.getElementById('answer-slots'));
         play('wrong');
         burst(document.getElementById('answer-slots'), 'cross', 3);
+        mascotReact('walk');
 
         roundWrongCount++;
         updateScore();

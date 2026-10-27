@@ -8,6 +8,7 @@ import { play } from '../game/sfx.js';
 import { shake, flash, scorePopup } from '../game/juice.js';
 import { burst, pips, clearPips, computeFinalScore } from '../game/arcade.js';
 import { openModal, closeModal } from '../components/modal.js';
+import { initMascot, mascotReact } from '../game/mascot.js';
 
 const GRID_SIZE = 10;
 const POINTS_PER_WORD = 10;
@@ -54,6 +55,22 @@ export default function init() {
     roundId = crypto.randomUUID?.() || Date.now().toString(36) + Math.random().toString(36).slice(2);
     setupGame();
     wireEvents();
+
+    // First-time gate: pop the How to Play modal before play begins. The
+    // timer starts on the first swipe, so no countdown needs pausing here.
+    try {
+        if (localStorage.getItem('alice-wordsearch-help-seen') !== '1') {
+            const helpModal = document.getElementById('game-help-modal');
+            if (helpModal) {
+                openModal(helpModal);
+                helpModal.querySelector('[data-modal-close]')?.addEventListener('click', () => {
+                    try { localStorage.setItem('alice-wordsearch-help-seen', '1'); } catch { /* storage off */ }
+                }, { once: true });
+            }
+        }
+    } catch { /* storage off */ }
+
+    initMascot('game-mascot');
 }
 
 function setupGame() {
@@ -553,6 +570,7 @@ function checkSelection() {
         play('match');
         burst(lastCell.el, 'star', 6);
         burst(document.getElementById('ws-grid'), 'coin', 3);
+        mascotReact('attack');
 
         flash(document.getElementById('ws-grid'), 'emerald');
 
@@ -567,6 +585,7 @@ function checkSelection() {
         wrongAttempts++;
         clearPips(document.getElementById('combo-pips'));
         play('wrong');
+        mascotReact('walk');
         for (const cell of selectedCells) {
             if (!cell.el.classList.contains('found')) {
                 shake(cell.el);
