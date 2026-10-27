@@ -235,12 +235,22 @@ class TeacherController extends Controller
                 'detail_label' => 'Open the roster',
             ],
             'quiz.baseline_met' => [
-                'label' => 'Baseline met',
+                'label' => 'Goal met',
                 'unit' => 'students',
-                'hint' => 'Students whose average quiz score that day met or beat their own placement bar. Students without a placement start at 70.',
+                'hint' => 'Students whose quiz average that day met or beat their own placement score. Students without a placement start at 70.',
                 'icon' => 'compass',
                 'kind' => 'sum',
                 'precision' => 0,
+                'detail_url' => null,
+                'detail_label' => null,
+            ],
+            'book.level' => [
+                'label' => 'Book level',
+                'unit' => 'grade',
+                'hint' => 'Average reading grade of the books students finished that day. Rising means they are reading harder texts.',
+                'icon' => 'book',
+                'kind' => 'avg',
+                'precision' => 1,
                 'detail_url' => null,
                 'detail_label' => null,
             ],
@@ -254,18 +264,8 @@ class TeacherController extends Controller
                 'detail_url' => null,
                 'detail_label' => null,
             ],
-            'battles.won' => [
-                'label' => 'Battles won',
-                'unit' => 'battles',
-                'hint' => 'Field Journal bosses defeated that day. Engagement with the journal feature.',
-                'icon' => 'heart',
-                'kind' => 'sum',
-                'precision' => 0,
-                'detail_url' => null,
-                'detail_label' => null,
-            ],
         ];
-    }
+}
 
     /**
      * The daily {date, count} series for one explorer metric across the
@@ -289,8 +289,18 @@ class TeacherController extends Controller
                 'quiz.retake_gain' => static::retakeGainSeries($range, $studentIds),
                 'reading.minutes' => static::readingMinutesSeries($range, $studentIds),
                 'quiz.baseline_met' => static::baselineMetSeries($range, $studentIds),
-                'words.saved' => static::wordsSavedSeries($range, $studentIds),
-                'battles.won' => static::battlesWonSeries($range, $studentIds),
+            'book.level' => static::bookLevelSeries($range, $studentIds),
+            'quiz.pass_rate' => [
+                'label' => 'Pass rate',
+                'unit' => '%',
+                'hint' => 'Share of quiz attempts that day that passed (70% or higher). Small days can swing the number.',
+                'icon' => 'chart-line',
+                'kind' => 'avg',
+                'precision' => 0,
+                'detail_url' => null,
+                'detail_label' => null,
+            ],
+            'words.saved' => static::wordsSavedSeries($range, $studentIds),
                 default => [],
             };
 
@@ -346,6 +356,48 @@ class TeacherController extends Controller
         $points = [];
         foreach ($buckets as $key => $bucket) {
             $points[] = ['date' => $key, 'count' => round($bucket['sum'] / $bucket['days'], 1)];
+        }
+
+        return $points;
+    }
+
+    /** Share of quiz attempts that day that passed (70%+). Days with no attempt are skipped. */
+    private static function passRateSeries(DashboardRange $range, Collection $studentIds): array
+    {
+        $rows = TestAttempt::query()
+            ->whereIn('user_id', $studentIds)
+            ->whereBetween('created_at', [$range->start(), $range->end()])
+            ->selectRaw('DATE(created_at) AS day, AVG(passed) * 100 AS total')
+            ->groupBy('day')
+            ->pluck('total', 'day');
+
+        $points = [];
+        foreach ($range->dates() as $day) {
+            if (isset($rows[$day])) {
+                $points[] = ['date' => $day, 'count' => round((float) $rows[$day], 1)];
+            }
+        }
+
+        return $points;
+    }
+
+    /** Average reading grade (Flesch level) of books finished that day. */
+    private static function bookLevelSeries(DashboardRange $range, Collection $studentIds): array
+    {
+        $rows = StoryProgress::query()
+            ->whereIn('user_id', $studentIds)
+            ->whereNotNull('completed_at')
+            ->whereBetween('completed_at', [$range->start(), $range->end()])
+            ->join('stories', 'stories.id', '=', 'story_progress.story_id')
+            ->selectRaw('DATE(story_progress.completed_at) AS day, AVG(stories.reading_level) AS total')
+            ->groupBy('day')
+            ->pluck('total', 'day');
+
+        $points = [];
+        foreach ($range->dates() as $day) {
+            if (isset($rows[$day])) {
+                $points[] = ['date' => $day, 'count' => round((float) $rows[$day], 1)];
+            }
         }
 
         return $points;
@@ -610,6 +662,7 @@ class TeacherController extends Controller
      */
     private static function zeroFill(DashboardRange $range, array|Collection $rows): array
     {
+        $rows = is_array($rows) ? $rows : $rows->all();
         $daily = [];
 
         foreach ($range->dates() as $day) {
