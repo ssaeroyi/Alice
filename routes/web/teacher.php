@@ -43,7 +43,8 @@ Route::middleware(['auth', 'role:teacher,admin', 'not.deleted'])->prefix('teache
     Route::get('/classes/create', [ClassController::class, 'create'])->name('classes.create');
     Route::post('/classes', [ClassController::class, 'store'])->name('classes.store');
     Route::get('/classes/{group}', [ClassController::class, 'show'])->name('classes.show');
-    Route::delete('/classes/{group}', [ClassController::class, 'destroy'])->name('classes.destroy');
+    Route::patch('/classes/{group}', [ClassController::class, 'update'])->name('classes.update');
+Route::delete('/classes/{group}', [ClassController::class, 'destroy'])->name('classes.destroy');
     Route::get('/classes/{group}/members/create', [ClassController::class, 'membersCreate'])->name('classes.members.create');
     Route::post('/classes/{group}/members/invite', [ClassController::class, 'membersInvite'])->name('classes.members.invite');
     Route::delete('/classes/{group}/members/{user}', [ClassController::class, 'removeMember'])->name('classes.remove-member');

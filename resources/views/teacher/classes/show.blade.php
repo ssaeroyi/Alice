@@ -28,21 +28,44 @@
             </form>
         </div>
 
-        {{-- Join code --}}
-        <div class="bg-white border border-[#E6DCCF] rounded-xl p-5">
-            <p class="text-xs font-bold text-[#2D231E] uppercase tracking-wide mb-2">Join code</p>
-            <div class="flex flex-wrap items-center gap-3">
-                <span class="text-2xl font-mono font-extrabold text-[#2D231E]">{{ $group->join_code }}</span>
-                <button
-                    type="button"
-                    data-copy-code
-                    data-code="{{ $group->join_code }}"
-                    class="inline-flex items-center gap-1.5 min-h-[36px] text-xs font-bold px-3 py-1.5 rounded-lg bg-[#F3ECE0] border border-[#E6DCCF] text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+        {{-- Join code + description --}}
+        <div class="bg-white border border-[#E6DCCF] rounded-xl p-5 space-y-4">
+            <div>
+                <p class="text-xs font-bold text-[#2D231E] uppercase tracking-wide mb-2">Join code</p>
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="text-2xl font-mono font-extrabold text-[#2D231E]">{{ $group->join_code }}</span>
+                    <button
+                        type="button"
+                        data-copy-code
+                        data-code="{{ $group->join_code }}"
+                        class="inline-flex items-center gap-1.5 min-h-[36px] text-xs font-bold px-3 py-1.5 rounded-lg bg-[#F3ECE0] border border-[#E6DCCF] text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
                 >
                     Copy code
                 </button>
+                </div>
+                <p class="mt-2 text-sm font-semibold text-[#2D231E]">Students type this in their "Class & Assignments" tab to join.</p>
             </div>
-            <p class="mt-2 text-sm font-semibold text-[#2D231E]">Students type this in their "Class & Assignments" tab to join.</p>
+
+            <div class="border-t border-[#E6DCCF] pt-4">
+                <p class="text-xs font-bold text-[#2D231E] uppercase tracking-wide mb-2">Class description</p>
+                <form method="POST" action="{{ route('teacher.classes.update', $group) }}" data-submit-guard class="space-y-2">
+                    @csrf
+                    @method('PATCH')
+                    <textarea
+                        name="description"
+                        rows="3"
+                        maxlength="2000"
+                        placeholder="What is this class about? Students see this on the class page."
+                        class="w-full px-3 py-2.5 border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-sky-600"
+                    >{{ old('description', $group->description) }}</textarea>
+                    <div class="flex justify-end">
+                        <button type="submit" class="inline-flex items-center min-h-[36px] text-xs font-bold px-4 py-1.5 rounded-lg bg-[#2D231E] text-white hover:bg-black transition-colors cursor-pointer">
+                            <span data-submit-idle>Save description</span>
+                            <span data-submit-active class="hidden"><x-spinner label="Saving..." /></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         {{-- Assignments --}}

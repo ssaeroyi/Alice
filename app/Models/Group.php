@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
  * teacher, their classmates, and class-scoped assignments. This is the
  * self-serve enrollment that replaces the old free-text section-string wiring.
  */
-#[Fillable(['teacher_id', 'name', 'join_code', 'section_label'])]
+#[Fillable(['teacher_id', 'name', 'join_code', 'section_label', 'description'])]
 class Group extends Model
 {
     public function teacher(): BelongsTo

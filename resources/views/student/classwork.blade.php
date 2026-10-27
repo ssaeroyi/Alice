@@ -3,7 +3,7 @@
 @section('page', 'classwork')
 
 @section('content')
-<div class="max-w-2xl mx-auto px-4 py-6 space-y-4">
+<div class="max-w-5xl mx-auto px-4 py-6 space-y-4">
 
     @include('partials.classwork-widget', [
         'assignments' => $assignments,

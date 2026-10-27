@@ -40,11 +40,13 @@ class ClassController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:80'],
+            'description' => ['nullable', 'string', 'max:2000'],
         ]);
 
         $group = Group::create([
             'teacher_id' => auth()->id(),
             'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
             'join_code' => Group::makeJoinCode(),
         ]);
 
@@ -70,6 +72,20 @@ class ClassController extends Controller
             'group' => $group,
             'students' => $this->allStudents(),
         ]);
+    }
+
+    /** Editable class details (description) on the teacher's class page. */
+    public function update(Request $request, Group $group): RedirectResponse
+    {
+        $this->authorizeOwner($group);
+
+        $validated = $request->validate([
+            'description' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $group->update(['description' => $validated['description'] ?? null]);
+
+        return back()->with('toast', ['message' => 'Class details saved.']);
     }
 
     public function destroy(Group $group): RedirectResponse

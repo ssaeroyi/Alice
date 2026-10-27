@@ -28,6 +28,19 @@
                 @error('name')<p class="mt-1 text-xs font-bold text-rose-600">{{ $message }}</p>@enderror
             </div>
 
+            <div>
+                <label for="description" class="block text-sm font-extrabold text-[#2D231E] mb-1">Description <span class="font-semibold text-[#8C7B70]">(optional)</span></label>
+                <textarea
+                    id="description"
+                    name="description"
+                    rows="3"
+                    maxlength="2000"
+                    placeholder="What is this class about? Students see this on the class page."
+                    class="w-full px-3 py-2.5 border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-sky-600"
+                >{{ old('description') }}</textarea>
+                @error('description')<p class="mt-1 text-xs font-bold text-rose-600">{{ $message }}</p>@enderror
+            </div>
+
             <div class="bg-[#FAF6EE] border border-[#E6DCCF] rounded-xl p-4">
                 <p class="text-xs font-bold text-[#2D231E] uppercase tracking-wide mb-1">How students join</p>
                 <p class="text-sm font-semibold text-[#2D231E]">A join code is created automatically. Share it with your class. Students enter it (or accept an invite) in their "Classwork" area to enroll.</p>

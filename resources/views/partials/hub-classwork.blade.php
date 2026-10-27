@@ -1,26 +1,24 @@
 @php
-    $schoolWide = $assignments->where('scope', '!=', 'group')->values();
-    $finishedSchoolWide = $finished->where('scope', '!=', 'group')->values();
+    // One merged, sorted assignment list per surface: not-done first (by due
+    // date, undated last), done sinks to the bottom. Work never disappears —
+    // it just stops leading. Status pills live in hub-assignment-row.
+    $schoolWide = $assignments->merge($finished)
+        ->filter(fn ($a) => $a->scope !== 'group')
+        ->values()
+        ->sortBy(fn ($a) => [
+            ($assignmentCompletion[$a->id] ?? false) ? 1 : 0,
+            $a->due_at ? $a->due_at->timestamp : PHP_FLOAT_MAX,
+        ])
+        ->values();
     $hasAny = $schoolWide->isNotEmpty() || $joinedClasses->isNotEmpty();
 @endphp
 
-<div class="space-y-4" data-cw-root
+<div class="space-y-5" data-cw-root
     data-join-url="{{ route('student.classes.join') }}"
     data-leave-url="{{ route('student.classes.leave', ['group' => '__ID__']) }}">
 
-    {{-- Landing view (study-page register: plain sections + border-2 study cards) --}}
+    {{-- Landing view --}}
     <div data-cw-view="classes" class="space-y-5">
-        <div class="flex items-center justify-between flex-wrap gap-3">
-            <h1 class="font-pixel text-[11px] sm:text-sm font-bold text-[#2D231E] uppercase tracking-wider">Classwork</h1>
-            <button
-                type="button"
-                data-modal-open="hub-join-class"
-                class="inline-flex items-center gap-1.5 min-h-[44px] px-4 rounded-2xl bg-amber-400 border-2 border-[#2D231E] text-[#2D231E] font-pixel text-[9px] font-bold uppercase shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] hover:bg-amber-300 active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] transition-all"
-            >
-                Join class
-            </button>
-        </div>
-
         @if (! $hasAny)
             <div class="bg-white border-2 border-[#2D231E] rounded-2xl p-8 text-center shadow-[3px_3px_0px_0px_rgba(45,35,30,1)]">
                 <p class="text-sm font-semibold text-[#2D231E]">Nothing here yet.</p>
@@ -36,65 +34,43 @@
                 </div>
             @endif
 
-            @if ($finishedSchoolWide->isNotEmpty())
-                <details class="bg-white border-2 border-[#2D231E] rounded-2xl px-4 py-2 shadow-[3px_3px_0px_0px_rgba(45,35,30,1)]">
-                    <summary class="flex items-center justify-between cursor-pointer text-sm font-bold text-[#2D231E] min-h-[44px] list-none [&::-webkit-details-marker]:hidden">
-                        <span>Finished assignments</span>
-                        <span class="text-[10px] font-bold text-[#2D231E]">{{ $finishedSchoolWide->count() }}</span>
-                    </summary>
-                    <div class="mt-2 space-y-2">
-                        @foreach ($finishedSchoolWide as $assignment)
-                            <a href="{{ route('student.assignments.show', $assignment) }}"
-                                class="flex flex-row items-center gap-3 p-3 bg-[#FAF6EE] border-2 border-[#2D231E]/20 rounded-xl hover:border-sky-600 transition-colors group">
-                                <span class="flex-1 min-w-0 text-sm font-bold text-[#2D231E] group-hover:text-sky-700 truncate">{{ $assignment->title }}</span>
-                                @if ($assignment->story?->title)
-                                    <span class="shrink-0 text-[10px] font-bold text-[#2D231E]">{{ \Illuminate\Support\Str::limit($assignment->story->title, 24) }}</span>
-                                @endif
-                                <svg class="font-semibold w-3.5 h-3.5 shrink-0 text-[#2D231E] group-hover:text-sky-700" fill="currentColor" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                            </a>
-                        @endforeach
-                    </div>
-                </details>
-            @endif
-
             <div class="space-y-3">
-                <p class="font-pixel text-[9px] font-bold uppercase text-[#2D231E]">Your classes</p>
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                    <p class="font-pixel text-[9px] font-bold uppercase text-[#2D231E]">Your classes</p>
+                    <button
+                        type="button"
+                        data-modal-open="hub-join-class"
+                        class="inline-flex items-center gap-1.5 min-h-[40px] px-4 rounded-xl bg-amber-400 border-2 border-[#2D231E] text-[#2D231E] font-pixel text-[9px] font-bold uppercase shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] hover:bg-amber-300 active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] transition-all"
+                    >
+                        Join class
+                    </button>
+                </div>
 
                 @if ($joinedClasses->isNotEmpty())
-                    <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                         @foreach ($joinedClasses as $class)
+                            @php
+                                $t = $class->teacher;
+                                $teacherName = $t ? (trim($t->first_name.' '.$t->last_name) ?: ($t->nickname ?? 'Teacher')) : 'Teacher';
+                            @endphp
                             <div class="flex flex-col bg-white border-2 border-[#2D231E] rounded-2xl overflow-hidden shadow-[3px_3px_0px_0px_rgba(45,35,30,1)]">
                                 <div class="bg-amber-400 border-b-2 border-[#2D231E] px-4 py-3">
-                                    <h3 class="text-sm font-extrabold text-[#2D231E] leading-tight">{{ $class->name }}</h3>
-                                    <p class="text-[10px] font-bold text-[#2D231E] truncate">
-                                        @if ($class->teacher)
-                                            {{ $class->teacher->first_name }} {{ $class->teacher->last_name }}
-                                        @else
-                                            Your teacher
-                                        @endif
-                                    </p>
+                                    <h3 class="font-pixel text-sm font-bold text-[#2D231E] leading-snug">{{ $class->name }}</h3>
+                                    <p class="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#2D231E]/80 truncate">Teacher · {{ $teacherName }}</p>
                                 </div>
 
-                                <div class="px-5 pt-4 flex items-center gap-2 flex-wrap">
-                                    <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 border-2 border-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,0.9)]">
-                                        {{ $class->members_count }} {{ $class->members_count === 1 ? 'student' : 'students' }}
-                                    </span>
-                                    <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full bg-sky-100 text-sky-700 border-2 border-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,0.9)]">
-                                        {{ $class->active_assignments->count() }} {{ $class->active_assignments->count() === 1 ? 'assignment' : 'assignments' }}
-                                    </span>
-                                    @if ($class->finished_assignments->isNotEmpty())
-                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full bg-[#FAF6EE] text-[#2D231E] border-2 border-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,0.9)]">
-                                            {{ $class->finished_assignments->count() }} finished
-                                        </span>
-                                    @endif
-                                </div>
-
-                                <div class="px-5 pb-5 pt-4 mt-auto">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <span class="text-[10px] font-bold uppercase tracking-wide text-[#2D231E]">Join code</span>
+                                <div class="px-4 pt-3 flex-1 space-y-3">
+                                    <div class="flex items-center justify-between gap-2 text-[11px] font-bold text-[#2D231E]">
+                                        <span>{{ $class->members_count }} {{ $class->members_count === 1 ? 'student' : 'students' }}</span>
+                                        <span>{{ $class->active_assignments->count() + $class->finished_assignments->count() }} {{ $class->active_assignments->count() + $class->finished_assignments->count() === 1 ? 'assignment' : 'assignments' }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span class="text-[10px] font-bold uppercase tracking-wide text-[#8C7B70]">Join code</span>
                                         <span class="font-mono text-xs font-bold text-sky-700 bg-[#FAF6EE] border border-[#2D231E]/20 rounded-lg px-2 py-0.5">{{ $class->join_code }}</span>
                                     </div>
+                                </div>
 
+                                <div class="px-4 pb-4 pt-3">
                                     <button
                                         type="button"
                                         data-cw-open="class-{{ $class->id }}"
@@ -116,105 +92,126 @@
         @endif
     </div>
 
-    {{-- One drill-down view per joined class: a single card with an internal
-         toolbar (tabs left, action icons right) and tab panels below. --}}
+    {{-- One drill-down view per joined class --}}
     @foreach ($joinedClasses as $class)
-        <div data-cw-view="class-{{ $class->id }}" hidden class="space-y-3">
+        @php
+            $t = $class->teacher;
+            $teacherName = $t ? (trim($t->first_name.' '.$t->last_name) ?: ($t->nickname ?? 'Teacher')) : 'Teacher';
+            $classAssignments = $class->active_assignments->merge($class->finished_assignments)
+                ->sortBy(fn ($a) => [
+                    ($assignmentCompletion[$a->id] ?? false) ? 1 : 0,
+                    $a->due_at ? $a->due_at->timestamp : PHP_FLOAT_MAX,
+                ])
+                ->values();
+        @endphp
+        <div data-cw-view="class-{{ $class->id }}" hidden class="space-y-4">
             <button
                 type="button"
                 data-cw-back
                 aria-label="Back to classes"
-                class="inline-flex items-center gap-1.5 min-h-[44px] font-pixel text-[9px] font-bold uppercase text-sky-700 hover:text-sky-800 transition-colors"
+                class="w-11 h-11 shrink-0 bg-white border-2 border-[#2D231E] rounded-xl text-[#2D231E] flex items-center justify-center shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] hover:bg-[#FAF6EE] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] transition-all cursor-pointer"
             >
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-                Classes
+                <x-icons.arrow-left class="w-4 h-4" />
             </button>
 
-            <div class="max-w-xl mx-auto bg-white border-2 border-[#2D231E] rounded-2xl shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] overflow-hidden">
+            {{-- Class hero banner --}}
+            <div class="bg-amber-400 border-2 border-[#2D231E] rounded-2xl shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] px-5 py-4">
+                <h2 class="font-pixel text-lg sm:text-xl font-bold text-[#2D231E] leading-snug">{{ $class->name }}</h2>
+                @if ($class->section_label)
+                    <p class="mt-0.5 text-xs font-bold uppercase tracking-wider text-[#2D231E]/80">{{ $class->section_label }}</p>
+                @endif
+                <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-bold text-[#2D231E]">
+                    <span>TEACHER <span class="font-extrabold">{{ $teacherName }}</span></span>
+                    <span class="font-extrabold bg-[#2D231E] text-amber-300 px-2 py-0.5 rounded-md">{{ $class->members_count }} {{ $class->members_count === 1 ? 'STUDENT' : 'STUDENTS' }}</span>
+                    <span class="font-mono">{{ $class->join_code }}</span>
+                </div>
+            </div>
+
+            <div class="bg-white border-2 border-[#2D231E] rounded-2xl shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] overflow-hidden">
                 <div class="p-4 sm:p-5">
                     <div class="flex items-center justify-between gap-2 mb-4">
-                    <div role="tablist" aria-label="Class sections" class="flex gap-1.5 overflow-x-auto min-w-0 pb-1 pr-1" style="scrollbar-width:none">
-                        <button
-                            type="button"
-                            role="tab"
-                            data-cw-tab="class-{{ $class->id }}-details"
-                            aria-selected="true"
-                            class="shrink-0 min-h-[40px] px-3 font-pixel text-[9px] font-bold uppercase border-2 border-[#2D231E] rounded-xl bg-amber-400 text-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)]"
-                        >
-                            Details
-                        </button>
-                        <button
-                            type="button"
-                            role="tab"
-                            data-cw-tab="class-{{ $class->id }}-assignments"
-                            aria-selected="false"
-                            class="shrink-0 min-h-[40px] px-3 font-pixel text-[9px] font-bold uppercase border-2 border-[#2D231E] rounded-xl bg-white text-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)]"
-                        >
-                            Assignments
-                        </button>
-                        @if ($class->finished_assignments->isNotEmpty())
+                        <div role="tablist" aria-label="Class sections" class="flex gap-1.5 overflow-x-auto min-w-0 pb-1 pr-1" style="scrollbar-width:none">
                             <button
                                 type="button"
                                 role="tab"
-                                data-cw-tab="class-{{ $class->id }}-past"
+                                data-cw-tab="class-{{ $class->id }}-details"
+                                aria-selected="true"
+                                class="shrink-0 min-h-[40px] px-3 font-pixel text-[9px] font-bold uppercase border-2 border-[#2D231E] rounded-xl bg-amber-400 text-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)]"
+                            >
+                                About
+                            </button>
+                            <button
+                                type="button"
+                                role="tab"
+                                data-cw-tab="class-{{ $class->id }}-assignments"
                                 aria-selected="false"
                                 class="shrink-0 min-h-[40px] px-3 font-pixel text-[9px] font-bold uppercase border-2 border-[#2D231E] rounded-xl bg-white text-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)]"
                             >
-                            Finished
-                        </button>
-                        @endif
+                                Assignments
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button
+                                type="button"
+                                data-cw-people-open="{{ $class->id }}"
+                                aria-haspopup="dialog"
+                                aria-controls="cw-people-{{ $class->id }}"
+                                aria-label="People in this class"
+                                class="min-w-[44px] min-h-[44px] w-10 inline-flex items-center justify-center bg-white border-2 border-[#2D231E] rounded-xl text-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] hover:bg-[#FAF6EE] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                            >
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                                    <circle cx="9" cy="8" r="3.25"/>
+                                    <path d="M3.5 20a5.5 5.5 0 0 1 11 0"/>
+                                    <circle cx="17" cy="9" r="2.5"/>
+                                    <path d="M15.5 14.2a5 5 0 0 1 5 5.8"/>
+                                </svg>
+                            </button>
+                            <button
+                                type="button"
+                                data-cw-leave-open="{{ $class->id }}"
+                                data-class-name="{{ $class->name }}"
+                                class="min-h-[40px] px-3 inline-flex items-center bg-rose-600 border-2 border-[#2D231E] rounded-xl font-pixel text-[9px] font-bold uppercase text-white shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] hover:bg-rose-700 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                            >
+                                Leave
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="flex items-center gap-1.5 shrink-0">
-                        <button
-                            type="button"
-                            data-cw-people-open="{{ $class->id }}"
-                            aria-haspopup="dialog"
-                            aria-controls="cw-people-{{ $class->id }}"
-                            aria-label="People in this class"
-                            class="min-w-[44px] min-h-[44px] w-10 inline-flex items-center justify-center bg-white border-2 border-[#2D231E] rounded-xl text-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] hover:bg-[#FAF6EE] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
-                        >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
-                                <circle cx="9" cy="8" r="3.25"/>
-                                <path d="M3.5 20a5.5 5.5 0 0 1 11 0"/>
-                                <circle cx="17" cy="9" r="2.5"/>
-                                <path d="M15.5 14.2a5 5 0 0 1 5 5.8"/>
-                            </svg>
-                        </button>
-                        <button
-                            type="button"
-                            data-cw-leave-open="{{ $class->id }}"
-                            data-class-name="{{ $class->name }}"
-                            class="min-h-[40px] px-3 inline-flex items-center bg-rose-600 border-2 border-[#2D231E] rounded-xl font-pixel text-[9px] font-bold uppercase text-white shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] hover:bg-rose-700 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
-                        >
-                            Leave
-                        </button>
-                    </div>
-                </div>
-
-                    <div role="tabpanel" data-cw-panel="class-{{ $class->id }}-details">
-                        <h3 class="text-base font-extrabold text-[#2D231E]">{{ $class->name }}</h3>
-                        <p class="mt-0.5 text-xs font-bold text-[#2D231E]">
-                            @if ($class->teacher)
-                                {{ $class->teacher->first_name }} {{ $class->teacher->last_name }}
+                    <div role="tabpanel" data-cw-panel="class-{{ $class->id }}-details" class="space-y-4">
+                        <div>
+                            <p class="font-pixel text-[9px] font-bold uppercase tracking-wider text-[#8C7B70] mb-1.5">About this class</p>
+                            @if ($class->description)
+                                <p class="text-sm font-semibold text-[#2D231E] leading-relaxed whitespace-pre-wrap">{{ $class->description }}</p>
                             @else
-                                Your teacher
+                                <p class="text-sm font-semibold text-[#8C7B70] italic">No description yet. Your teacher can add one from the teacher portal.</p>
                             @endif
-                        </p>
-                        <div class="mt-3 flex items-center gap-2 flex-wrap">
-                            <span class="inline-flex items-center font-mono text-[11px] font-bold text-sky-700 px-2.5 py-1 rounded-full bg-[#FAF6EE] border-2 border-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,0.9)]">
-                                {{ $class->join_code }}
-                            </span>
-                            <span class="inline-flex items-center text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 border-2 border-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,0.9)]">
-                                {{ $class->members_count }} {{ $class->members_count === 1 ? 'student' : 'students' }}
-                            </span>
+                        </div>
+
+                        <div class="rounded-xl border-2 border-[#2D231E]/15 bg-[#FAF6EE] p-4 space-y-2">
+                            <div class="flex items-center justify-between gap-3 text-sm">
+                                <span class="font-pixel text-[8px] font-bold uppercase tracking-wider text-[#8C7B70]">Teacher</span>
+                                <span class="font-extrabold text-[#2D231E]">{{ $teacherName }}</span>
+                            </div>
+                            <div class="flex items-center justify-between gap-3 text-sm">
+                                <span class="font-pixel text-[8px] font-bold uppercase tracking-wider text-[#8C7B70]">Students</span>
+                                <span class="font-extrabold text-[#2D231E]">{{ $class->members_count }}</span>
+                            </div>
+                            <div class="flex items-center justify-between gap-3 text-sm">
+                                <span class="font-pixel text-[8px] font-bold uppercase tracking-wider text-[#8C7B70]">Assignments</span>
+                                <span class="font-extrabold text-[#2D231E]">{{ $classAssignments->count() }}</span>
+                            </div>
+                            <div class="flex items-center justify-between gap-3 text-sm">
+                                <span class="font-pixel text-[8px] font-bold uppercase tracking-wider text-[#8C7B70]">Join code</span>
+                                <span class="font-mono font-extrabold text-sky-700">{{ $class->join_code }}</span>
+                            </div>
                         </div>
                     </div>
 
                     <div role="tabpanel" data-cw-panel="class-{{ $class->id }}-assignments" hidden>
-                        @if ($class->active_assignments->isNotEmpty())
+                        @if ($classAssignments->isNotEmpty())
                             <div class="space-y-2">
-                                @foreach ($class->active_assignments as $assignment)
+                                @foreach ($classAssignments as $assignment)
                                     @include('partials.hub-assignment-row', ['assignment' => $assignment])
                                 @endforeach
                             </div>
@@ -222,21 +219,6 @@
                             <p class="text-sm font-semibold text-[#2D231E] text-center py-4">No assignments yet.</p>
                         @endif
                     </div>
-
-                    @if ($class->finished_assignments->isNotEmpty())
-                        <div role="tabpanel" data-cw-panel="class-{{ $class->id }}-past" hidden class="space-y-2">
-                            @foreach ($class->finished_assignments as $assignment)
-                                <a href="{{ route('student.assignments.show', $assignment) }}"
-                                    class="flex flex-row items-center gap-3 p-3 bg-[#FAF6EE] border-2 border-[#2D231E]/20 rounded-xl hover:border-sky-600 transition-colors group">
-                                    <span class="flex-1 min-w-0 text-sm font-bold text-[#2D231E] group-hover:text-sky-700 truncate">{{ $assignment->title }}</span>
-                                    @if ($assignment->story?->title)
-                                        <span class="shrink-0 text-[10px] font-bold text-[#2D231E]">{{ \Illuminate\Support\Str::limit($assignment->story->title, 24) }}</span>
-                                    @endif
-                                    <svg class="font-semibold w-3.5 h-3.5 shrink-0 text-[#2D231E] group-hover:text-sky-700" fill="currentColor" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                                </a>
-                            @endforeach
-                        </div>
-                    @endif
                 </div>
             </div>
         </div>
@@ -244,6 +226,10 @@
 
     {{-- Per-class people drawers: rendered at root level so an open drawer never hides with its view --}}
     @foreach ($joinedClasses as $class)
+        @php
+            $t = $class->teacher;
+            $teacherName = $t ? (trim($t->first_name.' '.$t->last_name) ?: ($t->nickname ?? 'Teacher')) : 'Teacher';
+        @endphp
         <div
             id="cw-people-{{ $class->id }}"
             data-cw-people-drawer
@@ -268,21 +254,26 @@
                     </button>
                 </div>
 
-                <div class="flex-1 overflow-y-auto px-5 py-5 space-y-4">
-                    @if ($class->teacher)
-                        <div class="rounded-2xl border-2 border-[#2D231E] bg-[#FAF6EE] p-3 flex items-center gap-3 shadow-[2px_2px_0px_0px_rgba(45,35,30,0.9)]">
-                            <x-avatar :user="$class->teacher" :size="40" />
-                            <span class="flex-1 min-w-0">
-                                <span class="block text-sm font-extrabold text-[#2D231E] truncate">{{ $class->teacher->first_name }} {{ $class->teacher->last_name }}</span>
-                                <span class="inline-flex items-center mt-1 px-2 py-0.5 rounded-md bg-amber-100 border border-[#2D231E] font-pixel text-[8px] font-bold uppercase text-[#2D231E]">Teacher</span>
+                <div class="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+                    <div>
+                        <p class="font-pixel text-[9px] font-bold uppercase text-[#2D231E] mb-2">Teacher</p>
+                        <div class="flex items-center gap-3 rounded-2xl border-2 border-[#2D231E] bg-amber-400/40 p-3">
+                            @if ($class->teacher)
+                                <x-avatar :user="$class->teacher" :size="40" />
+                            @else
+                                <span class="w-10 h-10 shrink-0 rounded-full bg-white border-2 border-[#2D231E] flex items-center justify-center font-pixel text-xs font-bold text-[#2D231E]">?</span>
+                            @endif
+                            <span class="min-w-0">
+                                <span class="block text-sm font-extrabold text-[#2D231E] truncate">{{ $teacherName }}</span>
+                                <span class="inline-flex items-center mt-0.5 px-2 py-0.5 rounded-md bg-amber-100 border border-[#2D231E] font-pixel text-[8px] font-bold uppercase text-[#2D231E]">Teacher</span>
                             </span>
                         </div>
-                    @endif
+                    </div>
 
                     <div>
-                        <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2 mb-2">
                             <p class="font-pixel text-[9px] font-bold uppercase text-[#2D231E]">Students</p>
-                            <p class="text-[10px] font-bold text-[#2D231E]">{{ $class->members_count }}</p>
+                            <span class="font-pixel text-[8px] font-bold bg-[#2D231E] text-amber-300 px-1.5 py-0.5 rounded-md">{{ $class->members_count }}</span>
                         </div>
 
                         @if ($class->members_count === 1)
@@ -291,12 +282,14 @@
                                 <p class="mt-0.5 text-[10px] font-semibold text-[#2D231E]">Classmates show up here once they join.</p>
                             </div>
                         @else
-                            <div class="flex flex-wrap gap-1.5">
+                            <div class="space-y-1.5">
                                 @foreach ($class->members->sortBy('first_name')->values() as $classmate)
-                                    <span class="inline-flex items-center gap-1.5 pl-1 pr-2.5 py-1 rounded-full bg-[#FAF6EE] border-2 border-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,0.9)] text-xs font-bold text-[#2D231E]">
-                                        <x-avatar :user="$classmate" :size="24" />
-                                        {{ $classmate->first_name }} {{ $classmate->last_name }}@if ($classmate->id === auth()->id())<span class="font-semibold ml-0.5">(you)</span>@endif
-                                    </span>
+                                    <div class="flex items-center gap-3 px-3 py-2 rounded-xl bg-[#FAF6EE] border-2 border-[#2D231E]/15">
+                                        <x-avatar :user="$classmate" :size="32" />
+                                        <span class="text-sm font-bold text-[#2D231E] truncate">
+                                            {{ $classmate->first_name }} {{ $classmate->last_name }}@if ($classmate->id === auth()->id())<span class="font-semibold text-[#8C7B70] ml-1">(you)</span>@endif
+                                        </span>
+                                    </div>
                                 @endforeach
                             </div>
                         @endif
