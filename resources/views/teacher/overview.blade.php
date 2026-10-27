@@ -381,17 +381,18 @@
                         $gradeTotal = array_sum($gradeBreakdown);
                         $gradeCount = count($gradeBreakdown);
                         $gradePalette = ['#34D399', '#38BDF8', '#FBBF24', '#A78BFA', '#FB7185', '#2DD4BF', '#F472B6'];
+                        $gradeSlices = collect($gradeBreakdown)->map(fn ($total, $grade) => [
+                            'grade' => (string) $grade,
+                            'total' => (int) $total,
+                            'color' => $gradePalette[($grade - 7) % count($gradePalette)] ?? '#94A3B8',
+                            'href' => route('teacher.roster', ['grade' => $grade]),
+                        ])->values();
                     @endphp
                     <div class="flex flex-col sm:flex-row items-center gap-6">
                         <div class="relative w-40 h-40 shrink-0">
                             <canvas
                                 data-grade-canvas
-                                data-grade='@json(collect($gradeBreakdown)->map(fn ($total, $grade) => [
-                                    "grade" => (string) $grade,
-                                    "total" => (int) $total,
-                                    "color" => $gradePalette[($grade - 7) % count($gradePalette)] ?? "#94A3B8",
-                                    "href" => route("teacher.roster", ["grade" => $grade]),
-                                ])->values())'
+                                data-grade='@json($gradeSlices)'
                                 class="absolute inset-0 w-full h-full"
                             ></canvas>
                         </div>
