@@ -782,6 +782,10 @@ class TeacherController extends Controller
                     ? $query->where('is_setup_complete', true)
                     : $query->where('is_setup_complete', false);
             })
+            ->when($request->filled('class'), function ($query) use ($request) {
+                // "View all" from a class panel: only that class's members.
+                $query->whereHas('joinedGroups', fn ($q) => $q->where('groups.id', (int) $request->string('class')->toString()));
+            })
             ->when(in_array($request->string('presence')->toString(), ['online', 'recent', 'away'], true), function ($query) use ($request) {
                 // Presence reads off the fresher of last-seen and last-login
                 // (last_seen_at only exists for newer activity windows).

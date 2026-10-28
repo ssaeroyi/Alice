@@ -6,12 +6,14 @@
     'searchValue' => '',
     'resetUrl' => null,
     'formId' => null,
+    'hideButton' => false,
 ])
 
 @php
     $fid = $formId ?? 'filter-drawer-form';
 @endphp
 
+@if (! $hideButton)
 <button
     type="button"
     data-filter-drawer-open
@@ -28,8 +30,9 @@
         </span>
     @endif
 </button>
+@endif
 
-<div data-filter-drawer class="fixed inset-0 z-[60] hidden transition-opacity duration-300 ease-out" role="dialog" aria-modal="true" aria-label="{{ $label }}">
+<div data-filter-drawer class="fixed inset-0 z-[70] hidden transition-opacity duration-300 ease-out" role="dialog" aria-modal="true" aria-label="{{ $label }}">
     <div data-filter-drawer-backdrop class="absolute inset-0 bg-[#2D231E]/40 backdrop-blur-sm"></div>
 
     <div data-filter-drawer-panel class="absolute inset-y-0 right-0 w-full max-w-sm bg-white border-l-2 border-[#E6DCCF] flex flex-col transition-transform duration-300 ease-out translate-x-full">

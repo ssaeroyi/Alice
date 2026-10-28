@@ -26,7 +26,10 @@ export function initStoryTabs() {
             buttons.forEach((button) => {
                 const active = button.dataset.storyTab === name;
 
-                button.classList.toggle('bg-[#2D231E]', active);
+                // Active = emerald solid, inactive = neutral chip. Emerald is
+                // removed when inactive too (the old code only swapped
+                // bg-[#2D231E], leaving bg-emerald-600 stuck on forever).
+                button.classList.toggle('bg-emerald-600', active);
                 button.classList.toggle('text-white', active);
                 button.classList.toggle('bg-[#F3ECE0]', !active);
                 button.classList.toggle('border', !active);

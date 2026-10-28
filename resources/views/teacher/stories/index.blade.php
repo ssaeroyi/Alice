@@ -48,66 +48,43 @@ in the library the moment you publish.
                     />
 
                     <div class="flex flex-wrap items-center gap-2">
-                    <x-admin.filter-drawer
-                        label="Filter"
-                        :action="route('teacher.stories.index')"
-                        :count="$activeFilterCount"
-                        search-name=""
-                        :reset-url="route('teacher.stories.index')"
-                    >
-                        <input type="hidden" name="q" value="{{ request('q') }}">
-
-                        <label class="block">
-                            <span class="text-[11px] font-bold uppercase tracking-wide text-[#2D231E]">Status</span>
-                            <select name="status" class="mt-1 w-full h-11 px-3 bg-[#FAF6EE] border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-[#2D231E] cursor-pointer">
-                                <option value="">Any status</option>
-                                @foreach (\App\Enums\StoryStatus::cases() as $statusOption)
-                                    <option value="{{ $statusOption->value }}" @selected(request('status') === $statusOption->value)>
-                                        {{ $statusOption->label() }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </label>
-
-                        <label class="block">
-                            <span class="text-[11px] font-bold uppercase tracking-wide text-[#2D231E]">Genre</span>
-                            <select name="genre" class="mt-1 w-full h-11 px-3 bg-[#FAF6EE] border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-[#2D231E] cursor-pointer">
-                                <option value="">Any genre</option>
-                                @foreach ($genres as $genreOption)
-                                    <option value="{{ $genreOption->id }}" @selected((string) request('genre') === (string) $genreOption->id)>
-                                        {{ $genreOption->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </label>
-
-                        <label class="block">
-                            <span class="text-[11px] font-bold uppercase tracking-wide text-[#2D231E]">Sort by</span>
-                            <select name="sort" class="mt-1 w-full h-11 px-3 bg-[#FAF6EE] border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-[#2D231E] cursor-pointer">
-                                <option value="needs" @selected(request('sort', 'needs') === 'needs')>Needs attention first</option>
-                                <option value="newest" @selected(request('sort') === 'newest')>Newest first</option>
-                                <option value="oldest" @selected(request('sort') === 'oldest')>Oldest first</option>
-                                <option value="title_asc" @selected(request('sort') === 'title_asc')>Title A to Z</option>
-                                <option value="title_desc" @selected(request('sort') === 'title_desc')>Title Z to A</option>
-                            </select>
-                        </label>
-                    </x-admin.filter-drawer>
-
-                    <form method="POST" action="{{ route('teacher.stories.library.import') }}" data-library-import>
-                        @csrf
+                    <div class="flex items-center gap-2">
+                        {{-- Standalone trigger stays in the sticky toolbar row; the
+                             drawer markup itself sits outside the stacking context. --}}
                         <button
-                            type="submit"
-                            class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                            type="button"
+                            data-filter-drawer-open
+                            class="relative min-w-[44px] min-h-[44px] sm:min-h-[41px] inline-flex items-center gap-1.5 px-3 bg-white border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                            aria-label="Open Filter"
                         >
-                            Import Alice Library
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M6 12h12M10 18h4"></path>
+                            </svg>
+                            <span class="hidden sm:inline">Filter</span>
+                            @if ($activeFilterCount > 0)
+                                <span class="min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold inline-flex items-center justify-center">
+                                    {{ $activeFilterCount > 9 ? '9+' : $activeFilterCount }}
+                                </span>
+                            @endif
                         </button>
-                    </form>
-                    <a
-                        href="{{ route('teacher.stories.create') }}"
-                        class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors"
-                    >
-                        Add story
-                    </a>
+                        <form method="POST" action="{{ route('teacher.stories.library.import') }}" data-library-import>
+                            @csrf
+                            <button
+                                type="submit"
+                                class="inline-flex items-center justify-center gap-2 min-h-[44px] sm:min-h-[41px] px-3 sm:px-4 py-2 bg-white border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m-4-4l4 4M12 3v13"></path></svg>
+                                <span class="hidden sm:inline" data-library-import-text>Import Alice Library</span>
+                            </button>
+                        </form>
+                        <a
+                            href="{{ route('teacher.stories.create') }}"
+                            class="inline-flex items-center justify-center gap-2 min-h-[44px] sm:min-h-[41px] px-3 sm:px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors"
+                        >
+                            <svg class="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+                            <span class="hidden sm:inline">Add story</span>
+                        </a>
+                    </div>
                     </div>
                 </div>
 
@@ -117,8 +94,57 @@ in the library the moment you publish.
             </x-admin.panel>
         </div>
 
-        <x-admin.panel>
-            @if ($stories->isEmpty())
+        {{--
+Filter drawer lives OUTSIDE the sticky wrapper: a fixed drawer
+rendered inside a stacking context (the sticky bar) slides under
+the page header. Same markup, same data attributes, just free. --}}
+        <x-admin.filter-drawer
+            label="Filter"
+            :action="route('teacher.stories.index')"
+            :count="$activeFilterCount"
+            search-name=""
+            :reset-url="route('teacher.stories.index')"
+            :hideButton="true"
+        >
+            <input type="hidden" name="q" value="{{ request('q') }}">
+
+            <label class="block">
+                <span class="text-[11px] font-bold uppercase tracking-wide text-[#2D231E]">Status</span>
+                <select name="status" class="mt-1 w-full h-11 px-3 bg-[#FAF6EE] border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-[#2D231E] cursor-pointer">
+                    <option value="">Any status</option>
+                    @foreach (\App\Enums\StoryStatus::cases() as $statusOption)
+                        <option value="{{ $statusOption->value }}" @selected(request('status') === $statusOption->value)>
+                            {{ $statusOption->label() }}
+                        </option>
+                    @endforeach
+                </select>
+            </label>
+
+            <label class="block">
+                <span class="text-[11px] font-bold uppercase tracking-wide text-[#2D231E]">Genre</span>
+                <select name="genre" class="mt-1 w-full h-11 px-3 bg-[#FAF6EE] border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-[#2D231E] cursor-pointer">
+                    <option value="">Any genre</option>
+                    @foreach ($genres as $genreOption)
+                        <option value="{{ $genreOption->id }}" @selected((string) request('genre') === (string) $genreOption->id)>
+                            {{ $genreOption->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </label>
+
+            <label class="block">
+                <span class="text-[11px] font-bold uppercase tracking-wide text-[#2D231E]">Sort by</span>
+                <select name="sort" class="mt-1 w-full h-11 px-3 bg-[#FAF6EE] border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-[#2D231E] cursor-pointer">
+                    <option value="needs" @selected(request('sort', 'needs') === 'needs')>Needs attention first</option>
+                    <option value="newest" @selected(request('sort') === 'newest')>Newest first</option>
+                    <option value="oldest" @selected(request('sort') === 'oldest')>Oldest first</option>
+                    <option value="title_asc" @selected(request('sort') === 'title_asc')>Title A to Z</option>
+                    <option value="title_desc" @selected(request('sort') === 'title_desc')>Title Z to A</option>
+                </select>
+            </label>
+        </x-admin.filter-drawer>
+
+        <x-admin.panel>            @if ($stories->isEmpty())
                 <p class="text-sm font-semibold text-[#2D231E]">No stories here yet. Start with "Add story".</p>
             @else
                 <div data-story-batch>
@@ -199,7 +225,7 @@ in the library the moment you publish.
                                             id="batch-select-all"
                                             type="checkbox"
                                             data-batch-select-all
-                                            class="w-4 h-4 accent-sky-500 cursor-pointer"
+                                            class="w-4 h-4 accent-emerald-500 cursor-pointer"
                                         >
                                     </th>
                                     <th class="px-4 py-3 font-extrabold">Story</th>
@@ -228,14 +254,14 @@ in the library the moment you publish.
                                                 type="checkbox"
                                                 data-batch-select
                                                 value="{{ $story->id }}"
-                                                class="w-4 h-4 accent-sky-500 cursor-pointer"
+                                                class="w-4 h-4 accent-emerald-500 cursor-pointer"
                                             >
                                         </td>
                                         <td class="px-4 py-3">
                                             <button type="button" data-drawer-row-trigger="{{ $story->id }}" class="group text-left">
                                                 <span class="flex items-center gap-1.5">
-                                                    <span class="font-bold text-sky-700 group-hover:text-sky-800 group-hover:underline underline-offset-2 transition-colors truncate max-w-[180px] sm:max-w-[260px]">{{ $story->title }}</span>
-                                                    <span class="text-[#2D231E] group-hover:text-sky-700 transition-colors text-xs" aria-hidden="true">›</span>
+                                                    <span class="font-bold text-emerald-700 group-hover:text-emerald-800 group-hover:underline underline-offset-2 transition-colors truncate max-w-[180px] sm:max-w-[260px]">{{ $story->title }}</span>
+                                                    <span class="text-[#2D231E] group-hover:text-emerald-700 transition-colors text-xs" aria-hidden="true">›</span>
                                                 </span>
                                                 <span class="block text-[11px] font-semibold text-[#2D231E] truncate max-w-[200px] sm:max-w-[280px]">
                                                     {{ $story->author ?: 'No author' }}@if ($story->word_count), {{ number_format($story->word_count) }} words @endif
@@ -243,29 +269,33 @@ in the library the moment you publish.
                                                 </span>
                                             </button>
                                         </td>
-                                        <td class="px-4 py-3 hidden md:table-cell">
+                                        <td class="px-4 py-3 hidden md:table-cell whitespace-nowrap">
                                             @if ($story->difficulty_label)
-                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-extrabold {{ \App\Support\AliceLibrary::difficultyClasses($story->difficulty_label) }}">{{ $story->difficulty_label }}</span>
-                                                @if ($story->reading_level)
-                                                    <span class="block mt-0.5 text-[10px] font-bold text-[#2D231E]">Grade {{ $story->reading_level }}</span>
-                                                @endif
+                                                <span class="inline-flex items-center gap-1.5">
+                                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-extrabold {{ \App\Support\AliceLibrary::difficultyClasses($story->difficulty_label) }}">{{ $story->difficulty_label }}</span>
+                                                    @if ($story->reading_level)
+                                                        <span class="text-[11px] font-bold text-[#2D231E]">Grade {{ $story->reading_level }}</span>
+                                                    @endif
+                                                </span>
                                             @else
                                                 <span class="text-xs font-bold text-[#2D231E]">{{ $story->reading_level ? 'Grade '.$story->reading_level : '—' }}</span>
                                             @endif
                                         </td>
-                                        <td class="px-4 py-3 hidden lg:table-cell">
-                                            <div class="flex flex-wrap gap-1 max-w-[260px]">
-                                                @forelse ($story->genres as $genre)
-                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 text-[10px] font-bold">{{ $genre->name }}</span>
-                                                @empty
-                                                    <span class="text-[11px] font-semibold text-[#2D231E]">—</span>
-                                                @endforelse
-                                            </div>
+                                        <td class="px-4 py-3 hidden lg:table-cell whitespace-nowrap">
+                                            @forelse ($story->genres as $genre)
+                                                @if ($loop->first)
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-[#F3ECE0] text-[#2D231E] text-[10px] font-bold">{{ $genre->name }}</span>
+                                                @elseif ($loop->iteration === 2)
+                                                    <span class="text-[10px] font-bold text-[#8C7B70]" title="{{ $story->genres->drop(1)->pluck('name')->implode(', ') }}">+{{ $loop->parent->count() - 1 }} more</span>
+                                                @endif
+                                            @empty
+                                                <span class="text-[11px] font-semibold text-[#2D231E]">—</span>
+                                            @endforelse
                                         </td>
                                         <td class="px-4 py-3 hidden sm:table-cell">
                                             <div class="flex items-center gap-2 max-w-[140px]">
                                                 <div class="flex-1 h-2 bg-[#F3ECE0] rounded-full overflow-hidden">
-                                                    <div class="h-full {{ $completeness->percent() === 100 ? 'bg-emerald-300' : 'bg-sky-300' }} rounded-full" style="width: {{ $completeness->percent() }}%"></div>
+                                                    <div class="h-full {{ $completeness->percent() === 100 ? 'bg-emerald-500' : 'bg-emerald-300' }} rounded-full" style="width: {{ $completeness->percent() }}%"></div>
                                                 </div>
                                                 <span class="text-[11px] font-extrabold text-[#2D231E] tabular-nums">{{ $completeness->percent() }}%</span>
                                             </div>
@@ -358,7 +388,7 @@ class="inline-flex items-center justify-center min-h-[44px] px-4 py-1.5 bg-[#F3E
                                                         </button>
                                                         <a
                                                             href="{{ route('teacher.assignments.create', ['story_id' => $story->id]) }}"
-                                                            class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-[11px] font-bold text-sky-700 hover:bg-[#FAF6EE] transition-colors"
+                                                            class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-[11px] font-bold text-emerald-700 hover:bg-[#FAF6EE] transition-colors"
                                                         >
                                                             <span>Assign</span>
                                                         </a>
@@ -486,7 +516,7 @@ class="inline-flex items-center justify-center min-h-[44px] px-4 py-1.5 bg-[#F3E
                                                 <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-[#F0E9DD]">
                                                     <a
                                                         href="{{ route('teacher.stories.edit', $story) }}"
-class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors">
+class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors">
                                                         Edit story
                                                     </a>
                                                     @if ($story->status !== \App\Enums\StoryStatus::Published && $completeness->publishable())
@@ -506,7 +536,7 @@ class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE
                                                             @csrf
                                                             <button
                                                                 type="submit"
-                                                                class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                                                class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-rose-100 border border-rose-300 rounded-lg text-xs font-bold text-rose-700 hover:bg-rose-200 transition-colors cursor-pointer"
                                                             >
                                                                 <span data-submit-idle>Archive</span>
                                                                 <span data-submit-active class="hidden"><x-spinner label="Archiving..." /></span>
@@ -565,12 +595,6 @@ class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE
                 center and the student library. This is different from archiving, which keeps them for later, and every
                 deletion is recorded in the audit log.
             </p>
-            <label class="flex items-start gap-3 cursor-pointer">
-                <input type="checkbox" data-double-confirm class="mt-0.5 w-4 h-4 accent-rose-600 cursor-pointer">
-                <span class="text-xs font-semibold text-[#2D231E]">
-                    I understand. These stories will be deleted permanently and cannot be restored.
-                </span>
-            </label>
             <div class="flex items-center justify-end gap-2">
                 <button
                     type="button"

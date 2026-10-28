@@ -100,11 +100,15 @@
                                 </span>
                             </div>
                             <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] font-bold">
-                                <span class="text-[#2D231E]">
-                                    Due {{ $assignment->due_at?->format('M j, Y') ?? 'no due date' }}
+                                <span class="text-[#2D231E] whitespace-nowrap">
+                                    @if ($assignment->due_at)
+                                        Due {{ $assignment->due_at->format('M j, Y') }}
+                                    @else
+                                        No due date, assigned {{ optional($assignment->gateStartsAt())->format('M j') }}
+                                    @endif
                                 </span>
                                 @if ($assignment->status === 'active')
-                                    <span class="{{ $assignment->isOverdue() ? 'text-rose-600' : 'text-emerald-700' }}">
+                                    <span class="{{ $assignment->isOverdue() ? 'text-rose-600' : 'text-emerald-700' }} whitespace-nowrap">
                                         {{ $assignment->completedCount() }}/{{ $assignment->audienceCount() }} done
                                     </span>
                                 @endif
@@ -119,9 +123,14 @@
         <div class="bg-white border border-[#E6DCCF] rounded-xl p-5">
             <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                 <h3 class="text-base font-extrabold text-[#2D231E]">Students in this class</h3>
-                <a href="{{ route('teacher.classes.members.create', $group) }}" class="inline-flex items-center gap-1.5 min-h-[36px] text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors">
-                    Invite students
-                </a>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('teacher.roster', ['class' => $group->id]) }}" class="inline-flex items-center gap-1.5 min-h-[36px] text-xs font-bold px-3 py-1.5 rounded-lg bg-[#F3ECE0] border border-[#E6DCCF] text-[#2D231E] hover:border-[#2D231E] transition-colors">
+                        View all
+                    </a>
+                    <a href="{{ route('teacher.classes.members.create', $group) }}" class="inline-flex items-center gap-1.5 min-h-[36px] text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors">
+                        Invite students
+                    </a>
+                </div>
             </div>
 
             @if ($group->members->isEmpty())

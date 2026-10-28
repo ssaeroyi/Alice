@@ -6,23 +6,15 @@
 @section('content')
     <div class="space-y-5">
 
-        <a href="{{ route('teacher.stories.index', request()->query()) }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#2D231E] transition-colors">
-            <x-icons.core.arrow-left class="w-3.5 h-3.5" />
+        <a href="{{ route('teacher.stories.index', request()->query()) }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#2D231E] hover:text-sky-700 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
             Back to stories
         </a>
 
-        <div class="flex flex-col items-start sm:flex-row sm:items-center justify-start sm:justify-between gap-3">
-            <div>
-                <h1 class="text-base font-extrabold text-[#2D231E]">
-                    {{ $story ? 'Edit story' : 'Add a story' }}
-                </h1>
-                <p class="text-xs font-semibold text-[#2D231E] mt-0.5">
-                    @if ($story)
-                        {{ $story->title }},
-                    @endif
-                    Drafts are fine. The meter shows what publishing still needs.
-                </p>
-            </div>
+        <div class="flex items-center justify-between gap-3">
+            <h1 class="text-base font-extrabold text-[#2D231E]">
+                {{ $story ? 'Edit story' : 'Add a story' }}
+            </h1>
             @if ($story)
                 <x-admin.pill :tone="$story->status === \App\Enums\StoryStatus::Published ? 'ok' : ($story->status === \App\Enums\StoryStatus::Archived ? 'neutral' : 'warn')">
                     {{ $story->status->label() }}
@@ -148,28 +140,6 @@
                                 </div>
                             </div>
                         @endif
-                        <button
-                            type="submit"
-                            form="story-form"
-                            data-submit-guard
-class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-5 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors cursor-pointer"
-                        >
-                            <span data-submit-idle><span class="sm:hidden">{{ $story ? 'Save' : 'Create' }}</span><span class="hidden sm:inline">{{ $story ? 'Save changes' : 'Create story' }}</span></span>
-                            <span data-submit-active class="hidden"><x-spinner label="Saving..." /></span>
-                        </button>
-                        @if (! $story)
-                            <button
-                                type="submit"
-                                form="story-form"
-                                name="intent"
-                                value="add_another"
-                                data-submit-guard
-                                class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
-                            >
-                                <span data-submit-idle><span class="sm:hidden">Save another</span><span class="hidden sm:inline">Save &amp; add another</span></span>
-                                <span data-submit-active class="hidden"><x-spinner label="Saving..." /></span>
-                            </button>
-                        @endif
                     </div>
                 </div>
             </div>
@@ -271,7 +241,7 @@ class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-5 py-2 b
                             <label class="block text-xs font-bold text-[#2D231E] mb-1.5">Reading level <span class="font-semibold text-[#2D231E]">(auto)</span></label>
                             @if ($story?->reading_level)
                                 <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-                                    <span class="shrink-0 inline-flex items-center px-3 py-1.5 rounded-full text-xs font-extrabold {{ $story->difficulty_label ? \App\Support\AliceLibrary::difficultyClasses($story->difficulty_label) : 'bg-sky-100 text-sky-700' }}">
+                                    <span class="shrink-0 inline-flex items-center px-3 py-1.5 rounded-full text-xs font-extrabold {{ $story->difficulty_label ? \App\Support\AliceLibrary::difficultyClasses($story->difficulty_label) : 'bg-[#F3ECE0] text-[#2D231E]' }}">
                                         {{ $story->difficulty_label ?: 'Grade '.$story->reading_level }}
                                     </span>
                                     @if ($story->difficulty_label)
@@ -435,7 +405,10 @@ class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-5 py-2 b
                             Over the {{ number_format(config('stories.content.max_words')) }} word / {{ number_format(config('stories.content.max_chars')) }} character limit. The story won't save until it fits.
                         </p>
                     </div>
-                    <div class="mt-2 flex flex-wrap items-center justify-between gap-2">
+                    {{-- Editor footer: right group (Preview, Insights) reads
+                         first on phones as the row of eye-fit actions, then
+                         the tool row; desktop keeps tools left, actions right. --}}
+                    <div class="mt-2 flex flex-wrap flex-col-reverse sm:flex-row sm:items-center justify-between gap-2">
                         <div class="flex flex-wrap items-center gap-2">
                             <button
                                 type="button"
@@ -483,7 +456,7 @@ class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-5 py-2 b
                                 class="inline-flex items-center justify-center gap-1.5 min-h-[40px] px-3.5 bg-white border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
                             >
                                 Insights
-                                <span data-rl-level-badge="content" class="hidden inline-flex items-center px-1.5 py-0.5 bg-sky-100 text-sky-700 rounded-full text-[10px] font-extrabold"></span>
+                                <span data-rl-level-badge="content" class="hidden inline-flex items-center px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-extrabold"></span>
                             </button>
                         </div>
                     </div>
@@ -500,13 +473,13 @@ class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-5 py-2 b
                             <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" data-jump-target="genres">
                         @foreach ($genres as $genre)
                             @php $checked = $story?->genres->contains('id', $genre->id) ?? in_array($genre->id, old('genres', []), true); @endphp
-                            <label class="flex items-start gap-2.5 p-2.5 rounded-lg border {{ $checked ? 'border-sky-300 bg-sky-50' : 'border-[#E6DCCF] bg-white' }} cursor-pointer transition-colors">
+                            <label class="flex items-start gap-2.5 p-2.5 rounded-lg border {{ $checked ? 'border-emerald-400 bg-emerald-50' : 'border-[#E6DCCF] bg-white' }} hover:border-[#2D231E] cursor-pointer transition-colors">
                                 <input
                                     type="checkbox"
                                     name="genres[]"
                                     value="{{ $genre->id }}"
                                     @checked($checked)
-                                    class="mt-0.5 w-4 h-4 accent-sky-500 cursor-pointer"
+                                    class="mt-0.5 w-4 h-4 accent-emerald-500 cursor-pointer"
                                 >
                                 <span class="min-w-0">
                                     <span class="block text-xs font-bold text-[#2D231E]">{{ $genre->name }}</span>
@@ -520,6 +493,33 @@ class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-5 py-2 b
                     @enderror
                 </x-admin.panel>
 
+                {{-- Save bar: bottom-right of the Story tab, the standard editor
+                     footer. Quiz / Journal / Publish tabs keep their own CTAs. --}}
+                <div class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-2 border-t border-[#F0E9DD]">
+                    @if ($story)
+                        <span data-autosave-badge class="hidden sm:block mr-auto self-center text-[11px] font-bold text-[#2D231E]"></span>
+                    @endif
+                    @if (! $story)
+                        <button
+                            type="submit"
+                            name="intent"
+                            value="add_another"
+                            data-submit-guard
+                            class="w-full sm:w-auto inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                        >
+                            <span data-submit-idle>Save &amp; add another</span>
+                            <span data-submit-active class="hidden"><x-spinner label="Saving..." /></span>
+                        </button>
+                    @endif
+                    <button
+                        type="submit"
+                        data-submit-guard
+                        class="w-full sm:w-auto inline-flex items-center justify-center min-h-[44px] px-5 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors cursor-pointer"
+                    >
+                        <span data-submit-idle>{{ $story ? 'Save changes' : 'Create story' }}</span>
+                        <span data-submit-active class="hidden"><x-spinner label="Saving..." /></span>
+                    </button>
+                </div>
                 </div>
 
             </form>
@@ -529,7 +529,7 @@ class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-5 py-2 b
                     @if ($completeness)
                         <div class="flex items-center gap-3">
                             <div class="flex-1 h-3 bg-[#F3ECE0] rounded-full overflow-hidden">
-                                <div class="h-full {{ $completeness->percent() === 100 ? 'bg-emerald-300' : 'bg-sky-300' }} rounded-full transition-all" style="width: {{ $completeness->percent() }}%"></div>
+                                <div class="h-full {{ $completeness->percent() === 100 ? 'bg-emerald-500' : 'bg-emerald-300' }} rounded-full transition-all" style="width: {{ $completeness->percent() }}%"></div>
                             </div>
                             <span class="shrink-0 text-sm font-extrabold text-[#2D231E] tabular-nums">{{ $completeness->percent() }}%</span>
                         </div>
@@ -615,7 +615,7 @@ class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-5 py-2 b
 
                             <div class="mt-3 hidden" data-narration-progress-wrap>
                                 <div class="h-2 bg-[#F3ECE0] rounded-full overflow-hidden">
-                                    <div class="h-full bg-sky-300 rounded-full transition-all duration-500" data-narration-progress style="width:0%"></div>
+                                    <div class="h-full bg-emerald-300 rounded-full transition-all duration-500" data-narration-progress style="width:0%"></div>
                                 </div>
                                 <p class="mt-1 text-[10px] font-semibold text-[#2D231E]" data-narration-progress-text></p>
                             </div>
@@ -625,7 +625,7 @@ class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-5 py-2 b
                                     type="button"
                                     data-narration-request
                                     @if (! $requestable) disabled @endif
-                                    class="inline-flex items-center justify-center min-h-[40px] px-4 py-2 bg-sky-600 text-white rounded-lg text-[11px] font-bold hover:bg-sky-700 transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                                    class="inline-flex items-center justify-center min-h-[40px] px-4 py-2 bg-emerald-600 text-white rounded-lg text-[11px] font-bold hover:bg-emerald-700 transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                                 >
                                     <span data-narration-request-idle>{{ $requestable ? 'Generate narration' : 'Generation not available' }}</span>
                                     <span data-narration-request-active class="hidden"><x-spinner label="Generating..." /></span>
@@ -845,7 +845,7 @@ class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-5 py-2 b
                                                 >
                                                 <span class="hidden shrink-0" data-quiz-mcq-option="{{ $letter }}">
                                                     <label class="inline-flex items-center gap-1.5 pl-1 text-[10px] font-bold text-[#2D231E] cursor-pointer">
-                                                        <input type="radio" name="correct_option" value="{{ $letter }}" data-quiz-correct-radio="{{ $letter }}" @checked(old('correct_option') === $letter) class="w-4 h-4 accent-sky-500 cursor-pointer">
+                                                        <input type="radio" name="correct_option" value="{{ $letter }}" data-quiz-correct-radio="{{ $letter }}" @checked(old('correct_option') === $letter) class="w-4 h-4 accent-emerald-500 cursor-pointer">
                                                         Correct
                                                     </label>
                                                 </span>
@@ -1499,7 +1499,7 @@ class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-5 py-2 b
                 <div data-readability-panel="content" class="hidden p-4 bg-[#FAF6EE] border border-[#E6DCCF] rounded-lg">
                     <div class="flex items-center justify-between mb-3">
                         <h4 class="text-xs font-extrabold text-[#2D231E]">Readability analysis (Flesch-Kincaid grade level)</h4>
-                        <span data-rl-level="content" class="inline-flex items-center px-2.5 py-1 bg-sky-100 text-sky-700 rounded-full text-[10px] font-extrabold"></span>
+                        <span data-rl-level="content" class="inline-flex items-center px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-extrabold"></span>
                     </div>
                     <div class="grid grid-cols-2 gap-3 pb-3 border-b border-[#E6DCCF]/70">
                         <div>

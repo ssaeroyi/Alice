@@ -5,8 +5,8 @@
 
 @section('content')
     <div class="max-w-2xl mx-auto">
-        <a href="{{ route('teacher.classes.index') }}" class="inline-flex items-center gap-1 text-sm font-bold text-[#2D231E] mb-4">
-            <x-icons.core.arrow-left class="w-4 h-4" />
+        <a href="{{ route('teacher.classes.index') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#2D231E] hover:text-sky-700 transition-colors mb-4">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
             Back to classes
         </a>
 

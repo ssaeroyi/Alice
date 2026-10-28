@@ -156,7 +156,7 @@
             @endforeach
 
             {{-- Students panel --}}
-            <div data-rollup-panel="students" class="pt-4">
+            <div data-rollup-panel="students" class="pt-4 hidden md:block">
                 @if ($assignment->instructions)
                     <div class="bg-white border border-[#E6DCCF] rounded-xl px-4 py-3 mb-3">
                         <p class="text-[10px] font-bold text-[#2D231E] uppercase tracking-wide">Instructions</p>
@@ -183,7 +183,7 @@
                                 <path stroke-linecap="round" d="M21 21l-4.35-4.35"></path>
                             </svg>
                         </form>
-                        <a href="{{ route('teacher.assignments.export', array_merge(['assignment' => $assignment], $keyword ? ['q' => $keyword] : [])) }}" class="inline-flex items-center gap-1.5 min-h-[40px] px-3 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors">
+                        <a href="{{ route('teacher.assignments.export', array_merge(['assignment' => $assignment], $keyword ? ['q' => $keyword] : [])) }}" class="inline-flex items-center gap-1.5 min-h-[40px] px-3 py-2 bg-emerald-600 rounded-lg text-xs font-bold text-white hover:bg-emerald-700 transition-colors">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"></path>
                             </svg>
@@ -427,9 +427,46 @@
                     </div>
                 @endif
             </div>
+
+            {{-- Students, mobile card list: same data, no sideways table --}}
+            <div data-rollup-panel="students" class="pt-4 md:hidden">
+                <div class="bg-white border border-[#E6DCCF] rounded-xl p-3">
+                    @forelse ($audience as $student)
+                        @php
+                            $progress = $completion[$student->id] ?? ['read' => false, 'quiz' => false, 'completed' => false];
+                            $marked = $markedIds->contains($student->id);
+                            $summary = $quizSummaries->get($student->id);
+                            $drawerRow = $drawer->get($student->id);
+                            $rowState = ($progress['completed'] || $marked) ? 'done' : (($progress['read'] || $progress['quiz']) ? 'in_progress' : 'not_started');
+                            $rowMeta = \App\Models\Assignment::statusMeta($rowState);
+                        @endphp
+                        <a href="{{ route('teacher.student', ['user' => $student, 'from' => 'assignment:'.$assignment->id]) }}" class="block py-2.5 border-b border-[#F0E9DD] last:border-b-0">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <x-avatar :user="$student" :alt="$student->nickname ?? strtok($student->email, '@')" :size="36" />
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-bold text-[#2D231E] truncate">{{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}</p>
+                                    <p class="text-[11px] font-semibold text-[#2D231E] truncate">{{ $student->email }}</p>
+                                </div>
+                                <span class="shrink-0 inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-full {{ $rowMeta['classes'] }}">{{ $rowMeta['label'] }}</span>
+                            </div>
+                            <p class="mt-1.5 text-[11px] font-semibold text-[#8C7B70]">
+                                @if ($hasQuiz)
+                                    {{ $summary['attempted'] ? 'Quiz '.$summary['score'].'%' : 'Quiz not taken' }}
+                                @else
+                                    No quiz
+                                @endif
+                            </p>
+                        </a>
+                    @empty
+                        <p class="text-sm font-semibold text-[#2D231E] py-8 text-center">No students in this audience yet.</p>
+                    @endforelse
+                </div>
+            </div>
         </div>
     </div>
 
+    {{-- Students panel desktop wraps up here. The drawer/mobile panels above
+         are the work panel's own tails; everything below renders app-wide. --}}
     <div data-story-drawer class="fixed inset-0 z-40 pointer-events-none">
         <div data-story-drawer-backdrop class="absolute inset-0 bg-[#2D231E]/40 opacity-0 transition-opacity duration-300 pointer-events-none"></div>
         <div

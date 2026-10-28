@@ -171,7 +171,7 @@ function initCoverToggle() {
         document.querySelectorAll('[data-cover-mode-button]').forEach((tab) => {
             const active = tab.dataset.coverModeButton === mode;
             tab.setAttribute('aria-pressed', active ? 'true' : 'false');
-            tab.classList.toggle('bg-[#2D231E]', active);
+            tab.classList.toggle('bg-emerald-600', active);
             tab.classList.toggle('text-white', active);
             tab.classList.toggle('bg-[#F3ECE0]', !active);
             tab.classList.toggle('border-[#E6DCCF]', !active);
@@ -468,7 +468,7 @@ function initGrammarCheck() {
     const activeBuckets = new Set(['grammar', 'spelling', 'punctuation', 'style']);
 
     const chipClass = (active) => (active
-        ? 'inline-flex items-center min-h-[30px] px-2.5 bg-[#2D231E] text-[#FAF6EE] rounded-full text-[10px] font-bold cursor-pointer'
+        ? 'inline-flex items-center min-h-[30px] px-2.5 bg-emerald-600 text-white rounded-full text-[10px] font-bold cursor-pointer'
         : 'inline-flex items-center min-h-[30px] px-2.5 bg-[#F3ECE0] border border-[#E6DCCF] text-[#2D231E] rounded-full text-[10px] font-bold cursor-pointer hover:border-[#2D231E]');
 
     const renderFilters = (data) => {
