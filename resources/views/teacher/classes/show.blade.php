@@ -7,17 +7,10 @@
     <div class="space-y-6">
         {{-- Header --}}
         <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-                <nav class="flex items-center gap-1.5 text-sm font-bold text-[#2D231E] mb-2">
-                    <a href="{{ route('teacher.classes.index') }}" class="inline-flex items-center gap-1 hover:text-[#2D231E]">
-                        <x-icons.core.arrow-left class="w-4 h-4" />
-                        Back to classes
-                    </a>
-                    <span class="text-[#D8CBB9]">/</span>
-                    <span class="text-[#2D231E] truncate">{{ $group->name }}</span>
-                </nav>
-                <p class="text-sm font-bold text-[#2D231E]">{{ $group->displayLabel() }} — {{ $group->members->count() }} student{{ $group->members->count() === 1 ? '' : 's' }}, {{ $group->assignments->count() }} assignment{{ $group->assignments->count() === 1 ? '' : 's' }}</p>
-            </div>
+            <a href="{{ route('teacher.classes.index') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#2D231E] hover:text-sky-700 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+                Back to classes
+            </a>
             <form method="POST" action="{{ route('teacher.classes.destroy', $group) }}" data-submit-guard>
                 @csrf
                 @method('DELETE')
@@ -43,7 +36,6 @@
                     Copy code
                 </button>
                 </div>
-                <p class="mt-2 text-sm font-semibold text-[#2D231E]">Students type this in their "Class & Assignments" tab to join.</p>
             </div>
 
             <div class="border-t border-[#E6DCCF] pt-4">
@@ -103,8 +95,8 @@
                                     <span class="block text-sm font-extrabold text-[#2D231E] truncate">{{ $assignment->title }}</span>
                                     <span class="block text-xs font-semibold text-[#2D231E] mt-0.5">{{ $assignment->story?->title ?? 'No story attached' }}</span>
                                 </div>
-                                <span class="shrink-0 {{ $assignment->status === 'active' ? 'bg-emerald-100 text-emerald-700' : ($assignment->status === 'cancelled' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700') }} text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full">
-                                    {{ $assignment->status }}
+                                <span class="shrink-0 {{ $assignment->status === 'active' ? 'bg-emerald-100 text-emerald-700' : ($assignment->status === 'cancelled' ? 'bg-rose-100 text-rose-700' : ($assignment->status === 'archived' ? 'bg-stone-200 text-stone-700' : 'bg-amber-100 text-amber-700')) }} capitalize text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full">
+                                    {{ $assignment->status === 'archived' ? 'Finished' : $assignment->status }}
                                 </span>
                             </div>
                             <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] font-bold">
@@ -126,7 +118,7 @@
         {{-- Members --}}
         <div class="bg-white border border-[#E6DCCF] rounded-xl p-5">
             <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                <h3 class="text-base font-extrabold text-[#2D231E]">Students ({{ $group->members->count() }})</h3>
+                <h3 class="text-base font-extrabold text-[#2D231E]">Students in this class</h3>
                 <a href="{{ route('teacher.classes.members.create', $group) }}" class="inline-flex items-center gap-1.5 min-h-[36px] text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors">
                     Invite students
                 </a>
@@ -135,30 +127,57 @@
             @if ($group->members->isEmpty())
                 <p class="text-sm font-semibold text-[#2D231E]">No students yet. Share the join code above or invite them.</p>
             @else
-                <ul class="divide-y divide-[#E6DCCF]">
-                    @foreach ($group->members as $student)
-                        <li class="flex items-center justify-between gap-3 py-2.5">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <x-avatar :user="$student" :size="36" />
-                                <span class="min-w-0">
-                                    <span class="block text-sm font-bold text-[#2D231E] truncate">{{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}</span>
-                                    @if (filled(trim($student->first_name.' '.$student->last_name)))
-                                        <span class="block text-xs font-semibold text-[#2D231E]">{{ $student->nickname ?? strtok($student->email, '@') }}</span>
-                                    @endif
-                                    <span class="block text-xs font-semibold text-[#2D231E]">{{ $student->email }}</span>
-                                </span>
-                            </div>
-                            <form method="POST" action="{{ route('teacher.classes.remove-member', [$group, $student]) }}" data-submit-guard>
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" data-confirm-open="remove-member-{{ $student->id }}" class="text-xs font-bold text-rose-600 hover:text-rose-700 cursor-pointer">
-                                    <span data-submit-idle>Remove</span>
-                                    <span data-submit-active class="hidden"><x-spinner label="Removing..." /></span>
-                                </button>
-                            </form>
-                        </li>
-                    @endforeach
-                </ul>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead>
+                            <tr class="border-b border-[#E6DCCF] text-[11px] uppercase tracking-wider text-[#2D231E]">
+                                <th class="px-3 py-2.5 font-extrabold whitespace-nowrap">Student</th>
+                                <th class="px-3 py-2.5 font-extrabold hidden sm:table-cell whitespace-nowrap">Email</th>
+                                <th class="px-3 py-2.5 font-extrabold hidden md:table-cell whitespace-nowrap">Grade</th>
+                                <th class="px-3 py-2.5 font-extrabold whitespace-nowrap">Activity</th>
+                                <th class="px-3 py-2.5 font-extrabold whitespace-nowrap"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[#F0E9DD]">
+                            @foreach ($group->members as $student)
+                                <tr class="hover:bg-[#FAF6EE] transition-colors">
+                                    <td class="px-3 py-2.5">
+                                        <div class="flex items-center gap-3 min-w-0">
+                                            <x-avatar :user="$student" :size="32" />
+                                            <div class="min-w-0">
+                                                <a href="{{ route('teacher.student', $student) }}" class="block text-sm font-bold text-sky-700 hover:text-sky-800 hover:underline underline-offset-2 truncate max-w-[160px]">
+                                                    {{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}
+                                                </a>
+                                                @if (filled(trim($student->first_name.' '.$student->last_name)))
+                                                    <span class="block text-[11px] font-semibold text-[#8C7B70] truncate max-w-[160px]">{{ $student->nickname ?? strtok($student->email, '@') }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-3 py-2.5 hidden sm:table-cell text-xs font-semibold text-[#2D231E]">
+                                        <span class="block truncate max-w-[200px]">{{ $student->email }}</span>
+                                    </td>
+                                    <td class="px-3 py-2.5 hidden md:table-cell whitespace-nowrap text-xs font-bold text-[#2D231E]">
+                                        {{ $student->grade_level ? 'Grade '.$student->effectiveGrade() : '—' }}
+                                    </td>
+                                    <td class="px-3 py-2.5 whitespace-nowrap">
+                                        <x-presence-dot :at="$student->lastActiveAt()" compact />
+                                    </td>
+                                    <td class="px-3 py-2.5 text-right whitespace-nowrap">
+                                        <form method="POST" action="{{ route('teacher.classes.remove-member', [$group, $student]) }}" data-submit-guard>
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" data-confirm-open="remove-member-{{ $student->id }}" class="text-xs font-bold text-rose-600 hover:text-rose-700 cursor-pointer min-h-[26px]">
+                                                <span data-submit-idle>Remove</span>
+                                                <span data-submit-active class="hidden"><x-spinner label="Removing..." /></span>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             @endif
         </div>
     </div>

@@ -6,14 +6,10 @@
 @section('content')
     <div class="space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-                <nav class="flex items-center gap-1.5 text-sm font-bold text-[#2D231E]">
-                    <a href="{{ ($class ?? null) ? route('teacher.classes.show', $class) : route('teacher.classes.index') }}" class="inline-flex items-center gap-1 hover:text-[#2D231E]">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
-                        Back to {{ ($class ?? null) ? $class->name : 'classes' }}
-                    </a>
-                </nav>
-            </div>
+            <a href="{{ ($class ?? null) ? route('teacher.classes.show', $class) : route('teacher.classes.index') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#2D231E] hover:text-sky-700 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+                Back to {{ ($class ?? null) ? $class->name : 'classes' }}
+            </a>
             <a
                 href="{{ route('teacher.assignments.create') }}"
                 class="inline-flex items-center px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 transition-colors"

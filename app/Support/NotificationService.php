@@ -44,6 +44,38 @@ class NotificationService
     }
 
     /**
+     * Teacher-triggered "Remind class": the same due-soon-styled ping with a
+     * 7-day cooldown so pressing it again later actually re-reminds.
+     * Completed students never get it.
+     */
+    public static function assignmentRemind(Assignment $assignment): int
+    {
+        if ($assignment->story_id === null || $assignment->status !== 'active') {
+            return 0;
+        }
+
+        $audience = AssignmentAudience::resolve($assignment)->get();
+        $completion = $assignment->completionMapFor($audience);
+
+        $userIds = $audience
+            ->reject(fn (User $student) => $completion[(int) $student->id]['done'] ?? false)
+            ->pluck('id')
+            ->all();
+
+        $existing = Notification::query()
+            ->whereIn('user_id', $userIds)
+            ->where('type', 'assignment.reminder')
+            ->where('link', self::linkFor($assignment))
+            ->where('created_at', '>=', now()->subDays(7))
+            ->pluck('user_id')
+            ->all();
+
+        $userIds = array_values(array_diff(array_unique($userIds), $existing));
+
+        return self::dispatchForUsers($assignment, 'assignment.reminder', $userIds);
+    }
+
+    /**
      * Dispatch a due-soon or overdue reminder, skipping students who already
      * completed the assignment.
      *
@@ -431,6 +463,7 @@ class NotificationService
             'assignment.due_soon' => 'Due soon: '.$assignment->title,
             'assignment.overdue' => 'Overdue: '.$assignment->title,
             'assignment.updated' => 'Assignment updated: '.$assignment->title,
+            'assignment.reminder' => 'Reminder: '.$assignment->title,
             default => $assignment->title,
         };
     }
@@ -443,6 +476,9 @@ class NotificationService
                 .'. Finish it before the deadline.',
             'assignment.overdue' => 'This is an overdue notice. The due date has passed. You can still finish it.',
             'assignment.updated' => 'This is an update notice. The teacher changed this assignment. Open it to see what changed.',
+            'assignment.reminder' => 'A friendly reminder from your teacher. '
+                .($assignment->due_at ? 'It is due '.$assignment->due_at->diffForHumans().'.' : 'No due date on this one.')
+                .' Finish the reading'.($assignment->hasQuiz() ? ' and take the quiz' : '').' to mark it done.',
             default => 'This is a new assignment. Read '.($assignment->story?->title ?? 'the story').' and take the quiz to finish.',
         };
     }

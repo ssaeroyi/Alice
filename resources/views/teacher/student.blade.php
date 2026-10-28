@@ -12,10 +12,14 @@
 
 @section('title', $displayName)
 @section('eyebrow', 'Students')
-@section('back', $backUrl)
 
 @section('content')
     <div class="space-y-5">
+
+        <a href="{{ $backUrl }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#2D231E] hover:text-sky-700 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+            {{ $fromAssignment ? 'Back to assignment' : 'Back to students' }}
+        </a>
 
         <!-- HEADER -->
         <div class="bg-white border border-[#E6DCCF] rounded-xl p-5 sm:p-6">
@@ -314,8 +318,8 @@
                 <p class="text-sm font-semibold text-[#2D231E]">No activity recorded yet. It fills in as this student uses the app.</p>
             @else
                 <ul class="divide-y divide-[#F0E9DD]">
-                    @foreach ($recentActivity as $item)
-                        <li class="py-2.5 flex items-center justify-between gap-4">
+                    @foreach ($recentActivity as $index => $item)
+                        <li class="py-2.5 flex items-center justify-between gap-4 {{ $index >= 8 ? 'hidden js-activity-extra' : '' }}">
                             <p class="text-xs font-bold text-[#2D231E]">
                                 {{ $item['label'] }}
                                 @if ($item['count'] > 1)
@@ -328,6 +332,12 @@
                         </li>
                     @endforeach
                 </ul>
+                @if ($recentActivity->count() > 8)
+                    <button type="button" onclick="document.querySelectorAll('.js-activity-extra').forEach(r => r.classList.toggle('hidden')); this.textContent = this.textContent === 'Show earlier activity' ? 'Show less' : 'Show earlier activity';"
+                            class="mt-3 text-xs font-bold text-sky-700 hover:text-sky-800 transition-colors">
+                        Show earlier activity
+                    </button>
+                @endif
             @endif
         </x-admin.panel>
 

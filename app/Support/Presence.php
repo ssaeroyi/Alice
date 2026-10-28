@@ -64,10 +64,10 @@ class Presence
         }
 
         return match (true) {
-            $lastActiveAt->gt(now()->subHour()) => $lastActiveAt->diffInMinutes(now()).'m ago',
-            $lastActiveAt->gt(now()->subDay()) => $lastActiveAt->diffInHours(now()).'h ago',
-            $lastActiveAt->gt(now()->subWeek()) => floor($lastActiveAt->diffInHours(now()) / 24).'d ago',
-            $lastActiveAt->gt(now()->subDays(14)) => floor($lastActiveAt->diffInDays(now()) / 7).'w ago',
+            $lastActiveAt->gt(now()->subHour()) => (int) ($lastActiveAt->floatDiffInMinutes(now())).'m ago',
+            $lastActiveAt->gt(now()->subDay()) => (int) ($lastActiveAt->floatDiffInHours(now())).'h ago',
+            $lastActiveAt->gt(now()->subWeek()) => max(1, (int) floor($lastActiveAt->floatDiffInHours(now()) / 24)).'d ago',
+            $lastActiveAt->gt(now()->subDays(14)) => max(1, (int) floor($lastActiveAt->floatDiffInDays(now()) / 7)).'w ago',
             default => $lastActiveAt->format('M j'),
         };
     }

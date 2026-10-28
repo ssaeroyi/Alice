@@ -176,4 +176,39 @@ class ClassController extends Controller
 
         return redirect(route('student.classwork'))->with('toast', ['message' => 'You declined the class invitation.']);
     }
+
+    /**
+     * Accept ("Accept") or dismiss ("Not now") a pending class invite that
+     * arrived as a shared link, carried in the session. Accepting funnels
+     * through Group::addMember with the same name gate as joining by code,
+     * so link invites and typed codes can never diverge.
+     */
+    public function decideLinkInvite(Request $request): RedirectResponse
+    {
+        $groupId = (int) session('pending_class_invite', 0);
+        session()->forget('pending_class_invite');
+
+        $group = $groupId > 0 ? Group::find($groupId) : null;
+
+        if ($request->boolean('accept')) {
+            if ($group === null) {
+                return redirect(route('student.classwork'))->with('toast', ['message' => "That class no longer exists."]);
+            }
+
+            if (trim($request->user()->first_name.' '.$request->user()->last_name) === '') {
+                session(['pending_class_invite' => $groupId]);
+
+                return redirect(route('settings'))
+                    ->with('toast', ['message' => 'Add your first and last name in Settings first, then accept the invite again.']);
+            }
+
+            if ($group->addMember($request->user())) {
+                NotificationService::classJoined($group, $request->user());
+            }
+
+            return redirect(route('student.classwork'))->with('toast', ['message' => 'You joined "'.$group->name.'".']);
+        }
+
+        return redirect()->route('hub');
+    }
 }

@@ -145,7 +145,7 @@ class StudentActivity
             return [
                 'type' => 'quick_check',
                 'user' => $attemptUsers->get($attempt->user_id),
-                'label' => 'finished the placement quick check',
+                'label' => 'finished the level placement',
                 'count' => 1,
                 'at' => Carbon::parse($attempt->completed_at),
                 'meta' => [],
@@ -166,8 +166,8 @@ class StudentActivity
             $path === 'gym' => 'opened the Word Gym',
             $path === 'game' => 'opened Mini Games',
             $path === 'settings' => 'opened Settings',
-            str_starts_with($path, 'step') => 'worked on the placement quick check',
-            str_starts_with($path, 'placement/') => 'viewed the quick-check report',
+            str_starts_with($path, 'step') => 'worked on the level placement',
+            str_starts_with($path, 'placement/') => 'viewed the placement report',
             default => 'visited '.$path,
         };
     }

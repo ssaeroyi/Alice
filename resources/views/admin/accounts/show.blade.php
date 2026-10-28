@@ -2,10 +2,14 @@
 
 @section('title', $account->nickname ?? strtok($account->email, '@'))
 @section('eyebrow', 'Accounts')
-@section('back', route('admin.accounts.index'))
 
 @section('content')
     <div class="space-y-5">
+
+        <a href="{{ route('admin.accounts.index', request()->query()) }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#2D231E] hover:text-amber-700 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+            Back to accounts
+        </a>
 
         <!-- HEADER -->
         <div class="bg-white border border-[#E6DCCF] rounded-xl p-5 sm:p-6">

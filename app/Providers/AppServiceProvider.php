@@ -60,6 +60,13 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(10)->by($request->ip());
         });
 
+        // Class invite links (/a/CODE): public and guessable-ish, so a
+        // per-IP bucket keeps code guessing slow without hurting a class
+        // that opens the same link together.
+        RateLimiter::for('a-share', function (Request $request) {
+            return Limit::perMinute(10)->by($request->ip());
+        });
+
         // Named limiter keys are md5(limiterName . key), so these buckets are
         // independent — the 2.5s status poll can never drain the request
         // budget (inline throttle:N,M shares one key = sha1(user id) for an

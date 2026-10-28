@@ -76,14 +76,14 @@
     $toneClasses = match ($tone) {
         'reward' => 'bg-emerald-600',
         'badge' => 'bg-white',
-        'assignment' => 'bg-sky-600',
+        'assignment' => 'bg-emerald-600',
         'greeting' => 'bg-amber-500',
         default => '',
     };
     $iconWrap = match ($tone) {
         'reward' => 'bg-white border-[#2D231E] text-emerald-600',
         'badge' => ($badgeRarity['bg'] ?? 'bg-stone-100').' border-[#2D231E] '.($badgeRarity['text'] ?? 'text-stone-700'),
-        'assignment' => 'bg-white border-[#2D231E] text-sky-600',
+        'assignment' => 'bg-white border-[#2D231E] text-emerald-600',
         'greeting' => 'bg-white border-[#2D231E] text-[#2D231E]',
         default => '',
     };

@@ -60,7 +60,7 @@
                         <button
                             type="button"
                             data-modal-open="story-picker-modal"
-                            class="shrink-0 inline-flex items-center justify-center gap-2 min-h-[44px] px-4 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-sm font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                            class="shrink-0 inline-flex items-center justify-center gap-2 min-h-[44px] px-4 bg-emerald-600 rounded-lg text-sm font-bold text-white hover:bg-emerald-700 transition-colors cursor-pointer"
                         >
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
                                 <circle cx="11" cy="11" r="7"></circle>
@@ -70,7 +70,6 @@
                         </button>
                     </div>
                     <div class="mt-1 flex flex-wrap items-center gap-2">
-                        <p class="text-xs font-semibold text-[#2D231E] flex-1 min-w-0">Want something you don't see? Use Stories to add a story first.</p>
                         <a href="#" data-edit-story class="hidden text-xs font-bold text-sky-700 hover:underline shrink-0">Edit story</a>
                     </div>
                 </div>
@@ -89,36 +88,30 @@
                 @error('instructions')<p class="mt-1 text-xs font-bold text-rose-600">{{ $message }}</p>@enderror
             </div>
 
-            <div class="grid gap-5 sm:grid-cols-2">
-                <div>
-                    <label class="block text-sm font-extrabold text-[#2D231E] mb-1">Due date</label>
-                    <div data-date-picker class="relative">
-                        <input
-                            type="text"
-                            data-date-display
-                            readonly
-                            placeholder="Pick a date"
-                            value="{{ old('due_at') ? \Carbon\Carbon::parse(old('due_at'))->format('j M Y') : ($assignment?->due_at?->format('j M Y') ?? '') }}"
-                            class="w-full px-3 py-2.5 border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] bg-white focus:outline-none focus:border-sky-600 cursor-pointer"
-                        >
-                        <input type="hidden" name="due_at" data-date-value value="{{ old('due_at', $assignment?->due_at?->format('Y-m-d')) }}">
-                        <div data-date-popover class="hidden absolute top-full mt-2 z-30"></div>
-                    </div>
-                    @error('due_at')<p class="mt-1 text-xs font-bold text-rose-600">{{ $message }}</p>@enderror
+            <div>
+                <label class="block text-sm font-extrabold text-[#2D231E] mb-1">Due date</label>
+                <div data-date-picker class="relative">
+                    <input
+                        type="text"
+                        data-date-display
+                        readonly
+                        placeholder="Pick a date"
+                        value="{{ old('due_at') ? \Carbon\Carbon::parse(old('due_at'))->format('j M Y') : ($assignment?->due_at?->format('j M Y') ?? '') }}"
+                        class="w-full px-3 py-2.5 border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] bg-white focus:outline-none focus:border-sky-600 cursor-pointer"
+                    >
+                    <input type="hidden" name="due_at" data-date-value value="{{ old('due_at', $assignment?->due_at?->format('Y-m-d')) }}">
+                    <div data-date-popover class="hidden absolute top-full mt-2 z-30"></div>
                 </div>
-                <div>
-                    <label class="block text-sm font-extrabold text-[#2D231E] mb-1">Status</label>
-                    <select name="status" class="w-full px-3 py-2.5 border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-sky-600">
-                        <option value="draft" {{ old('status', $assignment?->status ?? 'draft') === 'draft' ? 'selected' : '' }}>Draft</option>
-                        <option value="active" {{ old('status', $assignment?->status ?? 'draft') === 'active' ? 'selected' : '' }}>Active now</option>
-                    </select>
-                </div>
+                @error('due_at')<p class="mt-1 text-xs font-bold text-rose-600">{{ $message }}</p>@enderror
             </div>
 
             <div>
                 <input type="hidden" name="scope" value="group">
+                <input type="hidden" name="status" value="{{ old('status', $assignment?->status ?? 'draft') }}">
                 @php
                     $selectedGroup = old('group_id', $assignment?->group_id ?? ($prefillClassId ?? null));
+                    $lockedClass = ! $assignment && isset($prefillClassId) && $prefillClassId;
+                    $lockedName = $classes->firstWhere('id', $prefillClassId)?->name ?? null;
                 @endphp
 
                 <label class="block text-sm font-extrabold text-[#2D231E] mb-1">Class</label>
@@ -127,6 +120,11 @@
                         <p class="text-sm font-semibold text-[#2D231E]">You don't have any classes yet.</p>
                         <a href="{{ route('teacher.classes.create') }}" class="inline-flex items-center gap-1 mt-2 text-sm font-bold text-sky-700 hover:text-sky-800">Create a class first →</a>
                     </div>
+                @elseif ($lockedClass && $lockedName)
+                    <p class="px-3 py-2.5 bg-[#FAF6EE] border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E]">
+                        {{ $lockedName }}
+                    </p>
+                    <input type="hidden" name="group_id" value="{{ $prefillClassId }}">
                 @else
                     <select name="group_id" class="w-full px-3 py-2.5 border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-sky-600">
                         @foreach ($classes as $class)

@@ -26,8 +26,9 @@
         <div class="flex flex-wrap items-center justify-between gap-3">
             <a href="{{ $backUrl }}"
                 aria-label="Back to classwork"
-                class="w-11 h-11 shrink-0 bg-white border-2 border-[#2D231E] rounded-xl text-[#2D231E] flex items-center justify-center shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] hover:bg-[#FAF6EE] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] transition-all">
-                <x-icons.arrow-left class="w-4 h-4" />
+                class="inline-flex items-center gap-1.5 text-xs font-bold text-[#2D231E] hover:text-sky-700 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+                Back to classwork
             </a>
             <span class="inline-flex items-center gap-1.5 text-xs font-bold text-[#8C7B70]">
                 From
@@ -132,14 +133,14 @@
                         @if ($done)
                             <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                                Completed
+                                Done
                             </span>
                         @elseif ($missed)
                             <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-rose-100 text-rose-700">Missed</span>
                         @elseif ($stepsDone > 0)
-                            <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">In progress</span>
+                            <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-700">In progress</span>
                         @else
-                            <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-sky-100 text-sky-700">Not started</span>
+                            <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#F3ECE0] text-[#2D231E]">Not started</span>
                         @endif
                     </div>
 

@@ -20,6 +20,26 @@ class Assignment extends Model
     use SoftDeletes;
 
     /**
+     * The one status vocabulary for student rows everywhere: teacher rollup,
+     * student classwork widget, and the student assignment page all read
+     * these labels and pill classes so the three can never disagree.
+     *
+     * @var array<string, array{label: string, classes: string}>
+     */
+    public const STATUS_META = [
+        'done' => ['label' => 'Done', 'classes' => 'bg-emerald-100 text-emerald-700'],
+        'in_progress' => ['label' => 'In progress', 'classes' => 'bg-amber-100 text-amber-700'],
+        'missed' => ['label' => 'Missed', 'classes' => 'bg-rose-100 text-rose-700'],
+        'not_started' => ['label' => 'Not started', 'classes' => 'bg-[#F3ECE0] text-[#2D231E]'],
+    ];
+
+    /** Label + pill classes for a progress state, one shared source. */
+    public static function statusMeta(string $state): array
+    {
+        return static::STATUS_META[$state] ?? ['label' => $state, 'classes' => 'bg-[#F3ECE0] text-[#2D231E]'];
+    }
+
+    /**
      * Per-request quiz lookup memo (hasQuiz hits the database; assignment
      * rollups call it per audience member).
      */
@@ -306,8 +326,7 @@ class Assignment extends Model
      * is what counts) for the story after the gate; `completed` combines the
      * two, treating reading alone as sufficient for stories without a quiz.
      */
-    public function studentProgress(User $student): array
-    {
+    public function studentProgress(User $student): array    {
         if ($this->story_id === null) {
             return ['read' => false, 'quiz' => false, 'completed' => false];
         }

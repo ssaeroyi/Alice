@@ -19,10 +19,13 @@ Route::get('/', function () {
 // hand the real admin back to their console.
 Route::middleware('auth')->post('/preview/return', [PreviewController::class, 'stop'])->name('preview.return');
 
-// Shared-assignment link: records the click for the teacher's rollup, then
-// hands the student straight to the assigned story's reader. Requires login
-// (the teacher dashboard shares these codes while signed in).
-Route::middleware('auth')->get('/a/{code}', [AssignmentController::class, 'openShare'])->name('assignment.share');
+// Class invite link: public on purpose. Guests keep a pending invite in
+// their session and receive the accept/decline modal after registering;
+// students decide right away; members and teachers go straight to their
+// side. The handler throttles lookups so guessed codes stay boring.
+Route::get('/a/{code}', [AssignmentController::class, 'openShare'])
+    ->name('assignment.share')
+    ->middleware('throttle:a-share');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

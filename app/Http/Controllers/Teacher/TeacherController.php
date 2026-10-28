@@ -856,7 +856,7 @@ class TeacherController extends Controller
         return view('teacher.student', [
             'student' => $user,
             'fromAssignment' => $fromAssignment,
-            'recentActivity' => StudentActivity::recentFor($user),
+            'recentActivity' => StudentActivity::recentFor($user, 40),
             'flaggedAttempts' => $flaggedAttempts,
             'quizHistory' => $attempts
                 ->map(fn ($a) => [

@@ -696,6 +696,7 @@
     </x-modal>
 
     @include('partials.streak-restore-prompt')
+    @include('partials.link-class-invite')
     @include('partials.toast')
     @include('partials.game-banner')
     @include('partials.tour-dialogue')

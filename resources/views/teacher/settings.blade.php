@@ -69,9 +69,9 @@
                 <div class="space-y-1">
                     <p class="text-xs font-bold text-[#2D231E]">Schedule account deletion</p>
                     <p class="text-sm font-semibold text-[#2D231E] leading-relaxed">
-                        Locks your account immediately. Inside a {{ (int) config('auth.deletion_grace_days', 7) }}-day
-                        grace period you can undo. After that your identity is erased — your classes and assignments
-                        are reassigned or archived by an administrator.
+                        Locks your account right away. You have {{ (int) config('auth.deletion_grace_days', 7) }} days
+                        to undo it. After that, your identity is erased and your classes and assignments are
+                        reassigned or archived by an administrator.
                     </p>
                 </div>
                 <button
@@ -252,8 +252,7 @@
             <ul class="text-xs font-medium text-[#2D231E] leading-relaxed list-disc pl-4 space-y-1">
                 <li>Your account locks immediately — sign-in is blocked.</li>
                 <li>You can undo for {{ (int) config('auth.deletion_grace_days', 7) }} days.</li>
-                <li>After that, your identity is erased. Your classes, assignments and stories are reassigned or archived by an admin.</li>
-                <li>Your email address becomes available for a new account right away.</li>
+                <li>After that, your identity is erased. Your classes, assignments and stories are reassigned or archived by an admin.</li>                <li>Your email address becomes available for a new account right away.</li>
             </ul>
         </div>
 

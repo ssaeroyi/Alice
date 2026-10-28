@@ -58,6 +58,7 @@ Route::get('/inbox/unread.json', [InboxController::class, 'unread'])->name('inbo
         // Class enrollment (My Class)
         Route::get('/classwork', [StudentClassController::class, 'classwork'])->name('student.classwork');
         Route::post('/classes/join', [StudentClassController::class, 'join'])->name('student.classes.join');
+        Route::post('/pending-invite/decide', [StudentClassController::class, 'decideLinkInvite'])->name('student.classes.link-decide');
         Route::post('/classes/invitation/{notification}/decide', [StudentClassController::class, 'decide'])->name('student.classes.decide');
         Route::delete('/classes/{group}/leave', [StudentClassController::class, 'leave'])->name('student.classes.leave');
 

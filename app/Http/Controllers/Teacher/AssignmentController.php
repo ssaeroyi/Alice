@@ -449,20 +449,19 @@ class AssignmentController extends Controller
     }
 
     /**
-     * Manually push a "new assignment" notice to the current audience. Useful
-     * for backfilling an older active assignment or nudging students who
-     * never saw it. Idempotent: the service de-dupes per assignment+student.
+     * Teacher-triggered "Remind class": one real reminder per student per
+     * week (7-day cooldown inside the service). Skips students already done.
      */
     public function notify(Assignment $assignment): RedirectResponse
     {
         $this->authorize('update', $assignment);
 
-        $sent = NotificationService::assignmentNew($assignment);
+        $sent = NotificationService::assignmentRemind($assignment);
 
         return back()->with('toast', [
             'message' => $sent > 0
-                ? 'Notification sent to '.$sent.' student'.($sent === 1 ? '' : 's').'.'
-                : 'No new notification needed — your students already have it.',
+                ? 'Reminder sent to '.$sent.' student'.($sent === 1 ? '' : 's').'.'
+                : 'No reminder sent — students were reminded within the last 7 days or already finished.',
         ]);
     }
 
@@ -495,11 +494,27 @@ class AssignmentController extends Controller
      * student off to the assignment detail page (sender, due date, instructions,
      * completion state, Start-reading CTA). Without a story it lands on the hub.
      */
+    /**
+     * Class invite link handler (/a/CODE — the code a teacher shares). The
+     * link is public: guests keep a pending invite in their session and get
+     * the accept/decline modal after registering, while students see the
+     * same modal straight away. Members go straight in, teachers land on the
+     * rollup, and a dead class or unknown code always resolves to a friendly
+     * toast instead of a crash.
+     */
     public function openShare(string $code): RedirectResponse
     {
         $assignment = Assignment::where('share_code', $code)
-            ->where('status', 'active')
-            ->firstOrFail();
+            ->whereIn('status', ['active', 'archived'])
+            ->first();
+
+        if ($assignment === null) {
+            return redirect()
+                ->route(auth()->check() ? 'hub' : 'login')
+                ->with('toast', ['message' => "We couldn't open that link. Ask your teacher to share it again."]);
+        }
+
+        $group = $assignment->group;
 
         $assignment->increment('clicks_count');
 
@@ -508,11 +523,31 @@ class AssignmentController extends Controller
             'code' => $code,
         ]);
 
-        if ($assignment->story_id && $assignment->story) {
+        $user = auth()->user();
+
+        if ($user !== null && in_array($user->role, [Role::Teacher, Role::Admin], true)) {
+            return redirect()->route('teacher.assignments.show', $assignment);
+        }
+
+        if ($group === null) {
+            return redirect()
+                ->route('hub')
+                ->with('toast', ['message' => "That class no longer exists. Ask your teacher for a new link."]);
+        }
+
+        // Already visible to the student (includes every audience member):
+        // straight in.
+        if ($user !== null && $assignment->isVisibleTo($user)) {
             return redirect()->route('student.assignments.show', $assignment);
         }
 
-        return redirect()->route('hub');
+        // Otherwise: queue the invite, then land on classwork where the
+        // invite modal is already wired up. Guests are sent to registration;
+        // the session survives the whole pause.
+        session(['pending_class_invite' => (int) $group->id]);
+
+        return redirect()->route(auth()->check() ? 'student.classwork' : 'register')
+            ->with('toast', ['message' => 'You were invited to join '.$group->name.'.']);
     }
 
     /**

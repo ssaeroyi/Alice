@@ -32,8 +32,7 @@ class User extends Authenticatable
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
-     */
-    protected function casts(): array
+     */    protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
@@ -211,7 +210,7 @@ class User extends Authenticatable
 
         $assignments = Assignment::query()
             ->where('status', 'active')
-            ->when($since, fn ($q) => $q->where('created_at', '>', $since))
+            ->when($since, fn ($q) => $q->whereRaw('COALESCE(assigned_at, created_at) > ?', [$since]))
             ->where(function ($q) use ($groupIds) {
                 $q->where('scope', 'all')
                     ->orWhere(fn ($sq) => $sq->where('scope', 'group')->whereIn('group_id', $groupIds))

@@ -6,21 +6,22 @@
 @section('content')
     <div class="space-y-6">
         <div class="flex flex-wrap items-start justify-between gap-3">
-            <div>
-                <a href="{{ $assignment->group_id ? route('teacher.classes.show', $assignment->group_id) : route('teacher.assignments.index') }}" class="inline-flex items-center gap-1 text-sm font-bold text-[#2D231E]">
-                    <x-icons.core.arrow-left class="w-4 h-4" />
-                    {{ $assignment->group_id ? 'Back to class' : 'Back to assignments' }}
-                </a>
-                <p class="text-sm font-bold text-[#2D231E]">{{ $assignment->audienceLabel() }}</p>
-            </div>
+            <a href="{{ $assignment->group_id ? route('teacher.classes.show', $assignment->group_id) : route('teacher.assignments.index') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#2D231E] hover:text-sky-700 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+                {{ $assignment->group_id ? 'Back to class' : 'Back to assignments' }}
+            </a>
             <div class="flex flex-wrap items-center justify-end gap-2">
-                    <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold px-3 py-1.5 rounded-lg bg-sky-50 border border-sky-200 text-sky-700">
-                        <span>Share: </span>
-                        <button type="button" data-copy-share data-share-url="{{ url('/a/'.$assignment->share_code) }}" class="font-bold hover:underline cursor-pointer">/a/{{ $assignment->share_code }}</button>
-                    </span>
-                    <span class="text-xs font-bold px-3 py-1.5 rounded-full {{ $assignment->status === 'active' ? 'bg-emerald-100 text-emerald-700' : ($assignment->status === 'cancelled' ? 'bg-rose-100 text-rose-700' : ($assignment->status === 'archived' ? 'bg-stone-200 text-stone-700' : 'bg-amber-100 text-amber-700')) }}">
+                    <span class="text-xs font-bold px-3 py-1.5 rounded-full {{ $assignment->status === 'active' ? 'bg-emerald-100 text-emerald-700' : ($assignment->status === 'cancelled' ? 'bg-rose-100 text-rose-700' : ($assignment->status === 'archived' ? 'bg-stone-200 text-stone-700' : 'bg-amber-100 text-amber-700')) }} capitalize">
                         {{ $assignment->status === 'archived' ? 'Finished' : $assignment->status }}
                     </span>
+                    <button type="button" data-copy-share data-share-url="{{ url('/a/'.$assignment->share_code) }}"
+                            title="Copy the share link for this class"
+                            class="inline-flex items-center gap-1.5 min-h-[28px] text-xs font-mono font-bold px-3 py-1.5 rounded-lg bg-[#FAF6EE] border border-[#E6DCCF] text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                        </svg>
+                        {{ $assignment->share_code }}
+                    </button>
                 @if ($assignment->status === 'draft')
                         <form method="POST" action="{{ route('teacher.assignments.publish', $assignment) }}">
                             @csrf
@@ -45,8 +46,8 @@
                             @if ($assignment->status === 'active' && $assignment->story_id)
                                 <form method="POST" action="{{ route('teacher.assignments.notify', $assignment) }}">
                                     @csrf
-                                    <button type="submit" data-confirm-open="notify-class-modal" title="Send a notification to this assignment's students (safe to repeat; duplicates are skipped)" class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-[11px] font-bold text-[#2D231E] hover:bg-[#FAF6EE] transition-colors cursor-pointer">
-                                        Notify class
+                                    <button type="submit" data-confirm-open="notify-class-modal" title="Send a friendly reminder to students still working on it" class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-[11px] font-bold text-[#2D231E] hover:bg-[#FAF6EE] transition-colors cursor-pointer">
+                                        Remind class
                                     </button>
                                 </form>
                             @endif
@@ -54,7 +55,7 @@
                             @if ($assignment->status === 'active')
                                 <form method="POST" action="{{ route('teacher.assignments.cancel', $assignment) }}">
                                     @csrf
-                                    <button type="submit" class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-[11px] font-bold text-amber-700 hover:bg-[#FAF6EE] transition-colors cursor-pointer">
+                                    <button type="submit" data-confirm-open="cancel-assignment-modal" class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-[11px] font-bold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer">
                                         Cancel
                                     </button>
                                 </form>
@@ -125,7 +126,6 @@
                         <p class="mt-1 text-sm font-extrabold text-[#2D231E]">
                             {{ $assignment->completedCount() }} / {{ $assignment->audienceCount() }} complete
                         </p>
-                        <p class="mt-0.5 text-xs font-semibold text-[#2D231E]">{{ $rc }}% done</p>
                     </div>
                     <svg class="w-9 h-9 shrink-0" viewBox="0 0 36 36" aria-hidden="true">
                         <circle cx="18" cy="18" r="14" fill="none" stroke="#F3ECE0" stroke-width="4" />
@@ -148,17 +148,21 @@
             </div>
         @endif
 
-        {{-- Tabs --}}
+        {{-- Work panel --}}
         <div data-rollup-tabs>
-            <div class="flex flex-wrap gap-1.5" role="group" aria-label="Assignment sections">
-                @foreach ([['students', 'Students'], ['details', 'Details']] as [$key, $label])
-                    <button type="button" data-rollup-tab="{{ $key }}" data-active="{{ $key === 'students' ? 'true' : 'false' }}"
-                        class="px-3 py-1.5 rounded-lg text-sm font-bold transition-colors {{ $key === 'students' ? 'bg-emerald-600 text-white' : 'text-[#2D231E] hover:bg-[#F3ECE0]' }}">{{ $label }}</button>
-                @endforeach
-            </div>
+            @foreach ([['students', 'Students']] as [$key, $label])
+                <button type="button" data-rollup-tab="{{ $key }}" data-active="{{ $key === 'students' ? 'true' : 'false' }}"
+                    class="px-3 py-1.5 rounded-lg text-sm font-bold transition-colors {{ $key === 'students' ? 'bg-emerald-600 text-white' : 'text-[#2D231E] hover:bg-[#F3ECE0]' }}">{{ $label }}</button>
+            @endforeach
 
             {{-- Students panel --}}
             <div data-rollup-panel="students" class="pt-4">
+                @if ($assignment->instructions)
+                    <div class="bg-white border border-[#E6DCCF] rounded-xl px-4 py-3 mb-3">
+                        <p class="text-[10px] font-bold text-[#2D231E] uppercase tracking-wide">Instructions</p>
+                        <p class="text-sm font-semibold text-[#2D231E] whitespace-pre-wrap mt-1">{{ $assignment->instructions }}</p>
+                    </div>
+                @endif
                 @if ($assignment->status === 'draft')
                     <div class="px-5 py-6 text-center bg-white border border-[#E6DCCF] rounded-xl">
                         <p class="text-sm font-semibold text-[#2D231E]">This assignment is still a draft. Publish it to make it visible to students.</p>
@@ -198,6 +202,7 @@
                                             <th class="px-5 py-2.5">Quiz</th>
                                         @endif
                                         <th class="px-5 py-2.5">Status</th>
+                                        <th class="px-5 py-2.5">Completed</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -206,67 +211,46 @@
                                             $progress = $completion[$student->id] ?? ['read' => false, 'quiz' => false, 'completed' => false];
                                             $marked = $markedIds->contains($student->id);
                                             $summary = $quizSummaries->get($student->id);
+                                            $drawerRow = $drawer->get($student->id);
+                                            $completedAt = $marked && ! $progress['completed']
+                                                ? $drawerRow['mark']?->created_at
+                                                : $drawerRow['progress']?->completed_at;
+                                            $rowState = $progress['completed'] ? 'done' : ($marked ? 'done' : (($progress['read'] || $progress['quiz']) ? 'in_progress' : 'not_started'));
+                                            $rowMeta = \App\Models\Assignment::statusMeta($rowState);
                                         @endphp
                                         <tr class="border-b border-[#E6DCCF]/60 last:border-0">
                                             <td class="px-5 py-2.5">
                                                 <div class="flex items-center gap-3 min-w-0">
                                                     <x-avatar :user="$student" :alt="$student->nickname ?? strtok($student->email, '@')" :size="36" />
                                                     <div class="min-w-0">
-                                                        <button type="button" data-story-drawer-open="{{ $student->id }}" class="block w-full text-left font-bold text-[#2D231E] hover:text-sky-700 truncate cursor-pointer">{{ $student->nickname ?? strtok($student->email, '@') }}</button>
+                                                        <button type="button" data-story-drawer-open="{{ $student->id }}" class="block w-full text-left font-bold text-[#2D231E] hover:text-sky-700 truncate cursor-pointer">{{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}</button>
                                                         <p class="text-[11px] font-semibold text-[#2D231E] truncate">{{ $student->email }}</p>
                                                     </div>
                                                 </div>
                                             </td>
                                             @if ($hasQuiz)
-                                                <td class="px-5 py-2.5">
-                            @if ($summary['attempted'])
-                                <span title="{{ $summary['raw'] ? $summary['raw'].' correct' : '' }}" class="inline-flex items-center min-w-[52px] justify-center rounded-full px-2.5 py-1 text-xs font-extrabold tabular-nums {{ $summary['passed'] ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-600' }}">
-                                    {{ $summary['score'] }}%
-                                </span>
-                                @if ($summary['points'] ?? null)
-                                    <p class="mt-1 text-[11px] font-semibold text-[#2D231E]">
-                                        {{ $summary['points'] }} items
-                                    </p>
-                                @endif
-                            @else
+                                                <td class="px-5 py-2.5 whitespace-nowrap">
+                                                    @if ($summary['attempted'])
+                                                        <span title="{{ $summary['raw'] ? $summary['raw'].' correct' : '' }}" class="inline-flex items-center min-w-[52px] justify-center rounded-full px-2.5 py-1 text-xs font-extrabold tabular-nums {{ $summary['passed'] ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-600' }}">
+                                                            {{ $summary['score'] }}%
+                                                        </span>
+                                                    @else
                                                         <span class="text-xs font-semibold text-[#c9bfb4]">Not taken</span>
                                                     @endif
                                                 </td>
                                             @endif
-                                            <td class="px-5 py-2.5">
-                                                <div class="flex flex-wrap items-center gap-2">
-                                                    @if ($progress['completed'])
-                                                        <span class="inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">
-                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                                                            Done
-                                                        </span>
-                                                    @elseif ($marked)
-                                                        <span class="inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">
-                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                                                            Done (teacher)
-                                                        </span>
-                                                    @elseif ($progress['read'] || $progress['quiz'])
-                                                        <span class="text-xs font-bold px-2 py-1 rounded-full bg-amber-100 text-amber-700">In progress</span>
-                                                    @else
-                                                        <span class="text-xs font-bold px-2 py-1 rounded-full bg-[#F3ECE0] text-[#2D231E]">Not started</span>
-                                                    @endif
-
-                                                    @if ($assignment->status === 'active')
-                                                        @if (! $progress['completed'] && ! $marked)
-                                                            <form method="POST" action="{{ route('teacher.assignments.mark', $assignment) }}">
-                                                                @csrf
-                                                                <input type="hidden" name="student_id" value="{{ $student->id }}">
-                                                                <button type="submit" class="text-[11px] font-bold text-sky-700 hover:underline cursor-pointer">Mark done</button>
-                                                            </form>
-                                                        @elseif ($marked && ! $progress['completed'])
-                                                            <form method="POST" action="{{ route('teacher.assignments.mark-remove', [$assignment, $student]) }}">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="text-[11px] font-bold text-rose-600 hover:underline cursor-pointer">Undo</button>
-                                                            </form>
-                                                        @endif
-                                                    @endif
-                                                </div>
+                                            <td class="px-5 py-2.5 whitespace-nowrap">
+                                                @if ($progress['completed'])
+                                                    <span class="inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                                                        Done
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full {{ $rowMeta['classes'] }}">{{ $rowMeta['label'] }}</span>
+                                                @endif
+                                            </td>
+                                            <td class="px-5 py-2.5 whitespace-nowrap text-xs font-semibold text-[#2D231E]">
+                                                {{ $completedAt?->format('M j, g:i A') ?? '—' }}
                                             </td>
                                             <template data-story-drawer-template="{{ $student->id }}">
                                                 <div class="flex items-start justify-between gap-4 p-5 border-b border-[#E6DCCF]">
@@ -434,7 +418,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="{{ $hasQuiz ? 3 : 2 }}" class="px-5 py-6 text-center text-sm font-semibold text-[#2D231E]">No {{ $keyword ? 'students match your search' : 'students match this audience' }} yet.</td>
+                                            <td colspan="{{ $hasQuiz ? 4 : 3 }}" class="px-5 py-6 text-center text-sm font-semibold text-[#2D231E]">No {{ $keyword ? 'students match your search' : 'students match this audience' }} yet.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -442,34 +426,6 @@
                         </div>
                     </div>
                 @endif
-            </div>
-
-            {{-- Details panel --}}
-            <div data-rollup-panel="details" class="pt-4" hidden>
-                <div class="bg-white border border-[#E6DCCF] rounded-xl p-5 space-y-4">
-                    <div>
-                        <p class="text-xs font-bold text-[#2D231E] uppercase tracking-wide mb-1">Instructions</p>
-                        <p class="text-sm font-semibold text-[#2D231E] whitespace-pre-wrap">{{ $assignment->instructions ?: 'No instructions.' }}</p>
-                    </div>
-                    <div class="grid gap-4 sm:grid-cols-2">
-                        <div>
-                            <p class="text-xs font-bold text-[#2D231E] uppercase tracking-wide mb-1">Scope</p>
-                            <p class="text-sm font-bold text-[#2D231E]">{{ ucfirst($assignment->scope) }}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-[#2D231E] uppercase tracking-wide mb-1">Story with quiz</p>
-                            <p class="text-sm font-bold text-[#2D231E]">{{ $hasQuiz ? 'Yes' : 'No' }}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-[#2D231E] uppercase tracking-wide mb-1">Assigned</p>
-                            <p class="text-sm font-bold text-[#2D231E]">{{ optional($assignment->gateStartsAt())->format('M j, Y') }}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-[#2D231E] uppercase tracking-wide mb-1">Share code</p>
-                            <p class="text-sm font-mono font-bold text-[#2D231E]">{{ $assignment->share_code }}</p>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -489,36 +445,41 @@
 
     <x-modal id="delete-assignment-modal" title="Delete this assignment?">
         <p class="text-xs font-semibold text-[#2D231E]">
-            This deletes the assignment and removes it from your class. Students lose access. This action is recorded
-            in the audit log.
+            Students lose access to this assignment and the results disappear from your records. This action is
+            recorded in the audit log.
         </p>
-        <label class="flex items-start gap-3 cursor-pointer">
-            <input type="checkbox" data-double-confirm class="mt-0.5 w-4 h-4 accent-rose-600 cursor-pointer">
-            <span class="text-xs font-semibold text-[#2D231E]">
-                I understand. This assignment will be deleted and students will lose access.
-            </span>
-        </label>
         <div class="flex items-center justify-end gap-2">
             <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer">Cancel</button>
             <button type="button" data-confirm-approve class="inline-flex items-center justify-center min-h-[44px] px-5 py-2 bg-rose-600 text-white rounded-lg text-xs font-bold hover:bg-rose-700 transition-colors cursor-pointer">Delete assignment</button>
         </div>
     </x-modal>
 
-    <x-modal id="notify-class-modal" title="Notify this assignment's students?">
+    <x-modal id="notify-class-modal" title="Remind the class?">
         <p class="text-xs font-semibold text-[#2D231E]">
-            Sends an inbox notification to each student in the class for this assignment. Safe to repeat. Duplicates
-            are skipped.
+            Students still working on this assignment get a friendly inbox reminder. Students who are already done
+            stay undisturbed, and reminding again too soon is skipped automatically.
         </p>
         <div class="flex items-center justify-end gap-2">
             <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer">Cancel</button>
-            <button type="button" data-confirm-approve class="inline-flex items-center justify-center min-h-[44px] px-5 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors cursor-pointer">Notify students</button>
+            <button type="button" data-confirm-approve class="inline-flex items-center justify-center min-h-[44px] px-5 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors cursor-pointer">Send reminder</button>
+        </div>
+    </x-modal>
+
+    <x-modal id="cancel-assignment-modal" title="Cancel this assignment?">
+        <p class="text-xs font-semibold text-[#2D231E]">
+            Use this if the assignment should not have gone out. Students lose access and it stops being counted.
+            Unlike finishing, which wraps up completed work, cancelling ends it for everyone.
+        </p>
+        <div class="flex items-center justify-end gap-2">
+            <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer">Keep assignment</button>
+            <button type="button" data-confirm-approve class="inline-flex items-center justify-center min-h-[44px] px-5 py-2 bg-rose-600 text-white rounded-lg text-xs font-bold hover:bg-rose-700 transition-colors cursor-pointer">Cancel assignment</button>
         </div>
     </x-modal>
 
     <x-modal id="archive-assignment-modal" title="Finish this assignment?">
         <p class="text-xs font-semibold text-[#2D231E]">
-            This moves the assignment out of your active list. Students keep access to it under "Past assignments"
-            on their hub, and you can still open it to review results. This action is recorded in the audit log.
+            This wraps up a finished period of work. Students keep their history under "Past assignments" and you
+            can still open it to review results. This action is recorded in the audit log.
         </p>
         <div class="flex items-center justify-end gap-2">
             <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer">Cancel</button>
