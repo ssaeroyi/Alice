@@ -24,7 +24,7 @@
             @else
                 @php $url = $paginator->url($item); @endphp
                 @if ($item == $paginator->currentPage())
-                    <span aria-current="page" class="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-xs font-bold rounded-lg bg-[#2D231E] text-white">
+                    <span aria-current="page" class="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-xs font-bold rounded-lg bg-emerald-600 text-white">
                         {{ $item }}
                     </span>
                 @else

@@ -168,7 +168,7 @@
                 <p class="text-sm font-bold text-[#2D231E] py-8 text-center">No accounts match these filters.</p>
             @endforelse
             <div class="pt-4">
-                {{ $users->links('pagination::admin') }}
+                {{ $users->links('pagination::teacher') }}
             </div>
         </x-admin.panel>
 
@@ -242,7 +242,7 @@
             </div>
 
             <div class="pt-4">
-                {{ $users->links('pagination::admin') }}
+                {{ $users->links('pagination::teacher') }}
             </div>
         </x-admin.panel>
 
