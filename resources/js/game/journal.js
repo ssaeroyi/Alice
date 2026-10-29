@@ -47,6 +47,7 @@ let failing = false;
 const findHits = new Set();
 let findRule = null;
 let findNeed = 0;
+let findSubmitting = false;
 
 const els = {};
 
@@ -131,15 +132,18 @@ function normalize(word) {
         .toLowerCase();
 }
 
-/** Mirror of FindGenerator::wordMatches (PHP). */
+/** Mirror of FindGenerator::wordMatches (PHP). Length is counted in code
+ *  points ([...word].length), matching PHP's mb_strlen — UTF-16 .length
+ *  would double-count characters above the BMP. */
 function wordMatches(rule, word) {
     if (!rule || !word || !/\p{L}/u.test(word)) return false;
-    if (rule.type === 'suffix') return word.endsWith(rule.value) && word.length > rule.value.length;
+    const len = [...word].length;
+    if (rule.type === 'suffix') return word.endsWith(rule.value) && len > [...rule.value].length;
     if (rule.type === 'doubles') return /(.)\1/u.test(word);
-    if (rule.type === 'short') return word.length <= Number(rule.value);
+    if (rule.type === 'short') return len <= Number(rule.value);
     if (rule.type === 'contains') return word.includes(rule.value);
-    if (rule.type === 'length') return word.length === Number(rule.value);
-    if (rule.type === 'prefix') return word.length >= 2 && word.startsWith(String(rule.value).toLowerCase());
+    if (rule.type === 'length') return len === Number(rule.value);
+    if (rule.type === 'prefix') return len >= 2 && word.startsWith(String(rule.value).toLowerCase());
     if (rule.type === 'set') return Array.isArray(rule.tokens) && rule.tokens.includes(word);
     return false;
 }
@@ -206,7 +210,7 @@ function renderList(wonOverride) {
         // Find moves show their target as pips; fill/choice moves have none.
         const pub = a.public_payload ?? {};
         const need = Number(pub.need) || 0;
-        const got = a.id === action?.id ? findHits.size : 0;
+        const got = a.id === action?.id ? Math.min(findHits.size, need) : 0;
         const pips = need > 0
             ? `<span class="journal-row-pips">${
                 Array.from({ length: need }, (_, j) => `<span class="journal-row-pip${j < got ? ' is-on' : ''}"></span>`).join('')
@@ -732,6 +736,10 @@ function clearFindMarks() {
 
 function onFindTap(el) {
     if (!action || action.kind !== 'find' || !findRule) return;
+    if (findSubmitting) return;
+    // Hard cap: the move wants exactly N words, so extra taps never pad the
+    // counter past the requirement (6/5, 7/5 fixed).
+    if (findHits.size >= findNeed) return;
 
     const norm = normalize(el.dataset.w ?? el.textContent);
     if (!norm || findHits.has(norm)) return;
@@ -744,7 +752,10 @@ function onFindTap(el) {
         const counter = els.missionsSheet.querySelector('[data-missions-progress]');
         if (counter) counter.textContent = `${findHits.size}/${findNeed}`;
         if (findHits.size >= findNeed) {
-            submitAnswers({ words: [...findHits].slice(0, 40) });
+            findSubmitting = true;
+            submitAnswers({ words: [...findHits].slice(0, 40) }).finally(() => {
+                findSubmitting = false;
+            });
         }
     } else {
         el.classList.add('gm-miss');
@@ -800,6 +811,15 @@ async function submitAnswers(answers) {
         shakePanel();
         note('Not quite. Try again.');
         play('wrong');
+        // Clean retry: a grader-rejected set must never stay painted. Wipe
+        // the hits and marks so the student starts the word search fresh —
+        // otherwise one client-accepted/server-rejected word dead-locks
+        // the move forever.
+        findHits.clear();
+        clearFindMarks();
+        els.gmTask.textContent = `FOUND WORDS 0/${findNeed}`;
+        const retry = els.missionsSheet.querySelector('[data-missions-progress]');
+        if (retry) retry.textContent = `0/${findNeed}`;
         return;
     }
 

@@ -20,9 +20,9 @@ class StoryProfile
         // letter/digit runs with internal apostrophes only, so hyphens and
         // dashes split ("half-breed" -> "half", "bred") and every token is
         // what normalize() produces from one tap.
-        preg_match_all("/[\p{L}\p{N}]+(?:['\x{2019}][\p{L}\p{N}]+)*/u", $content, $m);
+        preg_match_all("/[\p{L}\p{N}]+(?:['\x{2019}\x{2018}][\p{L}\p{N}]+)*/u", $content, $m);
         $this->tokens = array_values(array_map(
-            fn (string $w) => mb_strtolower(str_replace("\u{2019}", "'", $w)),
+            fn (string $w) => mb_strtolower(str_replace(["\u{2019}", "\u{2018}"], "'", $w)),
             $m[0]
         ));
     }

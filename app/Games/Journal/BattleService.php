@@ -242,7 +242,7 @@ class BattleService
 
         if ($action->kind === 'find') {
             $words = array_values(array_filter(array_map(
-                fn ($w) => mb_strtolower(trim((string) $w)),
+                fn ($w) => FindGenerator::normalizeWord((string) $w),
                 (array) ($answers['words'] ?? [])
             )));
             $words = array_unique($words);
@@ -267,8 +267,8 @@ class BattleService
                 return false;
             }
             foreach ($items as $i => $item) {
-                $a = mb_strtolower(trim((string) ($given[$i] ?? '')));
-                $e = mb_strtolower(trim((string) ($item['answer'] ?? '')));
+                $a = FindGenerator::normalizeWord((string) ($given[$i] ?? ''));
+                $e = FindGenerator::normalizeWord((string) ($item['answer'] ?? ''));
                 if ($a === '' || $a !== $e) {
                     return false;
                 }
@@ -283,8 +283,8 @@ class BattleService
                 return false;
             }
             foreach ($items as $i => $item) {
-                $a = mb_strtolower(trim((string) ($given[$i] ?? '')));
-                $e = mb_strtolower(trim((string) ($item['answer'] ?? '')));
+                $a = FindGenerator::normalizeWord((string) ($given[$i] ?? ''));
+                $e = FindGenerator::normalizeWord((string) ($item['answer'] ?? ''));
                 if ($a === '' || $a !== $e) {
                     return false;
                 }

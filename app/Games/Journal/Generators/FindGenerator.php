@@ -144,10 +144,14 @@ class FindGenerator implements ActionGenerator
     /**
      * Shared rule test (client match + server verification both use it).
      * Public so journal.js mirrors it and MissionController verifies taps.
+     * Normalization is the SAME as the client's normalize(): smart quotes
+     * become straight ones before lowercase, so "dog’s" passes server-side
+     * too (it used to be the rejection source).
      */
     public static function wordMatches(array $rule, string $word): bool
     {
-        $word = mb_strtolower(trim($word));
+        $word = self::normalizeWord($word);
+
         if ($word === '' || !preg_match('/\p{L}/u', $word)) {
             return false;
         }
@@ -158,10 +162,18 @@ class FindGenerator implements ActionGenerator
             'short' => mb_strlen($word) <= (int) $rule['value'],
             'contains' => str_contains($word, $rule['value']),
             'length' => mb_strlen($word) === (int) $rule['value'],
-            'prefix' => str_starts_with($word, mb_strtolower((string) $rule['value'])) && mb_strlen($word) >= 2,
+            'prefix' => str_starts_with($word, self::normalizeWord((string) $rule['value'])) && mb_strlen($word) >= 2,
             'set' => in_array($word, (array) ($rule['tokens'] ?? []), true),
             default => false,
         };
+    }
+
+    /** Client-parity word normalization: smart quotes → straight, trim, lowercase. */
+    public static function normalizeWord(string $word): string
+    {
+        $word = str_replace(["\u{2019}", "\u{2018}"], "'", $word);
+
+        return mb_strtolower(trim($word));
     }
 
     /** Distinct candidate count for a rule against this story's text. */
