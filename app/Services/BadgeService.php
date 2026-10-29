@@ -829,6 +829,16 @@ class BadgeService
             ->value('days'));
     }
 
+    /** Distinct stories where the student has at least one won battle. */
+    private static function battleStoryVariety(int $userId): int
+    {
+        return self::cachedInt($userId, 'battle_variety', fn () => StoryBattle::query()
+            ->where('user_id', $userId)
+            ->where('status', 'won')
+            ->distinct('story_id')
+            ->count('story_id'));
+    }
+
     /** Whether any won battle finished inside the given hour window. */
     private static function battleWonAtHour(int $userId, string $op, int $hour): bool
     {

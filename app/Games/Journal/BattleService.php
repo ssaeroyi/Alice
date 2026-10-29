@@ -157,7 +157,12 @@ class BattleService
 
             // Battle badges (Journal Keeper tiers + win tiers + variety/time
             // flavors). Idempotent: award() skips already-owned badges.
-            \App\Services\BadgeService::award($user, ['battle'], now());
+            // Guarded: a badge glitch must never roll back the player's action.
+            try {
+                \App\Services\BadgeService::award($user, ['battle'], now());
+            } catch (\Throwable $e) {
+                report($e);
+            }
 
             return [
                 'ok' => true,
