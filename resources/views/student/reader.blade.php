@@ -180,7 +180,8 @@
                         class="min-h-[40px] px-3 inline-flex items-center gap-1.5 font-pixel text-[9px] font-bold uppercase text-white bg-amber-500 hover:bg-amber-600 border-2 border-[#2D231E] rounded-xl shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all{{ $battleComplete ? '' : ' journal-pulse' }}"
                     >JOURNAL</button>
                 @endif
-                <form method="POST" action="{{ route('reader.finish', $story) }}" data-finish-form class="{{ $missionsEnabled && ! $battleComplete ? 'hidden' : '' }}">
+                @if (! $missionsEnabled)
+                <form method="POST" action="{{ route('reader.finish', $story) }}" data-finish-form>
                     @csrf
                     <button
                         type="submit"
@@ -188,6 +189,7 @@
                         class="min-h-[40px] px-3 inline-flex items-center gap-1.5 font-pixel text-[9px] font-bold uppercase text-white bg-emerald-600 hover:bg-emerald-700 border-2 border-[#2D231E] rounded-xl shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all opacity-30 pointer-events-none"
                     >FINISH</button>
                 </form>
+                @endif
             </div>
         </div>
     </div>
@@ -337,7 +339,7 @@
                     <p class="font-pixel text-[10px] font-bold text-[#2D231E] uppercase">3 STEPS TO BEAT THIS STORY</p>
                     <p><span class="font-extrabold">1.</span> Read to the end.</p>
                     <p><span class="font-extrabold">2.</span> Open the Field Journal and defeat the boss. Do the actions in the ACTIONS list. Every action damages the boss.</p>
-                    <p><span class="font-extrabold">3.</span> Tap FINISH. That marks the story beaten and pays your reward.</p>
+                    <p><span class="font-extrabold">3.</span> Tap FINISH STORY inside the journal. It appears right after the boss falls, and it makes the story beaten.</p>
                 </div>
                 <div class="bg-[#FAF6EE] border-2 border-[#2D231E] rounded-2xl p-3 space-y-1">
                     <p class="font-pixel text-[10px] font-bold text-amber-600 uppercase">WORDS</p>

@@ -874,15 +874,11 @@ function bind() {
 
     bindFinishFlush();
 
-    // Battle-win sync: the journal dispatches this on victory. Reveal the
-    // bottom-bar FINISH instantly (it only used to appear after a reload)
-    // and celebrate through Alice.
+    // Battle-win sync: the journal dispatches this on victory. The bottom bar
+    // stays stable (no FINISH appears there on battle stories); Alice points
+    // to the journal's own FINISH STORY button instead.
     document.addEventListener('alice:battle-won', () => {
-        document.querySelector('[data-finish-form]')?.classList.remove('hidden');
-        const btn = document.querySelector('[data-finish-btn]');
-        btn?.classList.add('finish-flash');
-        setTimeout(() => btn?.classList.remove('finish-flash'), 1600);
-        showMascotBubble("Bruno's down! Finish the story!");
+        showMascotBubble("Bruno's down! Finish the story inside the journal.");
         mascotReact('attack');
     });
 
