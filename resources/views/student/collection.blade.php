@@ -68,7 +68,7 @@
             :action="route('collection')"
             :currentDifficulty="$difficultyKey"
             :genres="$genres"
-            :activeGenre="$filters['genre'] ?? null"
+            :activeGenre="$filters['genre'][0] ?? null"
             :showGenre="true"
             :searchValue="$filters['q'] ?? ''"
             :currentSort="$filters['sort'] ?? 'title'"

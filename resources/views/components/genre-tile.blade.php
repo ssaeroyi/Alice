@@ -8,7 +8,7 @@
 @endphp
 
 <a
-    href="{{ route('library.genre', $slug) }}"
+    href="{{ route('library', ['genre' => [$slug]]) }}"
     class="group snap-start shrink-0 w-[180px] sm:w-[200px] border-4 border-[#2D231E] rounded-3xl p-4 shadow-[5px_5px_0px_0px_rgba(45,35,30,1)] {{ $style['bg'] }} relative flex flex-col items-center justify-center space-y-3 min-h-[140px] hover:-translate-y-0.5 transition-transform"
     style="{{ $dotsStyle }}"
 >

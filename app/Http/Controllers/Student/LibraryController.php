@@ -41,6 +41,17 @@ class LibraryController extends Controller
         'very-hard' => 10,
     ];
 
+    /** Length buckets the browse strip offers, each a duration_tier set. */
+    private const LENGTHS = [
+        'quick' => ['flash', 'quick'],
+        'medium' => ['medium'],
+        'long' => ['long'],
+    ];
+
+    /** Level scope of the browse grid: the student's served grade only,
+     * or the whole published shelf. "mine" is the default everywhere. */
+    private const LEVELS = ['mine', 'all'];
+
     /**
      * Minimum word count for a story to be featured on the front-and-center
      * surfaces (Quick Reads, Recommended, hero fallback). Sub-150-ish word
@@ -52,62 +63,75 @@ class LibraryController extends Controller
     /** §4.5 collection shelves, in tab-bar order. */
     private const COLLECTION_TABS = ['favorites', 'progress', 'finished'];
 
+    /**
+     * ONE library page: idle browsing shows the shelves; typing or any browse
+     * chip swaps the whole body into the filtered grid on this same page.
+     * No separate All Stories destination exists any more.
+     */
     public function index(Request $request): View
     {
         $user = $request->user();
+        $filters = $this->filters($request);
+        $browsing = $this->isBrowsing($filters);
 
-        return view('student.library', [
+        $viewData = [
             'grade' => $this->displayGrade($user),
-            'hero' => $this->heroStories(),
-            'inProgress' => $this->inProgressQuery($user)
-                ->limit(self::PAGE_SIZE)
-                ->get(),
-            'recommended' => $this->recommendedQuery($user)
-                ->limit(self::PAGE_SIZE)
-                ->get(),
             'genres' => $this->filterGenres('stories_count'),
-            'quickReads' => $this->baseQuery()
-                ->whereIn('duration_tier', LibraryPresentation::QUICK_TIERS)
-                ->where('word_count', '>=', self::MIN_PROMINENT_WORDS)
-                ->orderBy('word_count')
-                ->limit(self::PAGE_SIZE)
-                ->get(),
-        ]);
+            'filters' => $filters,
+            'browsing' => $browsing,
+        ];
+
+        if ($browsing) {
+            $stories = $this->browseQuery($user, $filters)
+                ->paginate(self::PAGE_SIZE)
+                ->withQueryString();
+
+            $viewData['stories'] = $stories;
+        } else {
+            // Idle pages are the shelf homepage; the hero + row queries are
+            // pointless once the student starts filtering, so they don't run.
+            $viewData += [
+                'hero' => $this->heroStories(),
+                'inProgress' => $this->inProgressQuery($user)
+                    ->limit(self::PAGE_SIZE)
+                    ->get(),
+                'recommended' => $this->recommendedQuery($user)
+                    ->limit(self::PAGE_SIZE)
+                    ->get(),
+                'quickReads' => $this->baseQuery()
+                    ->whereIn('duration_tier', LibraryPresentation::QUICK_TIERS)
+                    ->where('word_count', '>=', self::MIN_PROMINENT_WORDS)
+                    ->orderBy('word_count')
+                    ->limit(self::PAGE_SIZE)
+                    ->get(),
+            ];
+        }
+
+        return view('student.library', $viewData);
     }
 
-    public function all(Request $request, string $row): View|RedirectResponse
+    /**
+     * Legacy shelf links live and answer with a redirect on to the single
+     * library page so old bookmarks keep their intent and their querystring.
+     */
+    public function all(Request $request, string $row): RedirectResponse
     {
         if ($row === 'in-progress') {
             // §4.5: the collection page owns this shelf now.
             return redirect()->route('collection', ['tab' => 'progress']);
         }
 
-        if (! in_array($row, ['all', 'recommended', 'quick-reads'], true)) {
-            abort(404);
-        }
+        abort_unless(in_array($row, ['all', 'recommended', 'quick-reads'], true), 404);
 
-        $user = $request->user();
-        $filters = $this->filters($request);
+        return redirect()->route('library', $request->query());
+    }
 
-        $query = match ($row) {
-            'recommended' => $this->recommendedQuery($user),
-            'quick-reads' => $this->baseQuery()
-                ->whereIn('duration_tier', LibraryPresentation::QUICK_TIERS)
-                ->where('word_count', '>=', self::MIN_PROMINENT_WORDS),
-            default => $this->baseQuery(),
-        };
+    /** New legacy entry: genre tiles now filter on the library page itself. */
+    public function genre(Request $request, string $slug): RedirectResponse
+    {
+        abort_if($this->resolveGenreBySlug($slug) === null, 404);
 
-        $stories = $this->applyFilters($query, $filters)
-            ->paginate(self::PAGE_SIZE)
-            ->withQueryString();
-
-        return view('student.library-landing', [
-            'row' => $row,
-            'grade' => $this->displayGrade($user),
-            'stories' => $stories,
-            'genres' => $this->filterGenres(),
-            'filters' => $filters,
-        ]);
+        return redirect()->route('library', ['genre' => [$slug]]);
     }
 
     /**
@@ -129,31 +153,6 @@ class LibraryController extends Controller
             'genres' => $this->filterGenres(),
             'counts' => $this->collectionCounts($user, $filters),
             'stories' => $this->shelfQuery($user, $tab, $filters)->get(),
-        ]);
-    }
-
-    public function genre(Request $request, string $slug): View
-    {
-        $genre = $this->resolveGenreBySlug($slug);
-
-        abort_if($genre === null, 404);
-
-        $user = $request->user();
-        $filters = $this->filters($request);
-        $filters['genre'] = $slug;
-
-        $stories = $this->applyFilters(
-            $this->baseQuery()->whereHas('genres', fn (Builder $query) => $query->where('genres.id', $genre->id)),
-            $filters,
-        )->paginate(self::PAGE_SIZE)->withQueryString();
-
-        return view('student.library-landing', [
-            'row' => 'genre',
-            'genre' => $genre,
-            'grade' => $this->displayGrade($user),
-            'stories' => $stories,
-            'genres' => $this->filterGenres(),
-            'filters' => $filters,
         ]);
     }
 
@@ -369,19 +368,43 @@ class LibraryController extends Controller
         ];
     }
 
-    /** Apply the shared landing filters (grade/genre/sort/search) to a base story query. */
-    private function applyFilters(Builder $query, array $filters): Builder
+    /**
+     * The filtered library grid for the ONE library page. Level scope is the
+     * outer dial: "mine" pins to the student's served grade exactly, "all"
+     * opens the whole shelf; genre include (OR), genre exclude (AND-not),
+     * length and difficulty narrow inside whichever scope is active.
+     */
+    private function browseQuery($user, array $filters): Builder
     {
+        $query = $this->baseQuery();
+
         $this->applyFilterCriteria($query, $filters);
+
+        if ($filters['levels'] === 'mine') {
+            $query->where('reading_level', $filters['grade'] ?? $this->displayGrade($user));
+        }
+
         $this->applyShelfSort($query, $filters['sort'] ?? null);
 
         return $query;
     }
 
+    /** True when the page body is the filtered grid rather than the idle shelves. */
+    private function isBrowsing(array $filters): bool
+    {
+        return $filters['q'] !== null
+            || $filters['grade'] !== null
+            || $filters['genre'] !== []
+            || $filters['exclude'] !== []
+            || $filters['length'] !== null
+            || $filters['levels'] === 'all'
+            || $filters['sort'] !== 'title';
+    }
+
     /**
-     * JSON suggestions for the library search combobox: title/author matches
-     * only, a handful of rows, no navigation. Never errors on short input —
-     * returns an empty list so the dropdown just stays shut.
+     * Visual combobox payload: cover, reading band, first genre — the search
+     * dropdown renders exact story cards the student can start reading in one
+     * tap. Never errors on short input: an empty list keeps the dropdown shut.
      */
     public function suggest(Request $request): JsonResponse
     {
@@ -397,10 +420,14 @@ class LibraryController extends Controller
             ->where(fn (Builder $query) => $query->where('title', 'regexp', $needle)->orWhere('author', 'regexp', $needle))
             ->orderBy('title')
             ->limit(6)
-            ->get(['title', 'author', 'slug'])
+            ->get(['title', 'author', 'slug', 'cover_image', 'word_count', 'reading_level', 'difficulty_label'])
             ->map(fn (Story $story) => [
                 'title' => $story->title,
                 'author' => $story->author,
+                'genre' => $story->genres->first()?->name,
+                'band' => $story->difficulty_label ?: AliceLibrary::difficultyBand((int) $story->reading_level),
+                'cover' => $story->cover_image ? $story->coverUrl() : null,
+                'minutes' => LibraryPresentation::minutes((int) $story->word_count),
                 'url' => route('story.preview', $story->slug),
             ])
             ->all();
@@ -436,17 +463,34 @@ class LibraryController extends Controller
             });
         }
 
-        if (($filters['grade'] ?? null) !== null) {
-            $query->whereBetween('reading_level', [
-                max(AliceLibrary::bandFloor($filters['grade']), 1),
-                min(AliceLibrary::bandCeiling($filters['grade']), 12),
-            ]);
+        $map = $this->genreSlugMap();
+
+        if (($filters['genre'] ?? []) !== []) {
+            // Includes are an OR: any of the chosen genres qualifies.
+            $ids = collect($filters['genre'])
+                ->filter(fn (string $slug) => isset($map[$slug]))
+                ->map(fn (string $slug) => $map[$slug]->id)
+                ->all();
+
+            if ($ids !== []) {
+                $query->whereHas('genres', fn (Builder $inner) => $inner->whereIn('genres.id', $ids));
+            }
         }
 
-        if (($filters['genre'] ?? null) !== null) {
-            $genreId = $this->resolveGenreBySlug($filters['genre'])?->id;
+        foreach ($filters['exclude'] ?? [] as $slug) {
+            // Excludes are AND-not: each hidden genre removes its stories.
+            $id = $map[$slug]?->id ?? null;
+            $query->whereDoesntHave('genres', fn (Builder $inner) => $inner->where('genres.id', $id ?? 0));
+        }
 
-            $query->whereHas('genres', fn (Builder $inner) => $inner->where('genres.id', $genreId ?? 0));
+        if (($filters['grade'] ?? null) !== null) {
+            // Difficulty chips and legacy grade links both land here: the
+            // grade IS the reading level, so the filter is exact equality.
+            $query->where('reading_level', $filters['grade']);
+        }
+
+        if (($filters['length'] ?? null) !== null) {
+            $query->whereIn('duration_tier', self::LENGTHS[$filters['length']] ?? []);
         }
     }
 
@@ -489,11 +533,12 @@ class LibraryController extends Controller
     }
 
     /**
-     * Landing filters shared by every landing (and the collection shelves):
-     * free-text search, difficulty band (accepts the legacy grade param too),
-     * genre slug and sort order.
+     * Browse strip state for the one-page library (and the collection
+     * shelves): free-text search, difficulty band (accepts the legacy grade
+     * param), genre include/exclude slug lists, length bucket, level scope
+     * and sort. Unknown slugs and buckets are ignored, never errors.
      *
-     * @return array{q: ?string, grade: ?int, genre: ?string, sort: string}
+     * @return array{q: ?string, grade: ?int, genre: string[], exclude: string[], length: ?string, levels: string, sort: string}
      */
     private function filters(Request $request): array
     {
@@ -506,19 +551,38 @@ class LibraryController extends Controller
         } elseif (ctype_digit((string) $request->query('grade'))
             && (int) $request->query('grade') >= 7
             && (int) $request->query('grade') <= 10) {
-            // Legacy links may still carry ?grade=; map onto the same band.
+            // Legacy links may still carry ?grade=; map onto the same dial.
             $grade = (int) $request->query('grade');
         }
 
-        $genre = trim((string) $request->query('genre', ''));
+        $map = $this->genreSlugMap();
+        $normalize = fn ($values): array => collect((array) $values)
+            ->map(fn ($slug) => trim((string) $slug))
+            ->filter()
+            ->unique()
+            ->filter(fn (string $slug) => isset($map[$slug]))
+            ->values()
+            ->all();
+
+        $genre = $normalize($request->query('genre', []));
+        $exclude = $normalize($request->query('exclude', []));
+        // The one hard rule the strip enforces too: a genre cannot be both
+        // welcome and banned — exclude wins on the server side.
+        $exclude = array_values(array_diff($exclude, $genre));
+
+        $length = (string) $request->query('length', '');
+        $length = isset(self::LENGTHS[$length]) ? $length : null;
+
         $sort = (string) $request->query('sort', 'title');
+        $levels = $request->query('levels') === 'all' ? 'all' : 'mine';
 
         return [
             'q' => $q !== '' ? $q : null,
             'grade' => $grade,
-            // Only honour slugs that actually map to a published genre; unknown
-            // slugs are ignored rather than filtering every story out.
-            'genre' => $genre !== '' && isset($this->genreSlugMap()[$genre]) ? $genre : null,
+            'genre' => $genre,
+            'exclude' => $exclude,
+            'length' => $length,
+            'levels' => in_array($levels, self::LEVELS, true) ? $levels : 'mine',
             'sort' => in_array($sort, self::SORTS, true) ? $sort : 'title',
         ];
     }
