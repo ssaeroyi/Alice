@@ -14,122 +14,183 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
 
-    {{-- Search + browse strip: mounted once; library-browse.js swaps only
+    {{-- Search + filter drawer: mounted once; library-browse.js swaps only
          the [data-library-root] body below, so focus and scroll survive. --}}
-    <form id="library-browse" method="GET" action="{{ route('library') }}" data-browse data-search-clear-url="{{ route('library') }}" autocomplete="off" class="space-y-5">
-        <!-- Search -->
-        <div class="relative">
-            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#8C7B70] pointer-events-none">
-                <x-icons.search class="w-4 h-4" />
-            </span>
-            <input
-                type="search"
-                name="q"
-                autocomplete="off"
-                data-combobox="{{ route('library.suggest') }}"
-                value="{{ $filters['q'] ?? '' }}"
-                placeholder="Search titles or authors..."
-                class="w-full bg-white border-2 border-[#2D231E] rounded-2xl pl-11 pr-10 py-3 font-bold text-xs sm:text-sm text-[#2D231E] focus:outline-none focus:ring-2 focus:ring-amber-400 placeholder-[#8C7B70] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)]"
+    <form id="library-browse" method="GET" action="{{ route('library') }}" data-browse data-search-clear-url="{{ route('library') }}" autocomplete="off">
+        @php
+            $activeCount = ($filters['grade'] !== null ? 1 : 0)
+                + ($filters['genre'] !== [] ? count($filters['genre']) : 0)
+                + ($filters['exclude'] !== [] ? count($filters['exclude']) : 0)
+                + ($filters['length'] !== null ? 1 : 0)
+                + ($filters['levels'] === 'all' ? 1 : 0)
+                + ($filters['sort'] !== 'title' ? 1 : 0);
+        @endphp
+
+        <!-- Search + the FILTER button -->
+        <div class="flex items-center gap-2">
+            <div class="relative flex-1">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#8C7B70] pointer-events-none">
+                    <x-icons.search class="w-4 h-4" />
+                </span>
+                <input
+                    type="search"
+                    name="q"
+                    autocomplete="off"
+                    data-combobox="{{ route('library.suggest') }}"
+                    value="{{ $filters['q'] ?? '' }}"
+                    placeholder="Search titles or authors..."
+                    class="w-full bg-white border-2 border-[#2D231E] rounded-2xl pl-11 pr-10 py-3 font-bold text-xs sm:text-sm text-[#2D231E] focus:outline-none focus:ring-2 focus:ring-amber-400 placeholder-[#8C7B70] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)]"
+                >
+                <button type="button" data-search-clear aria-label="Clear search and back to the library"
+                    class="hidden absolute right-3 top-1/2 -translate-y-1/2 min-w-[28px] h-7 items-center justify-center rounded-md text-[#8C7B70] hover:text-[#2D231E] hover:bg-[#F3ECE0] transition-colors cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <button
+                type="button"
+                data-filter-drawer-open
+                class="relative min-w-[44px] min-h-[44px] w-11 h-11 shrink-0 bg-amber-400 border-2 border-[#2D231E] text-[#2D231E] rounded-xl font-bold flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
+                aria-label="Open filters"
             >
-            <button type="button" data-search-clear aria-label="Clear search and back to the library"
-                class="hidden absolute right-3 top-1/2 -translate-y-1/2 min-w-[28px] h-7 items-center justify-center rounded-md text-[#8C7B70] hover:text-[#2D231E] hover:bg-[#F3ECE0] transition-colors cursor-pointer">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path></svg>
+                <x-icons.sliders class="w-5 h-5" />
+                @if ($activeCount > 0)
+                    <span class="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-white border-2 border-[#2D231E] font-pixel text-[7px] font-bold text-[#2D231E] flex items-center justify-center">
+                        {{ $activeCount }}
+                    </span>
+                @endif
             </button>
         </div>
 
-        <!-- Level scope: MY GRADE is the standing rule, ALL LEVELS is the tap -->
-        <div class="space-y-1">
-            <span class="{{ $stripLabel }}">Level</span>
-            <div class="flex gap-1.5">
-                <label class="relative">
-                    <input type="radio" name="levels" value="mine" class="peer sr-only" @checked($filters['levels'] !== 'all')>
-                    <span class="{{ $chip }}">Grade {{ $grade }}</span>
-                </label>
-                <label class="relative">
-                    <input type="radio" name="levels" value="all" class="peer sr-only" @checked($filters['levels'] === 'all')>
-                    <span class="{{ $chip }}">All levels</span>
-                </label>
-            </div>
-        </div>
+        {{-- Filter drawer: everything the old strip held, tucked away. --}}
+        <div id="library-filter-drawer" data-filter-drawer class="fixed inset-0 z-[60] hidden transition-opacity duration-300 ease-out" role="dialog" aria-modal="true" aria-label="Library filters">
+            <div data-filter-drawer-backdrop class="absolute inset-0 bg-[#2D231E]/40 backdrop-blur-sm"></div>
 
-        <!-- Genre + hidden genre (a genre can be include or hide, never both) -->
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:items-start">
-            <div class="space-y-1">
-                <span class="{{ $stripLabel }}">Genre</span>
-                <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-                    @foreach ($genres as $genre)
-                        @php($slug = LibraryPresentation::genreSlug($genre->name))
-                        <label class="relative">
-                            <input type="checkbox" name="genre[]" value="{{ $slug }}" class="peer sr-only" @checked(in_array($slug, $filters['genre']))>
-                            <span class="{{ $chip }}">{{ $genre->name }}</span>
-                        </label>
-                    @endforeach
+            <div data-filter-drawer-panel class="absolute inset-y-0 right-0 w-full max-w-sm bg-white border-l-4 border-[#2D231E] shadow-[-6px_0_0_0_rgba(45,35,30,1)] flex flex-col transition-transform duration-300 ease-out translate-x-full">
+                <div class="flex items-center justify-between px-5 py-4 bg-amber-400 border-b-2 border-[#2D231E] shrink-0">
+                    <h2 class="font-pixel text-xs font-bold text-[#2D231E] uppercase tracking-wider">FILTERS</h2>
+                    <button
+                        type="button"
+                        data-filter-drawer-close
+                        class="w-9 h-9 font-bold text-[#2D231E] rounded-lg flex items-center justify-center hover:bg-[#FAF6EE] transition-colors cursor-pointer"
+                        aria-label="Close filters"
+                    >✕</button>
                 </div>
-            </div>
 
-            <div class="space-y-1">
-                <span class="{{ $stripLabel }}">Hide genre</span>
-                <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-                    @foreach ($genres as $genre)
-                        @php($slug = LibraryPresentation::genreSlug($genre->name))
-                        <label class="relative">
-                            <input type="checkbox" name="exclude[]" value="{{ $slug }}" class="peer sr-only" @checked(in_array($slug, $filters['exclude']))>
-                            <span class="{{ $chip }} peer-checked:bg-rose-400">{{ $genre->name }}</span>
-                        </label>
-                    @endforeach
+                <div class="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+                    <!-- Level scope: MY GRADE is the standing rule, ALL LEVELS is the tap -->
+                    <div class="space-y-2">
+                        <span class="{{ $stripLabel }}">Level</span>
+                        <div class="flex flex-wrap gap-1.5">
+                            <label class="relative">
+                                <input type="radio" name="levels" value="mine" class="peer sr-only" @checked($filters['levels'] !== 'all')>
+                                <span class="{{ $chip }}">Grade {{ $grade }}</span>
+                            </label>
+                            <label class="relative">
+                                <input type="radio" name="levels" value="all" class="peer sr-only" @checked($filters['levels'] === 'all')>
+                                <span class="{{ $chip }}">All levels</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Genre include (multi, any-of) -->
+                    <div class="space-y-2">
+                        <span class="{{ $stripLabel }}">Genre</span>
+                        <div class="flex flex-wrap gap-1.5">
+                            @foreach ($genres as $genre)
+                                @php($slug = LibraryPresentation::genreSlug($genre->name))
+                                <label class="relative">
+                                    <input type="checkbox" name="genre[]" value="{{ $slug }}" class="peer sr-only" @checked(in_array($slug, $filters['genre']))>
+                                    <span class="{{ $chip }}">{{ $genre->name }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Genre exclusion: hide what you don't want right now -->
+                    <div class="space-y-2">
+                        <span class="{{ $stripLabel }}">Hide genre</span>
+                        <div class="flex flex-wrap gap-1.5">
+                            @foreach ($genres as $genre)
+                                @php($slug = LibraryPresentation::genreSlug($genre->name))
+                                <label class="relative">
+                                    <input type="checkbox" name="exclude[]" value="{{ $slug }}" class="peer sr-only" @checked(in_array($slug, $filters['exclude']))>
+                                    <span class="{{ $chip }} peer-checked:bg-rose-400">{{ $genre->name }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Length -->
+                    <div class="space-y-2">
+                        <span class="{{ $stripLabel }}">Length</span>
+                        <div class="flex flex-wrap gap-1.5">
+                            <label class="relative">
+                                <input type="radio" name="length" value="quick" class="peer sr-only" @checked($filters['length'] === 'quick')>
+                                <span class="{{ $chip }}">Under 5 mins</span>
+                            </label>
+                            <label class="relative">
+                                <input type="radio" name="length" value="medium" class="peer sr-only" @checked($filters['length'] === 'medium')>
+                                <span class="{{ $chip }}">5 to 13 mins</span>
+                            </label>
+                            <label class="relative">
+                                <input type="radio" name="length" value="long" class="peer sr-only" @checked($filters['length'] === 'long')>
+                                <span class="{{ $chip }}">Long read</span>
+                            </label>
+                            <label class="relative">
+                                <input type="radio" name="length" value="" class="peer sr-only" @checked($filters['length'] === null)>
+                                <span class="{{ $chip }}">Any</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Difficulty -->
+                    <div class="space-y-2">
+                        <span class="{{ $stripLabel }}">Difficulty</span>
+                        <div class="flex flex-wrap gap-1.5">
+                            @foreach (['easy' => 7, 'intermediate' => 8, 'hard' => 9, 'very-hard' => 10] as $value => $bandGrade)
+                                <label class="relative">
+                                    <input type="radio" name="difficulty" value="{{ $value }}" class="peer sr-only" @checked($filters['grade'] === $bandGrade)>
+                                    <span class="{{ $chip }}">{{ ['7' => 'Easy', '8' => 'Intermediate', '9' => 'Hard', '10' => 'Very hard'][$bandGrade] }}</span>
+                                </label>
+                            @endforeach
+                            <label class="relative">
+                                <input type="radio" name="difficulty" value="" class="peer sr-only" @checked($filters['grade'] === null)>
+                                <span class="{{ $chip }}">Any</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Sort -->
+                    <div class="space-y-2">
+                        <span class="{{ $stripLabel }}">Sort</span>
+                        <div>
+                            <select name="sort" data-browse-sort
+                                class="w-full min-h-[44px] bg-white border-2 border-[#2D231E] rounded-xl px-3 py-2 font-pixel text-[9px] font-bold uppercase tracking-wider text-[#2D231E] cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400">
+                                @foreach (['title' => 'A to Z', 'newest' => 'Newest', 'length' => 'Shortest', 'grade' => 'Easiest first'] as $value => $text)
+                                    <option value="{{ $value }}" @selected($filters['sort'] === $value)>{{ $text }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Length + difficulty -->
-            <div class="space-y-1">
-                <span class="{{ $stripLabel }}">Length</span>
-                <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-                    <label class="relative">
-                        <input type="radio" name="length" value="quick" class="peer sr-only" @checked($filters['length'] === 'quick')>
-                        <span class="{{ $chip }}">Under 5 mins</span>
-                    </label>
-                    <label class="relative">
-                        <input type="radio" name="length" value="medium" class="peer sr-only" @checked($filters['length'] === 'medium')>
-                        <span class="{{ $chip }}">5 to 13 mins</span>
-                    </label>
-                    <label class="relative">
-                        <input type="radio" name="length" value="long" class="peer sr-only" @checked($filters['length'] === 'long')>
-                        <span class="{{ $chip }}">Long read</span>
-                    </label>
-                    <label class="relative">
-                        <input type="radio" name="length" value="" class="peer sr-only" @checked($filters['length'] === null)>
-                        <span class="{{ $chip }}">Any</span>
-                    </label>
+                {{-- Sticky footer --}}
+                <div class="px-5 py-4 border-t-2 border-[#2D231E] bg-[#FAF6EE] space-y-2 shrink-0">
+                    <button
+                        type="submit"
+                        class="w-full min-h-[44px] font-pixel text-xs font-bold px-6 py-3 rounded-2xl bg-amber-400 border-2 border-[#2D231E] text-[#2D231E] uppercase shadow-[3px_3px_0px_0px_rgba(45,35,30,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_rgba(45,35,30,1)] transition-all cursor-pointer"
+                    >
+                        APPLY FILTERS
+                    </button>
+                    <a
+                        href="{{ route('library') }}"
+                        data-browse-reset
+                        class="block w-full min-h-[44px] font-pixel text-[10px] font-bold px-6 py-3 rounded-2xl bg-white border-2 border-[#2D231E] text-[#8C7B70] uppercase text-center shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                    >
+                        RESET ALL
+                    </a>
                 </div>
-            </div>
-
-            <div class="space-y-1">
-                <span class="{{ $stripLabel }}">Difficulty</span>
-                <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-                    @foreach (['easy' => 7, 'intermediate' => 8, 'hard' => 9, 'very-hard' => 10] as $value => $bandGrade)
-                        <label class="relative">
-                            <input type="radio" name="difficulty" value="{{ $value }}" class="peer sr-only" @checked($filters['grade'] === $bandGrade)>
-                            <span class="{{ $chip }}">{{ ['7' => 'Easy', '8' => 'Intermediate', '9' => 'Hard', '10' => 'Very hard'][$bandGrade] }}</span>
-                        </label>
-                    @endforeach
-                    <label class="relative">
-                        <input type="radio" name="difficulty" value="" class="peer sr-only" @checked($filters['grade'] === null)>
-                        <span class="{{ $chip }}">Any</span>
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sort -->
-        <div class="space-y-1">
-            <span class="{{ $stripLabel }}">Sort</span>
-            <div>
-                <select name="sort" data-browse-sort
-                    class="min-h-[36px] bg-white border-2 border-[#2D231E] rounded-xl px-3 py-2 font-pixel text-[9px] font-bold uppercase tracking-wider text-[#2D231E] cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400">
-                    @foreach (['title' => 'A to Z', 'newest' => 'Newest', 'length' => 'Shortest', 'grade' => 'Easiest first'] as $value => $text)
-                        <option value="{{ $value }}" @selected($filters['sort'] === $value)>{{ $text }}</option>
-                    @endforeach
-                </select>
             </div>
         </div>
     </form>

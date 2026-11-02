@@ -155,6 +155,9 @@ async function swap(explicitUrl = null) {
 
         region.replaceWith(next);
         history.replaceState(null, '', url);
+        // The drawer owns its own open/close (filter-drawer.js): tap ✕ for it
+        // so a successful swap never leaves the panel hanging over results.
+        document.querySelector('[data-filter-drawer] [data-filter-drawer-close]')?.click();
         next.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (err) {
         if (err.name === 'AbortError') {
