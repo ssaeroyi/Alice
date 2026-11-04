@@ -110,35 +110,45 @@
             />
         </div>
 
-        {{-- Meta row: story + due + instructions absorb the old quick-facts card --}}
-        <div class="bg-white border border-[#E6DCCF] rounded-xl px-4 sm:px-5 py-4 flex flex-wrap items-center gap-x-8 gap-y-3">
+        {{-- Meta row: story + due + assigned, in three clean cells --}}
+        <div class="bg-white border border-[#E6DCCF] rounded-xl p-4 sm:p-5 grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 items-start">
             <div class="min-w-0">
                 <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#8C7B70]">Story</p>
-                <p class="text-sm font-extrabold text-[#2D231E] truncate">
+                <p class="text-sm font-extrabold text-[#2D231E] mt-0.5 break-words">
                     {{ $assignment->story?->title ?? 'No story' }}
-                    @if ($assignment->story)
-                        <a href="{{ route('teacher.stories.edit', $assignment->story) }}" class="text-[11px] font-bold text-sky-700 hover:underline ml-1">View</a>
+                </p>
+                @if ($assignment->story)
+                    <p class="mt-1 text-[11px] font-bold text-sky-700 space-x-3">
+                        <a href="{{ route('teacher.stories.edit', $assignment->story) }}" class="hover:underline">View story</a>
                         <form method="POST" action="{{ route('teacher.stories.duplicate', $assignment->story) }}" class="inline">
                             @csrf
-                            <button type="submit" class="text-[11px] font-bold text-sky-700 hover:underline">Make a copy</button>
+                            <button type="submit" class="hover:underline">Make a copy</button>
                         </form>
-                    @endif
-                </p>
+                    </p>
+                @endif
             </div>
+
             <div>
                 <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#8C7B70]">Due</p>
-                <p class="text-sm font-bold {{ ($assignment->status === 'active' && $assignment->due_at && $assignment->isOverdue()) ? 'text-rose-600' : 'text-[#2D231E]' }}">
+                <p class="text-sm font-bold mt-0.5 text-[#2D231E]">
                     {{ $assignment->due_at?->format('M j, Y') ?? 'No due date' }}
                 </p>
+                @if ($assignment->status === 'active' && $assignment->due_at && $assignment->isOverdue())
+                    <p class="text-[11px] font-bold text-rose-600">Overdue</p>
+                @endif
             </div>
+
             <div>
                 <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#8C7B70]">Assigned</p>
-                <p class="text-sm font-bold text-[#2D231E]">{{ optional($assignment->gateStartsAt())->format('M j, Y') }}</p>
+                <p class="text-sm font-bold text-[#2D231E] mt-0.5">
+                    {{ optional($assignment->gateStartsAt())->format('M j, Y') }}
+                </p>
             </div>
+
             @if ($assignment->instructions)
-                <div class="min-w-0 flex-1 basis-full">
+                <div class="min-w-0 sm:col-span-2 lg:col-span-3">
                     <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#8C7B70]">Instructions</p>
-                    <p class="text-xs font-semibold text-[#2D231E] whitespace-pre-wrap">{{ $assignment->instructions }}</p>
+                    <p class="text-xs font-semibold text-[#2D231E] whitespace-pre-wrap mt-0.5">{{ $assignment->instructions }}</p>
                 </div>
             @endif
         </div>
@@ -166,7 +176,7 @@
                     @continue($key !== 'participants' && ! $hasQuiz)
                     <a
                         href="{{ route('teacher.assignments.show', array_merge(['assignment' => $assignment, 'tab' => $key, 'sort' => $sort], $keyword ? ['q' => $keyword] : [])) }}"
-                        class="px-3.5 py-2 rounded-lg font-pixel text-[9px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors {{ $tab === $key ? 'bg-amber-400 text-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)]' : 'bg-white text-[#8C7B70] hover:text-[#2D231E] hover:border hover:border-amber-300 border border-[#E6DCCF]' }}"
+                        class="px-3.5 py-2 rounded-lg font-pixel text-[9px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors {{ $tab === $key ? 'bg-emerald-600 text-white' : 'bg-white text-[#2D231E] border border-[#E6DCCF] hover:border-amber-300 hover:text-[#2D231E]' }}"
                         @if ($tab === $key) aria-current="page" @endif
                     >{{ $label }}</a>
                 @endforeach
