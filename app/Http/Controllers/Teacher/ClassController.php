@@ -10,6 +10,7 @@ use App\Models\StoryProgress;
 use App\Models\TestAttempt;
 use App\Models\User;
 use App\Support\Audit;
+use App\Support\IntegritySignals;
 use App\Support\NotificationService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
