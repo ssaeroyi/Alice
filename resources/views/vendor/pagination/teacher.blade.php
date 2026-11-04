@@ -8,7 +8,7 @@
                 &#8249;
             </span>
         @else
-            <a href="{{ $paginator->previousPageUrl() }}" rel="prev" aria-label="Previous page" class="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-xs font-bold rounded-lg border border-[#E6DCCF] bg-white text-[#2D231E] hover:border-[#2D231E] transition-colors">
+            <a href="{{ $paginator->previousPageUrl() }}" rel="prev" aria-label="Previous page" class="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-xs font-bold rounded-lg border border-[#E6DCCF] bg-white text-[#2D231E] hover:border-amber-300 transition-colors">
                 &#8249;
             </a>
         @endif
@@ -28,7 +28,7 @@
                         {{ $item }}
                     </span>
                 @else
-                    <a href="{{ $url }}" aria-label="Page {{ $item }}" class="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-xs font-bold rounded-lg border border-[#E6DCCF] bg-white text-[#2D231E] hover:border-[#2D231E] transition-colors">
+                    <a href="{{ $url }}" aria-label="Page {{ $item }}" class="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-xs font-bold rounded-lg border border-[#E6DCCF] bg-white text-[#2D231E] hover:border-amber-300 transition-colors">
                         {{ $item }}
                     </a>
                 @endif
@@ -37,7 +37,7 @@
 
         {{-- Next --}}
         @if ($paginator->hasMorePages())
-            <a href="{{ $paginator->nextPageUrl() }}" rel="next" aria-label="Next page" class="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-xs font-bold rounded-lg border border-[#E6DCCF] bg-white text-[#2D231E] hover:border-[#2D231E] transition-colors">
+            <a href="{{ $paginator->nextPageUrl() }}" rel="next" aria-label="Next page" class="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-xs font-bold rounded-lg border border-[#E6DCCF] bg-white text-[#2D231E] hover:border-amber-300 transition-colors">
                 &#8250;
             </a>
         @else
