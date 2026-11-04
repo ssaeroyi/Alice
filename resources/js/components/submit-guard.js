@@ -1,7 +1,12 @@
 export function initSubmitGuards(root = document) {
     root.querySelectorAll('form[data-submit-guard]').forEach((form) => {
-        form.addEventListener('submit', () => {
+        form.addEventListener('submit', (event) => {
+            // A repeat press while the first hand-in is still in flight is
+            // cancelled outright: the locked button usually eats the click,
+            // but a fast double (or keyboard Enter) can still dispatch a
+            // second submit before navigation — it must never send twice.
             if (form.dataset.submitting === 'true') {
+                event.preventDefault();
                 return;
             }
 
