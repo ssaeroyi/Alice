@@ -52,7 +52,7 @@
                                 <p data-story-chosen-title class="text-sm font-bold text-[#2D231E] truncate">—</p>
                                 <p data-story-chosen-status class="mt-0.5 text-[10px] font-bold uppercase tracking-wide">—</p>
                             </div>
-                            <button type="button" data-story-clear aria-label="Clear story choice" class="shrink-0 min-w-[36px] min-h-[36px] flex items-center justify-center bg-white border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#B5A89C] hover:border-[#2D231E] hover:text-[#2D231E] transition-colors cursor-pointer">&times;</button>
+                            <button type="button" data-story-clear aria-label="Clear story choice" class="shrink-0 min-w-[36px] min-h-[36px] flex items-center justify-center bg-white border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#B5A89C] hover:border-amber-300 hover:text-[#2D231E] transition-colors cursor-pointer">&times;</button>
                         </div>
                         <div data-story-empty class="flex-1 min-w-0 flex items-center px-3 py-2.5 border border-dashed border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#B5A89C]">
                             No story chosen yet.

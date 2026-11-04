@@ -105,7 +105,7 @@
                                     type="button"
                                     data-dropdown-toggle="story-toolbar-menu"
                                     aria-label="More story actions"
-                                    class="shrink-0 min-h-[44px] min-w-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-base font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                    class="shrink-0 min-h-[44px] min-w-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-base font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                 >⋯</button>
                                 <div
                                     id="story-toolbar-menu"
@@ -305,7 +305,7 @@
                         <label
                             for="cover_image"
                             data-cover-dropzone
-                            class="block cursor-pointer rounded-xl border-2 border-dashed border-[#D8CCBC] bg-[#FAF6EE] hover:border-[#2D231E] transition-colors px-4 py-6 text-center"
+                            class="block cursor-pointer rounded-xl border-2 border-dashed border-[#D8CCBC] bg-[#FAF6EE] hover:border-amber-300 transition-colors px-4 py-6 text-center"
                         >
                             <svg class="mx-auto w-6 h-6 text-[#B5A89C]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.9A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
@@ -327,7 +327,7 @@
                             type="button"
                             data-cover-search
                             data-cover-search-url="{{ route('teacher.stories.cover-search') }}"
-                            class="inline-flex items-center justify-center min-h-[44px] w-full px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer">
+                            class="inline-flex items-center justify-center min-h-[44px] w-full px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer">
                             Search Open Library &amp; Wikimedia
                         </button>
                         <p class="mt-1.5 text-[11px] font-semibold text-[#2D231E]">Uses the story title and author to find real book covers. Picking one pastes it into the URL field.</p>
@@ -360,7 +360,7 @@
                         <button
                             type="button"
                             data-synopsis-fill="content"
-                            class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-3 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-[11px] font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                            class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-3 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-[11px] font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                         >
                             Fill from opening
                         </button>
@@ -428,14 +428,14 @@
                             <button
                                 type="button"
                                 data-content-import-button="content"
-                                class="inline-flex items-center justify-center min-h-[40px] px-3.5 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                class="inline-flex items-center justify-center min-h-[40px] px-3.5 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                             >
                                 Import .txt
                             </button>
                             <button
                                 type="button"
                                 data-clean-format="content"
-                                class="inline-flex items-center justify-center min-h-[40px] px-3.5 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                class="inline-flex items-center justify-center min-h-[40px] px-3.5 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                             >
                                 Clean format
                             </button>
@@ -444,7 +444,7 @@
                             <button
                                 type="button"
                                 data-preview-story
-                                class="inline-flex items-center justify-center min-h-[40px] px-3.5 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                class="inline-flex items-center justify-center min-h-[40px] px-3.5 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                             >
                                 Preview
                             </button>
@@ -453,7 +453,7 @@
                                 data-insights-toggle
                                 aria-expanded="false"
                                 aria-controls="story-insights-panel"
-                                class="inline-flex items-center justify-center gap-1.5 min-h-[40px] px-3.5 bg-white border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                class="inline-flex items-center justify-center gap-1.5 min-h-[40px] px-3.5 bg-white border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                             >
                                 Insights
                                 <span data-rl-level-badge="content" class="hidden inline-flex items-center px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-extrabold"></span>
@@ -473,7 +473,7 @@
                             <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" data-jump-target="genres">
                         @foreach ($genres as $genre)
                             @php $checked = $story?->genres->contains('id', $genre->id) ?? in_array($genre->id, old('genres', []), true); @endphp
-                            <label class="flex items-start gap-2.5 p-2.5 rounded-lg border {{ $checked ? 'border-emerald-400 bg-emerald-50' : 'border-[#E6DCCF] bg-white' }} hover:border-[#2D231E] cursor-pointer transition-colors">
+                            <label class="flex items-start gap-2.5 p-2.5 rounded-lg border {{ $checked ? 'border-emerald-400 bg-emerald-50' : 'border-[#E6DCCF] bg-white' }} hover:border-amber-300 cursor-pointer transition-colors">
                                 <input
                                     type="checkbox"
                                     name="genres[]"
@@ -505,7 +505,7 @@
                             name="intent"
                             value="add_another"
                             data-submit-guard
-                            class="w-full sm:w-auto inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                            class="w-full sm:w-auto inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                         >
                             <span data-submit-idle>Save &amp; add another</span>
                             <span data-submit-active class="hidden"><x-spinner label="Saving..." /></span>
@@ -713,7 +713,7 @@
                                 <button
                                     type="button"
                                     data-preview-quiz
-                                    class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                    class="shrink-0 inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                 >
                                     Test run
                                 </button>
@@ -721,7 +721,7 @@
                         </div>
 
                         <details class="mt-4" data-section-create>
-                            <summary class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer list-none">
+                            <summary class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer list-none">
                                 + Add section
                             </summary>
                             <form method="POST" action="{{ route('teacher.stories.sections.store', $story) }}" class="mt-2 flex flex-wrap items-start gap-2">
@@ -767,14 +767,14 @@
                                             data-quiz-undo
                                             aria-label="Undo the last change to this question"
                                             title="Undo (Ctrl+Z)"
-                                            class="min-h-[36px] min-w-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-sm font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer opacity-40 pointer-events-none"
+                                            class="min-h-[36px] min-w-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-sm font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer opacity-40 pointer-events-none"
                                         >&#8617;</button>
                                         <button
                                             type="button"
                                             data-quiz-redo
                                             aria-label="Redo the last undone change to this question"
                                             title="Redo (Ctrl+Y)"
-                                            class="min-h-[36px] min-w-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-sm font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer opacity-40 pointer-events-none"
+                                            class="min-h-[36px] min-w-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-sm font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer opacity-40 pointer-events-none"
                                         >&#8618;</button>
                                     </div>
                                 </div>
@@ -879,7 +879,7 @@
                                                         type="button"
                                                         data-quiz-answer-remove
                                                         aria-label="Remove answer"
-                                                        class="shrink-0 min-w-[44px] min-h-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                                        class="shrink-0 min-w-[44px] min-h-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                                     >×</button>
                                                 </div>
                                             @endforeach
@@ -898,7 +898,7 @@
                                                     type="button"
                                                     data-quiz-answer-remove
                                                     aria-label="Remove answer"
-                                                    class="shrink-0 min-w-[44px] min-h-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                                    class="shrink-0 min-w-[44px] min-h-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                                 >×</button>
                                             </div>
                                         @endif
@@ -906,7 +906,7 @@
                                     <button
                                         type="button"
                                         data-quiz-answer-add
-                                        class="mt-2 inline-flex items-center justify-center min-h-[44px] px-3 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                        class="mt-2 inline-flex items-center justify-center min-h-[44px] px-3 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                     >+ Add another answer</button>
                                     @error('acceptable_answers')
                                         <p class="mt-1 text-[11px] font-semibold text-rose-600">{{ $message }}</p>
@@ -946,7 +946,7 @@
                                                         type="button"
                                                         data-quiz-pair-remove
                                                         aria-label="Remove pair"
-                                                        class="shrink-0 min-w-[44px] min-h-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                                        class="shrink-0 min-w-[44px] min-h-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                                     >×</button>
                                                 </div>
                                             @endforeach
@@ -974,7 +974,7 @@
                                                         type="button"
                                                         data-quiz-pair-remove
                                                         aria-label="Remove pair"
-                                                        class="shrink-0 min-w-[44px] min-h-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                                        class="shrink-0 min-w-[44px] min-h-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                                     >×</button>
                                                 </div>
                                             @endforeach
@@ -983,7 +983,7 @@
                                     <button
                                         type="button"
                                         data-quiz-pair-add
-                                        class="mt-2 inline-flex items-center justify-center min-h-[44px] px-3 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                        class="mt-2 inline-flex items-center justify-center min-h-[44px] px-3 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                     >+ Add another pair</button>
                                     @error('match_pairs')
                                         <p class="mt-1 text-[11px] font-semibold text-rose-600">{{ $message }}</p>
@@ -1013,7 +1013,7 @@
                                                         type="button"
                                                         data-quiz-sequence-remove
                                                         aria-label="Remove step"
-                                                        class="shrink-0 min-w-[44px] min-h-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                                        class="shrink-0 min-w-[44px] min-h-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                                     >×</button>
                                                 </div>
                                             @endforeach
@@ -1033,7 +1033,7 @@
                                                         type="button"
                                                         data-quiz-sequence-remove
                                                         aria-label="Remove step"
-                                                        class="shrink-0 min-w-[44px] min-h-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                                        class="shrink-0 min-w-[44px] min-h-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                                     >×</button>
                                                 </div>
                                             @endforeach
@@ -1042,7 +1042,7 @@
                                     <button
                                         type="button"
                                         data-quiz-sequence-add
-                                        class="mt-2 inline-flex items-center justify-center min-h-[44px] px-3 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                        class="mt-2 inline-flex items-center justify-center min-h-[44px] px-3 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                     >+ Add another step</button>
                                     @error('sequence_items')
                                         <p class="mt-1 text-[11px] font-semibold text-rose-600">{{ $message }}</p>
@@ -1079,7 +1079,7 @@
                                     <button
                                         type="button"
                                         data-quiz-cancel
-                                        class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                        class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                     >Cancel</button>
                                 </div>
                             </form>
@@ -1134,7 +1134,7 @@
                                                         type="submit"
                                                         aria-label="Move section up"
                                                         @disabled($loop->first)
-                                                        class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                                                        class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                                                     >↑</button>
                                                 </form>
                                                 <form method="POST" action="{{ route('teacher.stories.sections.move', $unitSection) }}">
@@ -1144,7 +1144,7 @@
                                                         type="submit"
                                                         aria-label="Move section down"
                                                         @disabled($loop->last)
-                                                        class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                                                        class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                                                     >↓</button>
                                                 </form>
                                                 <form method="POST" action="{{ route('teacher.stories.sections.destroy', $unitSection) }}">
@@ -1248,7 +1248,7 @@
                                         type="button"
                                         data-quiz-add
                                         data-quiz-add-section="{{ $unitSection->id }}"
-                                        class="mt-3 inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                        class="mt-3 inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                     >
                                         + Add question to {{ $unitSection->name }}
                                     </button>
@@ -1297,7 +1297,7 @@
             <button
                 type="button"
                 data-modal-close
-                class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
             >
                 Cancel
             </button>
@@ -1319,7 +1319,7 @@
             <button
                 type="button"
                 data-modal-close
-                class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
             >
                 Cancel
             </button>
@@ -1341,7 +1341,7 @@
             <button
                 type="button"
                 data-modal-close
-                class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
             >
                 Cancel
             </button>
@@ -1447,7 +1447,7 @@
                 <button
                     type="button"
                     data-mission-cancel
-                    class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                    class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                 >Cancel</button>
                 <button
                     type="submit"
@@ -1466,7 +1466,7 @@
             "{{ $story->title }}" is hidden from students but kept for later. You can restore it any time.
         </p>
         <div class="flex items-center justify-end gap-2">
-            <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer">Cancel</button>
+            <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer">Cancel</button>
             <button type="button" data-confirm-approve class="inline-flex items-center justify-center min-h-[44px] px-5 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors cursor-pointer">Archive story</button>
         </div>
     </x-modal>
@@ -1549,7 +1549,7 @@
                             <button
                                 type="button"
                                 data-grammar-apply-all="content"
-                                class="hidden inline-flex items-center justify-center min-h-[40px] px-3 bg-[#F3ECE0] border border-[#E6DCCF] text-[#2D231E] rounded-lg text-[11px] font-bold hover:border-[#2D231E] transition-colors cursor-pointer disabled:opacity-40"
+                                class="hidden inline-flex items-center justify-center min-h-[40px] px-3 bg-[#F3ECE0] border border-[#E6DCCF] text-[#2D231E] rounded-lg text-[11px] font-bold hover:border-amber-300 transition-colors cursor-pointer disabled:opacity-40"
                             >
                                 Apply all fixes
                             </button>
@@ -1634,7 +1634,7 @@
                 <button
                     type="button"
                     data-modal-close
-                    class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                    class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                 >
                     Cancel
                 </button>

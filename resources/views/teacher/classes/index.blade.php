@@ -35,7 +35,7 @@
 
                         <div class="mt-4 pt-3 border-t border-[#E6DCCF] space-y-2">
                             <button type="button" onclick="if (navigator.clipboard) { navigator.clipboard.writeText('{{ $group->join_code }}'); this.querySelector('[data-copy-label]').textContent = 'Copied'; setTimeout(() => this.querySelector('[data-copy-label]').textContent = '{{ $group->join_code }}', 1500); }" title="Click to copy"
-                                    class="w-full flex items-center justify-between text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-[#FAF6EE] border border-[#E6DCCF] hover:border-[#2D231E] transition-colors cursor-pointer">
+                                    class="w-full flex items-center justify-between text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-[#FAF6EE] border border-[#E6DCCF] hover:border-amber-300 transition-colors cursor-pointer">
                                 <span class="text-[#8C7B70] uppercase tracking-wide">Join code</span>
                                 <span class="font-mono text-sky-700" data-copy-label>{{ $group->join_code }}</span>
                             </button>

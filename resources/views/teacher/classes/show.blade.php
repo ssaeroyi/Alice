@@ -31,7 +31,7 @@
                         type="button"
                         data-copy-code
                         data-code="{{ $group->join_code }}"
-                        class="inline-flex items-center gap-1.5 min-h-[36px] text-xs font-bold px-3 py-1.5 rounded-lg bg-[#F3ECE0] border border-[#E6DCCF] text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                        class="inline-flex items-center gap-1.5 min-h-[36px] text-xs font-bold px-3 py-1.5 rounded-lg bg-[#F3ECE0] border border-[#E6DCCF] text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                 >
                     Copy code
                 </button>
@@ -67,7 +67,7 @@
                 <div class="flex flex-wrap items-center gap-2">
                     <a
                         href="{{ route('teacher.assignments.index', ['class' => $group->id]) }}"
-                        class="inline-flex items-center gap-1.5 min-h-[36px] text-xs font-bold px-3 py-1.5 rounded-lg bg-[#F3ECE0] border border-[#E6DCCF] text-[#2D231E] hover:border-[#2D231E] transition-colors"
+                        class="inline-flex items-center gap-1.5 min-h-[36px] text-xs font-bold px-3 py-1.5 rounded-lg bg-[#F3ECE0] border border-[#E6DCCF] text-[#2D231E] hover:border-amber-300 transition-colors"
                     >
                         View all
                     </a>
@@ -124,7 +124,7 @@
             <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                 <h3 class="text-base font-extrabold text-[#2D231E]">Students in this class</h3>
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('teacher.roster', ['class' => $group->id]) }}" class="inline-flex items-center gap-1.5 min-h-[36px] text-xs font-bold px-3 py-1.5 rounded-lg bg-[#F3ECE0] border border-[#E6DCCF] text-[#2D231E] hover:border-[#2D231E] transition-colors">
+                    <a href="{{ route('teacher.roster', ['class' => $group->id]) }}" class="inline-flex items-center gap-1.5 min-h-[36px] text-xs font-bold px-3 py-1.5 rounded-lg bg-[#F3ECE0] border border-[#E6DCCF] text-[#2D231E] hover:border-amber-300 transition-colors">
                         View all
                     </a>
                     <a href="{{ route('teacher.classes.members.create', $group) }}" class="inline-flex items-center gap-1.5 min-h-[36px] text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors">
@@ -196,7 +196,7 @@
             This deletes the class, its assignments, and removes all students from it. They'll lose access to any class assignments. This can't be undone.
         </p>
         <div class="flex items-center justify-end gap-2">
-            <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer">Cancel</button>
+            <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer">Cancel</button>
             <button type="button" data-confirm-approve class="inline-flex items-center justify-center min-h-[44px] px-5 py-2 bg-rose-600 text-white rounded-lg text-xs font-bold hover:bg-rose-700 transition-colors cursor-pointer">Remove class</button>
         </div>
     </x-modal>
@@ -207,7 +207,7 @@
                 {{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }} will lose access to this class's assignments. They can rejoin using the class code if needed.
             </p>
             <div class="flex items-center justify-end gap-2">
-                <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer">Cancel</button>
+                <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer">Cancel</button>
                 <button type="button" data-confirm-approve class="inline-flex items-center justify-center min-h-[44px] px-5 py-2 bg-rose-600 text-white rounded-lg text-xs font-bold hover:bg-rose-700 transition-colors cursor-pointer">Remove from class</button>
             </div>
         </x-modal>

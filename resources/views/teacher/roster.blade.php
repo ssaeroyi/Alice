@@ -34,6 +34,7 @@
                 :count="$rosterFilterCount"
                 search-name=""
                 :reset-url="route('teacher.roster')"
+                hoverTone="amber"
             >
                 <input type="hidden" name="q" value="{{ request('q') }}">
 

@@ -5,7 +5,7 @@
         <button
             type="submit"
             data-submit-guard
-            class="{{ $story->missions_enabled ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-[#F3ECE0] border border-[#E6DCCF] text-[#2D231E] hover:border-[#2D231E]' }} inline-flex items-center justify-center min-h-[44px] px-4 rounded-lg text-xs font-bold transition-colors cursor-pointer"
+            class="{{ $story->missions_enabled ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-[#F3ECE0] border border-[#E6DCCF] text-[#2D231E] hover:border-amber-300' }} inline-flex items-center justify-center min-h-[44px] px-4 rounded-lg text-xs font-bold transition-colors cursor-pointer"
         >
             <span data-submit-idle>Journal: {{ $story->missions_enabled ? 'ON' : 'OFF' }}</span>
             <span data-submit-active class="hidden"><x-spinner label="Saving..." /></span>

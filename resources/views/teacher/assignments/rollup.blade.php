@@ -16,7 +16,7 @@
                     </span>
                     <button type="button" data-copy-share data-share-url="{{ url('/a/'.$assignment->share_code) }}"
                             title="Copy the share link for this class"
-                            class="inline-flex items-center gap-1.5 min-h-[28px] text-xs font-mono font-bold px-3 py-1.5 rounded-lg bg-[#FAF6EE] border border-[#E6DCCF] text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer">
+                            class="inline-flex items-center gap-1.5 min-h-[28px] text-xs font-mono font-bold px-3 py-1.5 rounded-lg bg-[#FAF6EE] border border-[#E6DCCF] text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
                         </svg>
@@ -40,7 +40,7 @@
                             data-dropdown-toggle="rollup-actions-menu"
                             aria-label="More actions for {{ $assignment->title }}"
                             aria-haspopup="true"
-                            class="min-h-[28px] min-w-[28px] inline-flex items-center justify-center bg-white border border-[#E6DCCF] rounded-lg text-sm font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                            class="min-h-[28px] min-w-[28px] inline-flex items-center justify-center bg-white border border-[#E6DCCF] rounded-lg text-sm font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                         >⋯</button>
                         <div id="rollup-actions-menu" data-dropdown class="hidden absolute right-0 top-full mt-1 z-50 w-48 p-1.5 bg-white border border-[#E6DCCF] rounded-xl shadow-[0_8px_24px_rgba(45,35,30,0.15)]">
                             @if ($assignment->status === 'active' && $assignment->story_id)
@@ -411,7 +411,7 @@
 
                                                     {{-- Open full profile link --}}
                                                     <div class="pt-2 border-t border-[#F0E9DD]">
-                                                        <a href="{{ route('teacher.student', ['user' => $student, 'from' => 'assignment:'.$assignment->id]) }}" class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors">Open full profile</a>
+                                                        <a href="{{ route('teacher.student', ['user' => $student, 'from' => 'assignment:'.$assignment->id]) }}" class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors">Open full profile</a>
                                                     </div>
                                                 </div>
                                             </template>
@@ -486,7 +486,7 @@
             recorded in the audit log.
         </p>
         <div class="flex items-center justify-end gap-2">
-            <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer">Cancel</button>
+            <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer">Cancel</button>
             <button type="button" data-confirm-approve class="inline-flex items-center justify-center min-h-[44px] px-5 py-2 bg-rose-600 text-white rounded-lg text-xs font-bold hover:bg-rose-700 transition-colors cursor-pointer">Delete assignment</button>
         </div>
     </x-modal>
@@ -497,7 +497,7 @@
             stay undisturbed, and reminding again too soon is skipped automatically.
         </p>
         <div class="flex items-center justify-end gap-2">
-            <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer">Cancel</button>
+            <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer">Cancel</button>
             <button type="button" data-confirm-approve class="inline-flex items-center justify-center min-h-[44px] px-5 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors cursor-pointer">Send reminder</button>
         </div>
     </x-modal>
@@ -508,7 +508,7 @@
             Unlike finishing, which wraps up completed work, cancelling ends it for everyone.
         </p>
         <div class="flex items-center justify-end gap-2">
-            <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer">Keep assignment</button>
+            <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer">Keep assignment</button>
             <button type="button" data-confirm-approve class="inline-flex items-center justify-center min-h-[44px] px-5 py-2 bg-rose-600 text-white rounded-lg text-xs font-bold hover:bg-rose-700 transition-colors cursor-pointer">Cancel assignment</button>
         </div>
     </x-modal>
@@ -519,7 +519,7 @@
             can still open it to review results. This action is recorded in the audit log.
         </p>
         <div class="flex items-center justify-end gap-2">
-            <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer">Cancel</button>
+            <button type="button" data-modal-close class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer">Cancel</button>
             <button type="button" data-confirm-approve class="inline-flex items-center justify-center min-h-[44px] px-5 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors cursor-pointer">Finish assignment</button>
         </div>
     </x-modal>

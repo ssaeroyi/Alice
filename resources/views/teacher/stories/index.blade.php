@@ -54,7 +54,7 @@ in the library the moment you publish.
                         <button
                             type="button"
                             data-filter-drawer-open
-                            class="relative min-w-[44px] min-h-[44px] sm:min-h-[41px] inline-flex items-center gap-1.5 px-3 bg-white border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                            class="relative min-w-[44px] min-h-[44px] sm:min-h-[41px] inline-flex items-center gap-1.5 px-3 bg-white border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                             aria-label="Open Filter"
                         >
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
@@ -71,7 +71,7 @@ in the library the moment you publish.
                             @csrf
                             <button
                                 type="submit"
-                                class="inline-flex items-center justify-center gap-2 min-h-[44px] sm:min-h-[41px] px-3 sm:px-4 py-2 bg-white border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                class="inline-flex items-center justify-center gap-2 min-h-[44px] sm:min-h-[41px] px-3 sm:px-4 py-2 bg-white border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                             >
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m-4-4l4 4M12 3v13"></path></svg>
                                 <span class="hidden sm:inline" data-library-import-text>Import Alice Library</span>
@@ -105,6 +105,7 @@ the page header. Same markup, same data attributes, just free. --}}
             search-name=""
             :reset-url="route('teacher.stories.index')"
             :hideButton="true"
+            hoverTone="amber"
         >
             <input type="hidden" name="q" value="{{ request('q') }}">
 
@@ -166,7 +167,7 @@ the page header. Same markup, same data attributes, just free. --}}
                                 <a
                                     href="#"
                                     data-batch-edit
-                                    class="hidden inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors"
+                                    class="hidden inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors"
                                 >
                                     Edit
                                 </a>
@@ -184,7 +185,7 @@ the page header. Same markup, same data attributes, just free. --}}
                                     form="batch-form"
                                     name="action"
                                     value="archive"
-                                    class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                    class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                 >
                                     Archive
                                 </button>
@@ -193,7 +194,7 @@ the page header. Same markup, same data attributes, just free. --}}
                                     form="batch-form"
                                     name="action"
                                     value="duplicate"
-                                    class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                    class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                 >
                                     Duplicate
                                 </button>
@@ -207,7 +208,7 @@ the page header. Same markup, same data attributes, just free. --}}
                                 <button
                                     type="button"
                                     data-batch-clear
-                                    class="inline-flex items-center justify-center min-h-[44px] px-3 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                    class="inline-flex items-center justify-center min-h-[44px] px-3 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                 >
                                     Clear
                                 </button>
@@ -354,7 +355,7 @@ the page header. Same markup, same data attributes, just free. --}}
                                             <div class="flex items-center justify-end gap-1.5">
                                                 <a
                                                     href="{{ route('teacher.stories.edit', $story) }}"
-class="inline-flex items-center justify-center min-h-[44px] px-4 py-1.5 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-[11px] font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors">
+class="inline-flex items-center justify-center min-h-[44px] px-4 py-1.5 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-[11px] font-bold text-[#2D231E] hover:border-amber-300 transition-colors">
                                                     Edit
                                                 </a>
                                                 <div class="relative">
@@ -363,7 +364,7 @@ class="inline-flex items-center justify-center min-h-[44px] px-4 py-1.5 bg-[#F3E
                                                         data-dropdown-toggle="story-menu-{{ $story->id }}"
                                                         aria-label="More actions for {{ $story->title }}"
                                                         aria-haspopup="true"
-                                                        class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-base font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                                                        class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-base font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                                     >⋯</button>
                                                     <div id="story-menu-{{ $story->id }}" data-dropdown class="hidden absolute right-0 top-full mt-1 z-30 w-44 p-1.5 bg-white border border-[#E6DCCF] rounded-xl shadow-[0_8px_24px_rgba(45,35,30,0.15)]">
                                                         @if ($story->status !== \App\Enums\StoryStatus::Published && $completeness->publishable())
@@ -547,7 +548,7 @@ class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-emerald
                                                         @csrf
                                                         <button
                                                             type="submit"
-class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                                             >
                                                                 <span data-submit-idle>Duplicate</span>
                                                                 <span data-submit-active class="hidden"><x-spinner label="Duplicating..." /></span>
@@ -599,7 +600,7 @@ class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE
                 <button
                     type="button"
                     data-modal-close
-                    class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                    class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                 >
                     Cancel
                 </button>
@@ -633,7 +634,7 @@ class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE
                 <button
                     type="button"
                     data-modal-close
-                    class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                    class="min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                 >
                     Cancel
                 </button>

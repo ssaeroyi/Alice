@@ -7,17 +7,21 @@
     'resetUrl' => null,
     'formId' => null,
     'hideButton' => false,
+    'hoverTone' => '',
 ])
 
 @php
     $fid = $formId ?? 'filter-drawer-form';
+    // hoverTone 'amber' = the teacher side's orange outline lift; the default
+    // keeps the admin drawer's ink hover untouched.
+    $hover = $hoverTone === 'amber' ? 'hover:border-amber-300' : 'hover:border-[#2D231E]';
 @endphp
 
 @if (! $hideButton)
 <button
     type="button"
     data-filter-drawer-open
-    class="relative min-w-[44px] min-h-[44px] inline-flex items-center gap-1.5 px-3 bg-white border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+    class="relative min-w-[44px] min-h-[44px] inline-flex items-center gap-1.5 px-3 bg-white border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] {{ $hover }} transition-colors cursor-pointer"
     aria-label="Open {{ $label }}"
 >
     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
