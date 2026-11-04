@@ -86,6 +86,7 @@ test('the invite page shows students with their real avatar or a nickname initia
     $response = $this->actingAs($this->teacher)
         ->get(route('teacher.classes.members.create', $group))
         ->assertOk()
+        ->assertSee('wren.png')
         ->assertSee('Wren')
         ->assertSee($withAvatar->email)
         ->assertSee('Arlo')
@@ -96,11 +97,9 @@ test('the invite page shows students with their real avatar or a nickname initia
         fn ($circle) => trim(preg_replace('/\s+/', ' ', $circle)),
         $matches[1] ?? []
     );
-    // Both identity treatments are NEUTRAL now: initials roll for everyone,
-    // the student sprite stays student-side.
-    $this->assertContains('A', $circles);
+    // The real avatar renders; the initial-only student rolls a letter.
     $this->assertContains('W', $circles);
-    $this->assertStringContainsString('Wren', $response->getContent());
+    $this->assertNotEmpty(preg_grep('/image\/avatar\/wren\.png/', $circles));
 });
 
 test('students already in the class are not re-invited', function () {
@@ -387,12 +386,10 @@ test('class view shows members with their avatar and nickname, not a blank tile'
         ->assertOk()
         ->getContent();
 
-    // Student sprites stay student-side: teacher surfaces carry neutral
-    // initial chips instead of the cartoon avatar file.
+    // Identity = the student's real avatar sprite again.
+    $this->assertStringContainsString('image/avatar/sprout.png', $html);
     $this->assertStringContainsString($avatarOnly->email, $html);
     $this->assertStringContainsString('Myling', $html);
-    $this->assertStringContainsString('rounded-full border-2 border-[#2D231E]', $html);
-    $this->assertStringNotContainsString('image/avatar/sprout.png', $html);
     $this->assertStringContainsString($this->student->nickname, $html);
     $this->assertStringContainsString($this->student->email, $html);
     $this->assertStringNotContainsString('bg-sky-100 text-sky-700 font-extrabold', $html);
