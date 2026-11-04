@@ -407,8 +407,9 @@
                     </div>
                     {{-- Editor footer: two labeled clusters (Tools / Review) so
                          the actions read as groups, not a loose row. --}}
-                    <div class="mt-2 flex flex-wrap flex-col-reverse sm:flex-row sm:items-start justify-between gap-2">
-                        <div class="flex flex-wrap items-start gap-2" aria-label="Text tools">
+                    <div class="mt-2 flex flex-wrap flex-col-reverse sm:flex-row sm:items-stretch justify-between gap-3">
+                        <div class="min-w-0 bg-[#FAF6EE] border border-[#E6DCCF] rounded-xl p-3" aria-label="Text tools">
+                            <p class="font-pixel text-[8px] font-bold text-[#8C7B70] uppercase tracking-wider mb-2">Text tools</p>
                             <div class="flex flex-wrap items-center gap-2">
                                 <button
                                     type="button"
@@ -442,8 +443,13 @@
                                     Clean format
                                 </button>
                             </div>
+                            </div>
                         </div>
-                        <div class="flex flex-wrap items-start gap-2" aria-label="Preview and insights">
+                        </div>
+
+                        <div class="min-w-0 bg-[#FAF6EE] border border-[#E6DCCF] rounded-xl p-3" aria-label="Preview and insights">
+                            <p class="font-pixel text-[8px] font-bold text-[#8C7B70] uppercase tracking-wider mb-2">Review</p>
+                            <div class="flex flex-wrap items-center gap-2">
                             <button
                                 type="button"
                                 data-preview-story
@@ -461,6 +467,7 @@
                                 Insights
                                 <span data-rl-level-badge="content" class="hidden inline-flex items-center px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-extrabold"></span>
                             </button>
+                            </div>
                         </div>
                     </div>
                     <p data-readability-note="content" class="hidden mt-2 text-[11px] font-semibold text-[#2D231E]"></p>
