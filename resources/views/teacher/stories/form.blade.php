@@ -405,42 +405,45 @@
                             Over the {{ number_format(config('stories.content.max_words')) }} word / {{ number_format(config('stories.content.max_chars')) }} character limit. The story won't save until it fits.
                         </p>
                     </div>
-                    {{-- Editor footer: right group (Preview, Insights) reads
-                         first on phones as the row of eye-fit actions, then
-                         the tool row; desktop keeps tools left, actions right. --}}
-                    <div class="mt-2 flex flex-wrap flex-col-reverse sm:flex-row sm:items-center justify-between gap-2">
-                        <div class="flex flex-wrap items-center gap-2">
-                            <button
-                                type="button"
-                                data-grammar-check="content"
-                                data-grammar-binary="{{ config('stories.grammar.binary') }}"
-                                data-grammar-max-chars="{{ config('stories.grammar.max_chars') }}"
-                                class="inline-flex items-center justify-center gap-1.5 min-h-[40px] px-3.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs font-bold text-emerald-800 hover:bg-emerald-100 hover:border-emerald-300 transition-colors cursor-pointer disabled:opacity-50"
-                            >
-                                <span data-grammar-label="content">Check grammar</span>
-                                <span data-grammar-busy="content" class="hidden"><x-spinner label="Checking…" /></span>
-                            </button>
-                            <x-admin.info label="About the grammar check">
-                                <p>The check runs entirely in your browser with Harper. The text never leaves this device, and nothing is stored anywhere.</p>
-                                <p class="mt-2">The check is a tool, not a gate: it never blocks publishing, and if something goes wrong you can keep writing and try again later.</p>
-                            </x-admin.info>
-                            <input data-content-import type="file" accept=".txt,.md,text/plain,text/markdown" class="hidden">
-                            <button
-                                type="button"
-                                data-content-import-button="content"
-                                class="inline-flex items-center justify-center min-h-[40px] px-3.5 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
-                            >
-                                Import .txt
-                            </button>
-                            <button
-                                type="button"
-                                data-clean-format="content"
-                                class="inline-flex items-center justify-center min-h-[40px] px-3.5 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
-                            >
-                                Clean format
-                            </button>
+                    {{-- Editor footer: two labeled clusters (Tools / Review) so
+                         the actions read as groups, not a loose row. --}}
+                    <div class="mt-2 flex flex-wrap flex-col-reverse sm:flex-row sm:items-start justify-between gap-2">
+                        <div class="flex flex-wrap items-start gap-2" aria-label="Text tools">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button
+                                    type="button"
+                                    data-grammar-check="content"
+                                    data-grammar-binary="{{ config('stories.grammar.binary') }}"
+                                    data-grammar-max-chars="{{ config('stories.grammar.max_chars') }}"
+                                    class="inline-flex items-center justify-center gap-1.5 min-h-[40px] px-3.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs font-bold text-emerald-800 hover:bg-emerald-100 hover:border-emerald-300 transition-colors cursor-pointer disabled:opacity-50"
+                                >
+                                    <span data-grammar-label="content">Check grammar</span>
+                                    <span data-grammar-busy="content" class="hidden"><x-spinner label="Checking…" /></span>
+                                </button>
+                                <x-admin.info label="About the grammar check">
+                                    <p>The check runs entirely in your browser with Harper. The text never leaves this device, and nothing is stored anywhere.</p>
+                                    <p class="mt-2">The check is a tool, not a gate: it never blocks publishing, and if something goes wrong you can keep writing and try again later.</p>
+                                </x-admin.info>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <input data-content-import type="file" accept=".txt,.md,text/plain,text/markdown" class="hidden">
+                                <button
+                                    type="button"
+                                    data-content-import-button="content"
+                                    class="inline-flex items-center justify-center min-h-[40px] px-3.5 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
+                                >
+                                    Import .txt
+                                </button>
+                                <button
+                                    type="button"
+                                    data-clean-format="content"
+                                    class="inline-flex items-center justify-center min-h-[40px] px-3.5 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
+                                >
+                                    Clean format
+                                </button>
+                            </div>
                         </div>
-                        <div class="flex flex-wrap items-center gap-2">
+                        <div class="flex flex-wrap items-start gap-2" aria-label="Preview and insights">
                             <button
                                 type="button"
                                 data-preview-story
@@ -1556,8 +1559,7 @@
                             <span data-grammar-summary="content" class="text-[11px] font-bold text-right"></span>
                         </div>
                     </div>
-                    <div data-grammar-filters="content" class="hidden flex flex-wrap items-center gap-1.5 mb-3"></div>
-                    <div data-grammar-issues="content" class="space-y-2"></div>
+                    <div data-grammar-filters="content" class="hidden flex flex-wrap items-center gap-1.5 mb-3"></div>                    <div data-grammar-issues="content" class="space-y-2"></div>
                 </div>
             </div>
         </aside>

@@ -405,8 +405,30 @@ class Narration
                 $state = $coverage['covered'] === $coverage['total'] && $coverage['total'] > 0
                     ? 'narrated'
                     : 'awaiting-deploy';
+            } elseif (($progress['state'] ?? null) === 'error') {
+                // The generator itself crashed: surface it as a hard failure
+                // with the engine's message, instead of rotting as "Queued".
+                $state = 'failed';
             }
-
+        } elseif ($wanted !== null && $progress === null) {
+            // Escape hatch for the dead queue: a request nobody picked up
+            // (spawn failed or the narrating machine is down) must not sit
+            // as "Queued" forever — past one stall window it reads as failed.
+            $requested = strtotime((string) ($wanted['requested_at'] ?? ''));
+            if (in_array($state, ['missing', 'partial', 'stale'], true)
+                && is_int($requested)
+                && (time() - $requested) > self::stallSeconds()) {
+                $state = 'failed';
+                $progressOut = [
+                    'state' => 'error',
+                    'done' => 0,
+                    'total' => $coverage['total'],
+                    'current_page' => 0,
+                    'started_at' => $wanted['requested_at'],
+                    'updated_at' => $wanted['requested_at'],
+                    'error' => 'No narration engine picked up this request. Retry, or narrate from the machine that runs the Kokoro engine.',
+                ];
+            } else {
             $progressOut = [
                 'state' => $progress['state'] ?? null,
                 'done' => (int) ($progress['done'] ?? 0),
@@ -416,9 +438,10 @@ class Narration
                 'updated_at' => $progress['updated_at'] ?? null,
                 'error' => $progress['error'] ?? null,
             ];
+            }
         }
 
-        if (in_array($state, ['missing', 'partial', 'stale'], true) && $wanted !== null && $progress === null) {
+        if (in_array($state, ['missing', 'partial', 'stale'], true) && $wanted !== null && $progress === null && $state !== 'failed') {
             $state = 'queued';
         }
 
@@ -469,6 +492,7 @@ class Narration
             'generating' => ($runtime['progress']['done'] ?? 0).' of '.($runtime['progress']['total'] ?? $runtime['total']).' pages',
             'awaiting-deploy' => 'Awaiting deploy',
             'stalled' => 'Generator stalled',
+            'failed' => 'Generation failed',
             default => ucfirst((string) $runtime['state']),
         };
     }
@@ -485,6 +509,7 @@ class Narration
             'generating' => 'bg-sky-100 text-sky-700',
             'awaiting-deploy' => 'bg-sky-100 text-sky-700',
             'stalled' => 'bg-rose-100 text-rose-700',
+            'failed' => 'bg-rose-100 text-rose-700',
         ][$state] ?? 'bg-[#F3ECE0] text-[#8C7B70]';
     }
 

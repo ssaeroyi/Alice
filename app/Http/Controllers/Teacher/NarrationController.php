@@ -125,7 +125,8 @@ class NarrationController extends Controller
 
         // Detached background spawn so the PHP request returns immediately and
         // the child survives the request. cmd.exe's `start /B` on Windows;
-        // nohup + `&` on unix.
+        // nohup + `&` on unix. The script self-defaults HF_HOME/voice/model
+        // (generate_narration.py) — no env prefix needed at launch.
         if (PHP_OS_FAMILY === 'Windows') {
             $command = 'start /B "" '.$command;
         } else {

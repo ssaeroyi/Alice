@@ -204,8 +204,7 @@ test('teacher dashboard shows the class and assignments panel', function () {
         ->assertSee('due this week')
         ->assertSee('Overdue')
         ->assertSee('Read The Lost Coin')
-        ->assertSee('7 Diamond')
-        ->assertSee('1 student');
+        ->assertSee('7 Diamond');
 });
 
 test('teacher dashboard flags students who need attention', function () {

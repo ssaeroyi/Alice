@@ -578,6 +578,10 @@ function initGrammarCheck() {
         }
 
         panel.classList.remove('hidden');
+        // The analysis now renders fully inside the wide grammar modal; open it
+        // so the details get roomy space. The panel element still hosts the
+        // rows — data bindings untouched.
+        document.querySelector('[data-modal-open="grammar-check-modal"]')?.click();
         updateInsightsSummary();
     };
 

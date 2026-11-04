@@ -364,7 +364,7 @@ class="inline-flex items-center justify-center min-h-[44px] px-4 py-1.5 bg-[#F3E
                                                         data-dropdown-toggle="story-menu-{{ $story->id }}"
                                                         aria-label="More actions for {{ $story->title }}"
                                                         aria-haspopup="true"
-                                                        class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-base font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
+                                                        class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center bg-white border border-[#E6DCCF] rounded-lg text-base font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                                                     >⋯</button>
                                                     <div id="story-menu-{{ $story->id }}" data-dropdown class="hidden absolute right-0 top-full mt-1 z-30 w-44 p-1.5 bg-white border border-[#E6DCCF] rounded-xl shadow-[0_8px_24px_rgba(45,35,30,0.15)]">
                                                         @if ($story->status !== \App\Enums\StoryStatus::Published && $completeness->publishable())

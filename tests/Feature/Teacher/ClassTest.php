@@ -97,8 +97,8 @@ test('the invite page shows students with their real avatar or a nickname initia
         fn ($circle) => trim(preg_replace('/\s+/', ' ', $circle)),
         $matches[1] ?? []
     );
-    // The real avatar renders; the initial-only student rolls a letter.
-    $this->assertContains('W', $circles);
+    // The real avatar renders inside the ring; the initial-only student shows a letter.
+    $this->assertContains('A', $circles);
     $this->assertNotEmpty(preg_grep('/image\/avatar\/wren\.png/', $circles));
 });
 

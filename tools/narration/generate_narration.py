@@ -57,6 +57,13 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 
+# Model cache: when the app's launch command leaves HF_HOME unset, settle the
+# Hugging Face cache inside the app's own narration folder so a fresh server
+# never scatters ~350 MB of weights into whoever's home directory spawned us.
+os.environ.setdefault("HF_HOME", str(REPO / "storage" / "app" / "narration" / "hf"))
+os.environ.setdefault("NARRATION_VOICE", "af_heart")
+os.environ.setdefault("NARRATION_MODEL", "kokoro-v1.0")
+
 # Laravel's "local" disk root is storage/app/private on Laravel 11+.
 EXPORT_PATH = REPO / "storage" / "app" / "private" / "narration" / "export.json"
 AUDIO_ROOT = REPO / "storage" / "app" / "public" / "audio" / "stories"

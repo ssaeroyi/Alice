@@ -13,9 +13,10 @@ const STATE_CLASSES = {
     generating: 'bg-sky-100 text-sky-700',
     'awaiting-deploy': 'bg-sky-100 text-sky-700',
     stalled: 'bg-rose-100 text-rose-700',
+    failed: 'bg-rose-100 text-rose-700',
 };
 
-const REQUESTABLE = new Set(['missing', 'stale', 'partial', 'stalled']);
+const REQUESTABLE = new Set(['missing', 'stale', 'partial', 'stalled', 'failed']);
 
 function csrfToken() {
     const meta = document.querySelector('meta[name="csrf-token"]');
@@ -39,6 +40,7 @@ function buildLabel(state) {
         queued: 'Queued',
         'awaiting-deploy': 'Awaiting deploy',
         stalled: 'Generator stalled',
+        failed: 'Generation failed',
     };
     return labels[state.state] ?? state.state;
 }
@@ -166,9 +168,12 @@ export function initNarrationStatus() {
                 const data = await response.json();
 
                 if (!response.ok) {
-                    if (errorEl && data.message) {
-                        errorEl.textContent = data.message;
-                        errorEl.classList.toggle('hidden', false);
+                    if (errorEl) {
+                        errorEl.textContent = data.message ??
+                            (data.spawned === false
+                                ? 'Narration engine not configured on this server — nothing will be picked up.'
+                                : '');
+                        errorEl.classList.toggle('hidden', !errorEl.textContent);
                     }
                     if (data.status) {
                         render(data.status);

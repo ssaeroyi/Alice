@@ -350,7 +350,7 @@ test('the Publish tab auditions fresh pages with one chained native player', fun
 
     $this->actingAs($teacher)->get(route('teacher.stories.edit', $story))
         ->assertOk()
-        ->assertSee('Hear narration · saved text')
+        ->assertSee('Hear narration (saved text)')
         ->assertSee('data-hear-narration', false)
         ->assertSee('data-hear-audio', false)
         ->assertSee('section-1.mp3', false)
