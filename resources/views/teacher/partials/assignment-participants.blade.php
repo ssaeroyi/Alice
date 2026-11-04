@@ -28,24 +28,6 @@
         </div>
     @endif
 
-    @php
-        // Sort urls precomputed so Chip hrefs stay plain {{ }} interpolations;
-        // raw attribute injection through escaped Blade once broke both chips.
-        $sortUrls = collect(['name', 'score', 'time'])
-            ->mapWithKeys(fn ($key) => [$key => route('teacher.assignments.show', array_merge(
-                ['assignment' => $assignment, 'tab' => 'participants'],
-                $key === 'name' ? [] : ['sort' => $key],
-                $keyword ? ['q' => $keyword] : [],
-            ))]);
-    @endphp
-
-    <div class="flex flex-wrap items-center gap-1.5">
-        <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#8C7B70] mr-1">Order</span>
-        @foreach (['name' => 'Name', 'score' => 'Quiz score', 'time' => 'Completed'] as $key => $label)
-            <a href="{{ $sortUrls[$key] }}" class="inline-flex items-center gap-1 min-h-[28px] px-2.5 rounded-lg font-pixel text-[9px] font-bold uppercase tracking-wider transition-colors {{ $sort === $key ? 'bg-amber-400 text-[#2D231E]' : 'bg-white text-[#8C7B70] border border-[#E6DCCF] hover:border-amber-300 hover:text-[#2D231E]' }}" @if ($sort === $key) aria-current="true" @endif>{{ $label }}</a>
-        @endforeach
-    </div>
-
     @if ($assignment->status === 'draft')
         <div class="px-5 py-6 text-center bg-white border border-[#E6DCCF] rounded-xl">
             <p class="text-sm font-semibold text-[#2D231E]">Draft assignments have no results yet.</p>

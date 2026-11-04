@@ -152,28 +152,18 @@
             @endif
         </div>
 
-        {{-- ROSTER: this class's own students, card grid + in-page drawer --}}
+        {{-- ROSTER: plain list, capped, in-page drawer on click --}}
         <div>
-            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
                 <h2 class="font-pixel text-[11px] sm:text-xs font-bold text-[#2D231E] uppercase tracking-wider">
                     Students <span class="text-[#8C7B70]">({{ $members->count() }})</span>
                 </h2>
             </div>
 
             @php
-                $sortUrls = collect(['name', 'activity', 'stories', 'score'])
-                    ->mapWithKeys(fn ($key) => [$key => route('teacher.classes.show', array_merge(
-                        ['group' => $group],
-                        $key === 'name' ? [] : ['sort' => $key],
-                    ))]);
-                $chipBase = 'inline-flex items-center gap-1 min-h-[30px] px-3 rounded-lg font-pixel text-[9px] font-bold uppercase tracking-wider transition-colors';
+                $showAll = request()->boolean('all');
+                $rosterCap = $showAll ? $members->count() : min($members->count(), 8);
             @endphp
-            <div class="flex flex-wrap items-center gap-1.5 mb-3">
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#8C7B70] mr-1">Order</span>
-                @foreach (['name' => 'Name', 'activity' => 'Active', 'stories' => 'Stories', 'score' => 'Quiz score'] as $key => $label)
-                    <a href="{{ $sortUrls[$key] }}" class="{{ $chipBase }} {{ $sortParam === $key ? 'bg-amber-400 text-[#2D231E]' : 'bg-white text-[#8C7B70] border border-[#E6DCCF] hover:border-amber-300 hover:text-[#2D231E]' }}" @if ($sortParam === $key) aria-current="true" @endif>{{ $label }}</a>
-                @endforeach
-            </div>
 
             @if ($members->isEmpty())
                 <div class="border border-[#E6DCCF] rounded-lg p-6 text-center">
@@ -181,41 +171,38 @@
                     <p class="mt-1 text-sm font-semibold text-[#2D231E]">Share the join code above or invite them, and they show up here.</p>
                 </div>
             @else
-                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3">
-                    @foreach ($members as $student)
+                <div class="bg-white border border-[#E6DCCF] rounded-xl divide-y divide-[#F0E9DD] overflow-hidden">
+                    @foreach ($members->take($rosterCap) as $student)
                         @php
                             $stat = $roster[$student->id];
                             $score = $stat['score'];
                         @endphp
-                        <button type="button" data-story-drawer-open="{{ $student->id }}" class="text-left bg-white border border-[#E6DCCF] rounded-xl p-4 hover:border-amber-300 hover:shadow-[0_4px_14px_rgba(45,35,30,0.07)] transition-all cursor-pointer">
-                            <div class="flex items-center gap-3">
-                                <x-teacher.student-chip :student="$student" :size="40" />
-                                <div class="min-w-0 flex-1">
-                                    <p class="text-sm font-bold text-[#2D231E] truncate">{{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}</p>
-                                    <p class="text-[11px] font-semibold text-[#8C7B70] truncate">{{ $student->email }}</p>
-                                </div>
-                                <x-presence-dot :at="$roster[$student->id]['activity_at']" compact />
+                        <button type="button" data-story-drawer-open="{{ $student->id }}" class="w-full text-left flex items-center gap-3 px-4 py-2.5 hover:bg-[#FAF6EE] transition-colors cursor-pointer">
+                            <x-teacher.student-chip :student="$student" :size="32" />
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-bold text-[#2D231E] truncate">{{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}</p>
+                                <p class="text-[11px] font-semibold text-[#8C7B70] truncate">{{ $student->email }}</p>
                             </div>
-                            <div class="mt-3 grid grid-cols-3 gap-2 text-center">
-                                <div class="rounded-lg bg-[#FAF6EE] border border-[#E6DCCF] px-1.5 py-2">
-                                    <p class="text-sm font-extrabold tabular-nums text-[#2D231E]">{{ $stat['stories_finished'] }}</p>
-                                    <p class="text-[9px] font-bold uppercase tracking-wide text-[#8C7B70]">stories</p>
-                                </div>
-                                <div class="rounded-lg bg-[#FAF6EE] border border-[#E6DCCF] px-1.5 py-2">
-                                    <p class="text-sm font-extrabold tabular-nums {{ $score !== null ? ($stat['passed'] ? 'text-emerald-600' : 'text-rose-600') : 'text-[#B5A89C]' }}">{{ $score !== null ? $score.'%' : '—' }}</p>
-                                    <p class="text-[9px] font-bold uppercase tracking-wide text-[#8C7B70]">last quiz</p>
-                                </div>
-                                <div class="rounded-lg bg-[#FAF6EE] border border-[#E6DCCF] px-1.5 py-2">
-                                    @php $rp = $student->readingProgress; @endphp
-                                    <p class="text-[11px] font-extrabold leading-none pt-1 {{ ($rp && $rp->comprehension_level) ? 'text-[#2D231E]' : 'text-[#B5A89C]' }}">
-                                        {{ $rp && $rp->comprehension_level ? Str::limit($rp->comprehension_level->label(), 12) : '—' }}
-                                    </p>
-                                    <p class="text-[9px] font-bold uppercase tracking-wide text-[#8C7B70] mt-1">reading</p>
-                                </div>
+                            <div class="shrink-0 hidden sm:block text-right text-[11px] font-semibold text-[#8C7B70]">
+                                @if ($score !== null)
+                                    <span class="tabular-nums font-bold {{ $stat['passed'] ? 'text-emerald-600' : 'text-rose-600' }}">{{ $score }}%</span>
+                                @else
+                                    <span class="text-[#8C7B70]">No quiz yet</span>
+                                @endif
                             </div>
+                            <x-presence-dot :at="$stat['activity_at']" compact />
                         </button>
                     @endforeach
                 </div>
+
+                @if ($members->count() > 8 && ! $showAll)
+                    <a
+                        href="{{ route('teacher.classes.show', ['group' => $group, 'all' => 1]) }}"
+                        class="mt-2 inline-flex items-center min-h-[36px] text-xs font-bold text-sky-700 hover:text-sky-800 transition-colors"
+                    >
+                        View all {{ $members->count() }} students →
+                    </a>
+                @endif
             @endif
         </div>
     </div>
