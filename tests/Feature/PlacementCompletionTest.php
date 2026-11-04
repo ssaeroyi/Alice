@@ -322,7 +322,7 @@ test('an incomplete user is blocked from the hub', function () {
         ->assertRedirect(route('placement.step1'));
 });
 
-test('a completed user is redirected from placement steps to the hub', function () {
+test('a completed user is redirected from placement steps to the library', function () {
     $user = User::factory()->create();
 
     completePlacement($user, fn (array $items, string $prefix) => correctAnswersFor($items, $prefix));
@@ -331,7 +331,7 @@ test('a completed user is redirected from placement steps to the hub', function 
 
     $this->actingAs($user)
         ->get(route('placement.step1'))
-        ->assertRedirect(route('hub'));
+        ->assertRedirect(route('library'));
 });
 
 test('the score is frozen in a snapshot at completion and cannot be changed later', function () {
@@ -353,7 +353,7 @@ test('the score is frozen in a snapshot at completion and cannot be changed late
     $wrong = wrongAnswersFor($attempt->set->content['vocab'], 'vocab');
     $this->actingAs($user)
         ->post(route('placement.step2.submit'), $wrong)
-        ->assertRedirect(route('hub'));
+        ->assertRedirect(route('library'));
 
     $attempt->refresh();
 

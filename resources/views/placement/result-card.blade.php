@@ -1,44 +1,12 @@
 {{--
-    Placement result card — shared by the placement result page (step-5-result)
-    and the admin dev-tools placement preview. Variables are inherited from the
-    including view; the dev tool passes the same shapes. Pass $previewMode=true
-    to hide the personalized "start here" strip and the Enter-Hub CTA (nothing
-    on a preview should navigate a real student flow).
+    Placement result card — rendered by the placement result page
+    (step-5-result). Pass $previewMode=true to hide the personalized
+    "start here" strip and the Enter-Library CTA (nothing on a preview
+    should navigate a real student flow).
 --}}
 <!-- Completion Badge -->
 <div class="inline-flex items-center gap-2 font-pixel text-[10px] sm:text-xs bg-emerald-400 border-2 border-[#2D231E] text-[#2D231E] px-4 py-1.5 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] uppercase tracking-wider">
     <span>CHECK COMPLETE</span>
-</div>
-
-<!-- Conversational Dialogue Box with ALICE Radial Shadow -->
-<div class="flex items-center gap-3 sm:gap-4 text-left">
-
-    <!-- ALICE Mascot with Radial Shadow -->
-    <div class="shrink-0 flex items-center justify-center relative">
-        <!-- Dark Soft Radial Glow -->
-        <div class="absolute w-12 h-12 sm:w-20 sm:h-20 rounded-full bg-[#2D231E]/20 blur-md"></div>
-
-        <!-- Character Sprite -->
-        <img
-            src="{{ asset('image/Alice/Light mode/alice-lt-talking.png') }}"
-            width="1280" height="1280"
-            alt="ALICE"
-            class="relative z-10 w-14 h-14 sm:w-24 sm:h-24 object-contain scale-110 drop-shadow-[3px_3px_0px_rgba(45,35,30,1)]"
-        >
-    </div>
-
-    <!-- Hovering Speech Bubble (dialogue stays to Alice's right at all sizes) -->
-    <div class="relative flex-1 w-full min-w-0 bg-[#FAF6EE] border-2 border-[#2D231E] rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_0px_rgba(45,35,30,1)]">
-
-        <!-- Left Speech Tail (Always points left to ALICE) -->
-        <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-5 h-5 bg-[#FAF6EE] border-l-2 border-b-2 border-[#2D231E] rotate-45"></div>
-
-        <!-- Speech Content -->
-        <p class="text-xs sm:text-sm font-bold text-[#2D231E] leading-relaxed text-left">
-            You're all set! Here's your starting shelf. {{ $motivation }}
-        </p>
-    </div>
-
 </div>
 
 <!-- Starting Shelf Hero Box -->
@@ -48,7 +16,7 @@
         Grade {{ $serveGrade }}
     </div>
     <p class="text-xs font-bold text-[#2D231E]">
-        You'll start on the Grade {{ $serveGrade }} shelf in the {{ $bandLabel }} band. Short stories there are just right for building your streak.
+        You'll start on the Grade {{ $serveGrade }} shelf in the {{ $bandLabel }} band.
     </p>
 
     @if ($diagnosedBelowFloor)
@@ -74,11 +42,11 @@
 <!-- Score Summary Breakdown Grid -->
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center w-full">
     <div class="min-h-[64px] flex flex-col min-w-0 items-center justify-center gap-1 bg-[#FAF6EE] border-2 border-[#2D231E] rounded-xl px-2 py-3">
-        <span class="font-pixel text-[8px] font-bold text-[#8C7B70] uppercase leading-tight text-center break-words" title="Word meaning questions">Vocabulary</span>
+        <span class="font-pixel text-[8px] font-bold text-[#8C7B70] uppercase leading-tight text-center break-words" title="Vocabulary">Vocabulary</span>
         <span class="text-sm font-extrabold text-[#2D231E] tabular-nums">{{ $result['vocab']['correct'] }}/{{ $result['vocab']['total'] }}</span>
     </div>
     <div class="min-h-[64px] flex flex-col min-w-0 items-center justify-center gap-1 bg-[#FAF6EE] border-2 border-[#2D231E] rounded-xl px-2 py-3">
-        <span class="font-pixel text-[8px] font-bold text-[#8C7B70] uppercase leading-tight text-center break-words" title="Fill in the blank">Cloze</span>
+        <span class="font-pixel text-[8px] font-bold text-[#8C7B70] uppercase leading-tight text-center break-words" title="Cloze">Cloze</span>
         <span class="text-sm font-extrabold text-[#2D231E] tabular-nums">{{ $result['cloze']['correct'] }}/{{ $result['cloze']['total'] }}</span>
     </div>
     <div class="min-h-[64px] flex flex-col min-w-0 items-center justify-center gap-1 bg-[#FAF6EE] border-2 border-[#2D231E] rounded-xl px-2 py-3">
@@ -126,10 +94,10 @@
 @if (! ($previewMode ?? false))
     <div class="pt-2 border-t-2 border-dashed border-[#E6DCCF]">
         <a
-            href="{{ route('hub') }}"
+            href="{{ route('library') }}"
             class="w-full min-h-[44px] font-pixel text-xs sm:text-sm px-6 py-3.5 rounded-2xl bg-amber-400 border-2 border-[#2D231E] text-[#2D231E] font-bold flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(45,35,30,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] transition-all cursor-pointer uppercase"
         >
-            <span>ENTER ALICE HUB</span>
+            <span>ENTER THE LIBRARY</span>
         </a>
     </div>
 @endif
