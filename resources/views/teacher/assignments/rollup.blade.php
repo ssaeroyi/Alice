@@ -118,13 +118,13 @@
                     {{ $assignment->story?->title ?? 'No story' }}
                 </p>
                 @if ($assignment->story)
-                    <p class="mt-1 text-[11px] font-bold text-sky-700 space-x-3">
+                    <div class="mt-1 flex items-center gap-3 text-[11px] font-bold text-sky-700">
                         <a href="{{ route('teacher.stories.edit', $assignment->story) }}" class="hover:underline">View story</a>
-                        <form method="POST" action="{{ route('teacher.stories.duplicate', $assignment->story) }}" class="inline">
+                        <form method="POST" action="{{ route('teacher.stories.duplicate', $assignment->story) }}">
                             @csrf
-                            <button type="submit" class="hover:underline">Make a copy</button>
+                            <button type="submit" class="text-[11px] font-bold text-sky-700 hover:underline">Make a copy</button>
                         </form>
-                    </p>
+                    </div>
                 @endif
             </div>
 
