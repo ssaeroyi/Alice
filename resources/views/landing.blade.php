@@ -45,7 +45,7 @@
                         id="landing-alice"
                         src="{{ asset('image/Alice/Light%20mode/alice-lt-casual.png') }}"
                         width="1280" height="1280"
-                        alt="ALICE, your reading guide"
+                        alt="Alice, your guide"
                         fetchpriority="high"
                         decoding="async"
                         class="relative z-10 w-20 h-20 sm:w-24 sm:h-24 object-contain scale-110 drop-shadow-[3px_3px_0px_rgba(45,35,30,1)] landing-alice-float"
@@ -56,7 +56,7 @@
                     <div class="absolute -left-2.5 sm:-left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 bg-[#FAF6EE] border-l-2 border-b-2 border-[#2D231E] rotate-45"></div>
 
                     <p class="text-xs sm:text-sm font-bold text-[#2D231E] leading-relaxed text-left">
-                        Hi! I'm ALICE, your reading guide. I find you stories just right for you, then we play, learn, and grow together.
+                        Hi! I'm Alice, your guide around here. This website helps you practice reading and comprehension.
                     </p>
                 </div>
             </div>
