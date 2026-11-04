@@ -150,7 +150,7 @@
                         <a
                             href="@yield('back')"
                             aria-label="Back"
-                            class="w-10 h-10 shrink-0 bg-white border border-[#E6DCCF] rounded-lg flex items-center justify-center text-[#2D231E] hover:border-[#2D231E] transition-colors"
+                            class="w-10 h-10 shrink-0 bg-white border border-[#E6DCCF] rounded-lg flex items-center justify-center text-[#2D231E] hover:border-amber-300 transition-colors"
                         >
                             <x-icons.arrow-left class="w-5 h-5" />
                         </a>
@@ -161,7 +161,7 @@
                         type="button"
                         data-sidebar-toggle
                         aria-label="Open navigation"
-                        class="lg:hidden w-10 h-10 shrink-0 bg-white border border-[#E6DCCF] rounded-lg flex items-center justify-center text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                        class="lg:hidden w-10 h-10 shrink-0 bg-white border border-[#E6DCCF] rounded-lg flex items-center justify-center text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                     >
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -240,7 +240,7 @@
                     <button
                         type="button"
                         data-dropdown-toggle="admin-actor-dropdown"
-                        class="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E6DCCF] rounded-lg hover:border-[#2D231E] transition-colors cursor-pointer"
+                        class="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E6DCCF] rounded-lg hover:border-amber-300 transition-colors cursor-pointer"
                     >
                         <x-avatar :user="auth()->user()" alt="Your avatar" :size="28" />
                         <span class="text-xs font-bold text-[#2D231E] hidden sm:inline">

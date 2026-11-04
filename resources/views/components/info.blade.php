@@ -6,7 +6,7 @@
         type="button"
         data-modal-open="{{ $modal }}"
         aria-label="{{ $label }}"
-        {{ $attributes->merge(['class' => 'inline-flex align-middle items-center justify-center font-semibold w-5 h-5 shrink-0 rounded-full bg-[#F3ECE0] border border-[#2D231E]/30 text-[#2D231E] hover:bg-white hover:border-[#2D231E] hover:text-[#2D231E] transition-colors cursor-pointer']) }}
+        {{ $attributes->merge(['class' => 'inline-flex align-middle items-center justify-center font-semibold w-5 h-5 shrink-0 rounded-full bg-[#F3ECE0] border border-[#2D231E]/30 text-[#2D231E] hover:bg-white hover:border-amber-300 hover:text-[#2D231E] transition-colors cursor-pointer']) }}
     >
         <span class="font-pixel text-[10px] font-bold leading-none">?</span>
     </button>
@@ -17,7 +17,7 @@
             data-info-toggle
             aria-label="{{ $label }}"
             aria-expanded="false"
-            class="font-semibold w-5 h-5 shrink-0 inline-flex items-center justify-center rounded-full bg-[#F3ECE0] border border-[#2D231E]/30 text-[#2D231E] hover:bg-white hover:border-[#2D231E] hover:text-[#2D231E] transition-colors cursor-pointer"
+            class="font-semibold w-5 h-5 shrink-0 inline-flex items-center justify-center rounded-full bg-[#F3ECE0] border border-[#2D231E]/30 text-[#2D231E] hover:bg-white hover:border-amber-300 hover:text-[#2D231E] transition-colors cursor-pointer"
         >
             <span class="font-pixel text-[10px] font-bold leading-none">?</span>
         </button>

@@ -97,11 +97,14 @@
                 @if ($freezeHeld >= $freezeCap)
                     <span class="shrink-0 self-start sm:self-center min-h-[44px] inline-flex items-center px-4 rounded-xl border-2 border-[#2D231E] bg-[#F4F0EA] text-[#8C7B70] font-pixel text-[10px] font-bold uppercase">Full</span>
                 @else
-                    <form method="POST" action="{{ route('rewards.freeze.buy') }}" class="shrink-0 self-start sm:self-center">
+                    <form method="POST" action="{{ route('rewards.freeze.buy') }}" data-submit-guard class="shrink-0 self-start sm:self-center">
                         @csrf
                         <button type="submit" class="min-h-[44px] inline-flex items-center gap-2 px-4 rounded-xl border-2 border-[#2D231E] bg-white text-[#2D231E] font-pixel text-[10px] font-bold uppercase shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all">
-                            <span class="w-3.5 h-3.5 text-amber-600 [&>svg]:h-full [&>svg]:w-full">{!! $glyph('key') !!}</span>
-                            Buy {{ $freezeCost }} keys
+                            <span data-submit-idle class="inline-flex items-center gap-2">
+                                <span class="w-3.5 h-3.5 text-amber-600 [&>svg]:h-full [&>svg]:w-full">{!! $glyph('key') !!}</span>
+                                Buy {{ $freezeCost }} keys
+                            </span>
+                            <span data-submit-active class="hidden"><x-spinner /></span>
                         </button>
                     </form>
                 @endif

@@ -17,7 +17,7 @@
                     <button
                         type="button"
                         data-modal-open="nickname-modal"
-                        class="shrink-0 min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                        class="shrink-0 min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                     >
                         Edit
                     </button>
@@ -33,7 +33,7 @@
                     <button
                         type="button"
                         data-modal-open="name-modal"
-                        class="shrink-0 min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                        class="shrink-0 min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                     >
                         Edit
                     </button>
@@ -47,7 +47,7 @@
                     <button
                         type="button"
                         data-modal-open="email-modal"
-                        class="shrink-0 min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                        class="shrink-0 min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                     >
                         Edit
                     </button>
@@ -69,7 +69,7 @@
                 <button
                     type="button"
                     data-modal-open="password-modal"
-                    class="shrink-0 min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer"
+                    class="shrink-0 min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
                 >
                     Edit
                 </button>

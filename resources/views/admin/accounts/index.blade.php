@@ -93,7 +93,7 @@
                 <div class="hidden md:flex items-center gap-2">
                     <a
                         href="{{ route('admin.accounts.export', request()->query()) }}"
-                        class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors"
+                        class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-xs font-bold text-[#2D231E] hover:border-amber-300 transition-colors"
                     >
                         Export CSV
                     </a>

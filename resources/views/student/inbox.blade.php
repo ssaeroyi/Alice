@@ -8,10 +8,11 @@
         <div class="flex flex-wrap items-center justify-between gap-3">
             <h1 class="text-xl font-extrabold text-[#2D231E]">Inbox</h1>
             @if ($unreadCount > 0)
-                <form method="POST" action="{{ route('inbox.read-all') }}">
+                <form method="POST" action="{{ route('inbox.read-all') }}" data-submit-guard>
                     @csrf
                     <button type="submit" class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 text-xs font-bold text-sky-700 hover:text-sky-800 transition-colors cursor-pointer">
-                        Mark all as read
+                        <span data-submit-idle>Mark all as read</span>
+                        <span data-submit-active class="hidden"><x-spinner /></span>
                     </button>
                 </form>
             @endif
@@ -82,15 +83,21 @@
                                 </span>
                             </div>
                             <div class="mt-3 flex flex-wrap items-center gap-2 pl-6">
-                                <form method="POST" action="{{ route('student.classes.decide', $notification) }}">
+                                <form method="POST" action="{{ route('student.classes.decide', $notification) }}" data-submit-guard>
                                     @csrf
                                     <input type="hidden" name="decision" value="accept">
-                                    <button type="submit" class="inline-flex items-center justify-center min-h-[44px] px-5 py-2 rounded-xl bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 transition-colors cursor-pointer">Accept</button>
+                                    <button type="submit" class="inline-flex items-center justify-center min-h-[44px] px-5 py-2 rounded-xl bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 transition-colors cursor-pointer">
+                                        <span data-submit-idle>Accept</span>
+                                        <span data-submit-active class="hidden"><x-spinner /></span>
+                                    </button>
                                 </form>
-                                <form method="POST" action="{{ route('student.classes.decide', $notification) }}">
+                                <form method="POST" action="{{ route('student.classes.decide', $notification) }}" data-submit-guard>
                                     @csrf
                                     <input type="hidden" name="decision" value="decline">
-                                    <button type="submit" class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 rounded-xl bg-white border-2 border-[#E6DCCF] text-sm font-bold text-[#8C7B70] hover:text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer">Not now</button>
+                                    <button type="submit" class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 rounded-xl bg-white border-2 border-[#E6DCCF] text-sm font-bold text-[#8C7B70] hover:text-[#2D231E] hover:border-[#2D231E] transition-colors cursor-pointer">
+                                        <span data-submit-idle>Not now</span>
+                                        <span data-submit-active class="hidden"><x-spinner /></span>
+                                    </button>
                                 </form>
                             </div>
                         </div>
@@ -121,34 +128,40 @@
                                     {!! \App\Support\LibraryPresentation::iconGlyph('ui', 'key') !!}
                                     +{{ (int) config('placement.welcome_kit.keys') }} keys
                                 </span>
-                                <form method="POST" action="{{ route('inbox.claim', $notification) }}">
+                                <form method="POST" action="{{ route('inbox.claim', $notification) }}" data-submit-guard>
                                     @csrf
-                                    <button type="submit" class="inline-flex items-center justify-center min-h-[44px] px-5 py-2 rounded-xl bg-amber-400 border-2 border-[#2D231E] text-[#2D231E] text-sm font-extrabold hover:bg-amber-500 transition-colors cursor-pointer uppercase shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none">Claim</button>
+                                    <button type="submit" class="inline-flex items-center justify-center min-h-[44px] px-5 py-2 rounded-xl bg-amber-400 border-2 border-[#2D231E] text-[#2D231E] text-sm font-extrabold hover:bg-amber-500 transition-colors cursor-pointer uppercase shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none">
+                                        <span data-submit-idle>Claim</span>
+                                        <span data-submit-active class="hidden"><x-spinner /></span>
+                                    </button>
                                 </form>
                             </div>
                         </div>
                     @else
-                        <form method="POST" action="{{ route('inbox.read', $notification) }}">
+                        <form method="POST" action="{{ route('inbox.read', $notification) }}" data-submit-guard>
                             @csrf
                             <button
                                 type="submit"
                                 class="w-full text-left flex items-start gap-3 p-4 rounded-2xl border-2 {{ $notification->read_at ? 'bg-white border-[#E6DCCF]' : 'bg-amber-50 border-[#2D231E] shadow-[3px_3px_0px_0px_rgba(45,35,30,0.9)]' }} transition-colors hover:bg-[#FAF6EE] cursor-pointer"
                             >
-                                <span class="mt-1 w-3 h-3 shrink-0 rounded-full {{ $notification->read_at ? 'bg-[#E6DCCF]' : 'bg-amber-400' }}"></span>
-                                <span class="flex-1 min-w-0">
-                                    <span class="flex items-center justify-between gap-2">
-                                        <span class="inline-flex flex-wrap items-center gap-2">
-                                            @if ($pill)
-                                                <span class="text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $pillClass }}">{{ $pill }}</span>
-                                            @endif
-                                            <span class="text-sm font-extrabold text-[#2D231E]">{{ $notification->title }}</span>
+                                <span data-submit-idle class="contents">
+                                    <span class="mt-1 w-3 h-3 shrink-0 rounded-full {{ $notification->read_at ? 'bg-[#E6DCCF]' : 'bg-amber-400' }}"></span>
+                                    <span class="flex-1 min-w-0">
+                                        <span class="flex items-center justify-between gap-2">
+                                            <span class="inline-flex flex-wrap items-center gap-2">
+                                                @if ($pill)
+                                                    <span class="text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $pillClass }}">{{ $pill }}</span>
+                                                @endif
+                                                <span class="text-sm font-extrabold text-[#2D231E]">{{ $notification->title }}</span>
+                                            </span>
+                                            <time class="text-[11px] font-bold text-[#8C7B70] shrink-0">{{ $notification->created_at->diffForHumans() }}</time>
                                         </span>
-                                        <time class="text-[11px] font-bold text-[#8C7B70] shrink-0">{{ $notification->created_at->diffForHumans() }}</time>
+                                        @if ($notification->body)
+                                            <span class="block text-sm font-semibold text-[#8C7B70] mt-1">{{ $notification->body }}</span>
+                                        @endif
                                     </span>
-                                    @if ($notification->body)
-                                        <span class="block text-sm font-semibold text-[#8C7B70] mt-1">{{ $notification->body }}</span>
-                                    @endif
                                 </span>
+                                <span data-submit-active class="hidden"><x-spinner /></span>
                                 <svg class="w-4 h-4 mt-1 shrink-0 text-[#8C7B70]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
                                 </svg>

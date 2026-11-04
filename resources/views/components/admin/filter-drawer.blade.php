@@ -12,9 +12,9 @@
 
 @php
     $fid = $formId ?? 'filter-drawer-form';
-    // hoverTone 'amber' = the teacher side's orange outline lift; the default
-    // keeps the admin drawer's ink hover untouched.
-    $hover = $hoverTone === 'amber' ? 'hover:border-amber-300' : 'hover:border-[#2D231E]';
+    // hoverTone 'ink' = the admin drawer's standing ink hover; anything else
+    // (teacher pages pass 'amber') lifts orange instead.
+    $hover = $hoverTone === 'ink' ? 'hover:border-[#2D231E]' : 'hover:border-amber-300';
 @endphp
 
 @if (! $hideButton)

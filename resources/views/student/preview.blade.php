@@ -46,7 +46,7 @@
                 </span>
             @endif
 
-            <form method="POST" action="{{ route('story.favorite', $story) }}" class="absolute top-3 right-3">
+            <form method="POST" action="{{ route('story.favorite', $story) }}" data-submit-guard class="absolute top-3 right-3">
                 @csrf
                 <button
                     type="submit"
@@ -54,8 +54,8 @@
                     aria-label="{{ $favorite ? 'Remove from your shelf' : 'Save to your shelf' }}"
                     class="min-h-[44px] min-w-[44px] px-3 inline-flex items-center justify-center gap-1.5 font-pixel text-[9px] font-bold uppercase rounded-xl border-2 border-[#2D231E] cursor-pointer transition-all active:translate-x-[1px] active:translate-y-[1px] {{ $favorite ? 'bg-rose-100 text-rose-600 shadow-[1px_1px_0px_0px_rgba(45,35,30,1)]' : 'bg-white text-[#2D231E] shadow-[2px_2px_0px_0px_rgba(45,35,30,1)]' }}"
                 >
-                    <x-icons.heart class="w-4 h-4 {{ $favorite ? 'fill-current' : '' }}" />
-                    {{ $favorite ? 'SAVED' : 'SAVE' }}
+                    <span data-submit-idle class="inline-flex items-center gap-1.5"><x-icons.heart class="w-4 h-4 {{ $favorite ? 'fill-current' : '' }}" />{{ $favorite ? 'SAVED' : 'SAVE' }}</span>
+                    <span data-submit-active class="hidden"><x-spinner /></span>
                 </button>
             </form>
         </div>

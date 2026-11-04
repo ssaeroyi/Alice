@@ -29,7 +29,7 @@
                                 @if ($error['account_id'])
                                     <a
                                         href="{{ route('admin.accounts.show', $error['account_id']) }}"
-                                        class="inline-flex items-center min-h-[44px] px-3 py-1.5 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-[11px] font-bold text-[#2D231E] hover:border-[#2D231E] transition-colors"
+                                        class="inline-flex items-center min-h-[44px] px-3 py-1.5 bg-[#F3ECE0] border border-[#E6DCCF] rounded-lg text-[11px] font-bold text-[#2D231E] hover:border-amber-300 transition-colors"
                                     >
                                         {{ $error['nickname'] ?: 'Account #'.$error['account_id'] }}
                                     </a>
