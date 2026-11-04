@@ -405,12 +405,12 @@ test('notify action dispatches a new-assignment notice to the audience and is id
 
     $this->assertDatabaseHas('notifications', [
         'user_id' => $this->student->id,
-        'type' => 'assignment.new',
+        'type' => 'assignment.reminder',
         'link' => route('student.assignments.show', $assignment),
     ]);
 
     $count = Notification::where('user_id', $this->student->id)
-        ->where('type', 'assignment.new')
+        ->where('type', 'assignment.reminder')
         ->where('link', route('student.assignments.show', $assignment))
         ->count();
 
@@ -420,7 +420,7 @@ test('notify action dispatches a new-assignment notice to the audience and is id
         ->assertRedirect();
 
     $this->assertSame(1, Notification::where('user_id', $this->student->id)
-        ->where('type', 'assignment.new')
+        ->where('type', 'assignment.reminder')
         ->where('link', route('student.assignments.show', $assignment))
         ->count());
 });

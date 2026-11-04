@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Teacher;
 
+use App\Enums\Role;
 use App\Enums\StoryStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Assignment;
 use App\Models\AssignmentMark;
 use App\Models\Group;
+use App\Models\Question;
 use App\Models\Story;
 use App\Models\StoryProgress;
 use App\Models\TestAttempt;
@@ -15,6 +17,7 @@ use App\Support\AssignmentAudience;
 use App\Support\Audit;
 use App\Support\IntegritySignals;
 use App\Support\NotificationService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -156,10 +159,13 @@ class AssignmentController extends Controller
     {
         $this->authorize('view', $assignment);
 
-        $data = $this->rollupData($assignment, $request->query('q'));
+        $data = $this->rollupData($assignment, $request->query('q'), $request->query('sort'));
 
         return view('teacher.assignments.rollup', [
             'assignment' => $assignment,
+            'tab' => in_array($request->query('tab'), ['participants', 'questions', 'overview'], true)
+                ? $request->query('tab')
+                : 'participants',
             ...$data,
         ]);
     }
@@ -171,9 +177,12 @@ class AssignmentController extends Controller
      * teacher-marked student ids. Kept in one place so the page and the export
      * can never drift.
      */
-    private function rollupData(Assignment $assignment, ?string $q = null): array
+    private function rollupData(Assignment $assignment, ?string $q = null, ?string $sort = null): array
     {
         $assignment->load(['story', 'targets.user']);
+
+        $sorts = ['name', 'accuracy', 'score', 'time'];
+        $sort = in_array($sort, $sorts, true) ? $sort : 'name';
 
         $audience = AssignmentAudience::resolve($assignment)
             ->when($q !== null && trim($q) !== '', function ($query) use ($q) {
@@ -269,6 +278,31 @@ class AssignmentController extends Controller
             ]];
         });
 
+        // Server-side roster ordering: name is the default, score rides the
+        // latest attempt's percentage (unattempted students keep their name
+        // position), time rides the completion timestamp. A copied audience
+        // is returned so the sheets never sort under the drawer's feet.
+        $nameOf = fn ($student) => Str::of(trim(($student->last_name ?? '').' '.($student->first_name ?? '')))->trim()->__toString();
+        $scoreOf = fn ($student) => $quizSummaries->get($student->id)['score'] ?? -1;
+        $timeOf = fn ($student) => ($drawer->get($student->id)['mark']?->created_at
+            ?: ($drawer->get($student->id)['progress']?->completed_at ?? null))?->timestamp ?? 0;
+
+        $audience = match ($sort) {
+            'time' => $audience->sort(function ($a, $b) use ($timeOf, $nameOf) {
+                if ($timeOf($a) !== $timeOf($b)) {
+                    return $timeOf($b) <=> $timeOf($a);
+                }
+                return $nameOf($a) <=> $nameOf($b);
+            })->values(),
+            'score' => $audience->sort(function ($a, $b) use ($scoreOf, $nameOf) {
+                if ($scoreOf($a) !== $scoreOf($b)) {
+                    return $scoreOf($b) <=> $scoreOf($a);
+                }
+                return $nameOf($a) <=> $nameOf($b);
+            })->values(),
+            default => $audience->sortBy($nameOf)->values(),
+        };
+
         return [
             'audience' => $audience,
             'hasQuiz' => $hasQuiz,
@@ -278,6 +312,139 @@ class AssignmentController extends Controller
             'completion' => $completion,
             'drawer' => $drawer,
             'keyword' => $q,
+            'sort' => $sort,
+            ...$this->reportAggregates($assignment, $audience, $quizSummaries, $allAttempts, $completion, $hasQuiz),
+        ];
+    }
+
+    /**
+     * The report-page aggregates (the headline strip, the per-question stats
+     * for the Questions tab and the student x question grid for the Overview
+     * tab). Everything derives from data already stored — progress rows,
+     * latest attempt scores and the answer audit inside each attempt's
+     * answers_json — so nothing here can contradict the roster tables.
+     */
+    private function reportAggregates(Assignment $assignment, Collection $audience, $quizSummaries, Collection $allAttempts, array $completion, bool $hasQuiz): array
+    {
+        $audienceCount = max(1, $assignment->audienceCount());
+        $completedCount = $assignment->completedCount();
+
+        $started = collect($completion)->filter(fn ($row) => $row['read'] || $row['quiz'])->count();
+
+        $attempted = $quizSummaries->filter(fn ($s) => $s['attempted']);
+        $avgScore = $attempted->isNotEmpty()
+            ? (int) round($attempted->avg(fn ($s) => (float) $s['score']))
+            : null;
+        $passCount = $attempted->filter(fn ($s) => $s['passed'])->count();
+        $passRate = $attempted->isNotEmpty()
+            ? (int) round(100 * $passCount / $attempted->count())
+            : null;
+
+        $headline = [
+            'audience_count' => $assignment->audienceCount(),
+            'completed_count' => $completedCount,
+            'completion_pct' => (int) round(100 * $completedCount / $audienceCount),
+            'started_count' => $started,
+            'avg_score' => $avgScore,
+            'pass_count' => $passCount,
+            'pass_rate' => $passRate,
+            'attempted_count' => $attempted->count(),
+        ];
+
+        // Per-question truth: stricter than the pass flag — a question counts
+        // as correct only at FULL points (earned == worth), partial credit
+        // shows separately. No per-question time exists in stored data, so
+        // none is shown (the getter never fabricates).
+        $questions = collect();
+        $grid = [];
+        $questionIds = [];
+        $questionStats = [];
+
+        if ($hasQuiz && $assignment->story_id !== null) {
+            $questionIds = Question::query()
+                ->where('story_id', $assignment->story_id)
+                ->orderBy('position')
+                ->orderBy('id')
+                ->pluck('question_text', 'id');
+
+            $latest = $allAttempts->mapWithKeys(fn ($rows, $userId) => [$userId => $rows->sortByDesc('created_at')->first()]);
+
+            $grid = $audience->keyBy('id')->map(function ($student) use ($latest, $questionIds) {
+                $attempt = $latest->get($student->id);
+                $items = collect($attempt?->answers_json['items'] ?? [])->keyBy('question_id');
+
+                $cells = [];
+                foreach ($questionIds as $questionId => $text) {
+                    /** @var array|null $item */
+                    $item = $items->get($questionId);
+                    $worth = (int) ($item['worth'] ?? 0);
+                    $earned = (int) round((float) ($item['earned'] ?? 0));
+
+                    if ($attempt === null || $item === null || $worth <= 0) {
+                        $cells[$questionId] = ['state' => 'none'];
+                    } elseif ($earned >= $worth) {
+                        $cells[$questionId] = ['state' => 'correct'];
+                    } elseif ($earned > 0) {
+                        $cells[$questionId] = ['state' => 'partial'];
+                    } else {
+                        $cells[$questionId] = ['state' => 'wrong'];
+                    }
+
+                    if ($item !== null) {
+                        $cells[$questionId]['answer'] = is_string($item['value'] ?? null)
+                            ? (string) $item['value']
+                            : json_encode($item['value'] ?? '');
+                        $cells[$questionId]['earned'] = $earned.' of '.$worth;
+                    }
+                }
+
+                return [
+                    'student' => $student,
+                    'score' => $attempt?->score_pct,
+                    'passed' => (bool) ($attempt?->passed ?? false),
+                    'cells' => $cells,
+                ];
+            });
+
+            $questionStats = $questionIds->mapWithKeys(function ($text, $questionId) use ($grid): array {
+                $correct = 0;
+                $partial = 0;
+                $wrong = 0;
+
+                foreach ($grid as $row) {
+                    match ($row['cells'][$questionId]['state'] ?? 'none') {
+                        'correct' => $correct++,
+                        'partial' => $partial++,
+                        'wrong' => $wrong++,
+                        default => null,
+                    };
+                }
+
+                return [$questionId => [
+                    'text' => $text,
+                    'correct' => $correct,
+                    'partial' => $partial,
+                    'wrong' => $wrong,
+                    'correct_pct' => $correct + $partial > 0
+                        ? (int) round(100 * $correct / max(1, $correct + $partial + $wrong))
+                        : 0,
+                ]];
+            })->all();
+        }
+
+        return [
+            'headline' => $headline,
+            'questions' => $questions,
+            'grid' => collect($grid),
+            'questionStats' => $questionStats,
+            // Hard first: easiest questions sink to the bottom of the tab.
+            'questionRows' => collect($questionStats)
+                ->sortBy([
+                    ['correct_pct', 'desc'],
+                    ['wrong', 'desc'],
+                ])
+                ->values()
+                ->all(),
         ];
     }
 
@@ -334,7 +501,7 @@ class AssignmentController extends Controller
     {
         $this->authorize('view', $assignment);
 
-        $data = $this->rollupData($assignment, $request->query('q'));
+        $data = $this->rollupData($assignment, $request->query('q'), $request->query('sort'));
         $audience = $data['audience'];
         $quizSummaries = $data['quizSummaries'];
         $markedIds = $data['markedIds'];
@@ -344,11 +511,28 @@ class AssignmentController extends Controller
 
         $filename = 'assignment-'.$assignment->id.'-'.Str::slug($assignment->title).'.csv';
 
-        return response()->streamDownload(function () use ($audience, $quizSummaries, $markedIds, $completion) {
+        // Per-question columns ride along for quiz stories: one column per
+        // question (C = correct, P = partial, X = wrong, - = no attempt) so
+        // anyone opening the file sees the Overview grid in spreadsheet form.
+        $questionStats = $data['questionStats'];
+        $gridIds = $data['grid'];
+        $questionIds = array_keys($questionStats);
+
+        return response()->streamDownload(function () use ($audience, $quizSummaries, $markedIds, $completion, $questionIds, $gridIds) {
             $handle = fopen('php://output', 'w');
 
             fwrite($handle, "\xEF\xBB\xBF");
-            fputcsv($handle, ['Student', 'Status', 'Quiz score', 'Percentage', 'Passed', 'Teacher marked']);
+            fputcsv($handle, array_merge(
+                ['Student', 'Status', 'Quiz score', 'Percentage', 'Passed', 'Teacher marked'],
+                array_map(fn ($id) => 'Question '.$id, $questionIds),
+            ));
+
+            $flag = fn ($state) => match ($state) {
+                'correct' => 'C',
+                'partial' => 'P',
+                'wrong' => 'X',
+                default => '-',
+            };
 
             foreach ($audience as $student) {
                 $summary = $quizSummaries->get($student->id);
@@ -359,14 +543,16 @@ class AssignmentController extends Controller
                     ? 'Done'
                     : ($marked ? 'Done (teacher)' : ($progress['read'] || $progress['quiz'] ? 'In progress' : 'Not started'));
 
-                fputcsv($handle, [
+                $row = $gridIds->get($student->id);
+
+                fputcsv($handle, array_merge([
                     $student->nickname ?? strtok($student->email, '@'),
                     $status,
                     $summary && $summary['attempted'] ? ''.$summary['raw'] : '—',
                     $summary && $summary['attempted'] ? round((float) $summary['score']).'%' : '—',
                     $summary && $summary['attempted'] ? ($summary['passed'] ? 'Yes' : 'No') : '—',
                     $marked ? 'Yes' : '—',
-                ]);
+                ], array_map(fn ($id) => isset($row['cells'][$id]) ? $flag($row['cells'][$id]['state']) : '—', $questionIds)));
             }
 
             fclose($handle);
@@ -508,10 +694,14 @@ class AssignmentController extends Controller
             ->whereIn('status', ['active', 'archived'])
             ->first();
 
-        if ($assignment === null) {
-            return redirect()
-                ->route(auth()->check() ? 'hub' : 'login')
-                ->with('toast', ['message' => "We couldn't open that link. Ask your teacher to share it again."]);
+        // Contract: a share link that doesn't resolve to a live assignment is
+        // a plain 404 - there is nothing to show a student about a draft.
+        abort_if($assignment === null, 404);
+
+        $user = auth()->user();
+
+        if ($user === null) {
+            return redirect()->route('login');
         }
 
         $group = $assignment->group;
@@ -523,21 +713,18 @@ class AssignmentController extends Controller
             'code' => $code,
         ]);
 
-        $user = auth()->user();
-
-        if ($user !== null && in_array($user->role, [Role::Teacher, Role::Admin], true)) {
+        if (in_array($user->role, [Role::Teacher, Role::Admin], true)) {
             return redirect()->route('teacher.assignments.show', $assignment);
         }
 
         if ($group === null) {
-            return redirect()
-                ->route('hub')
-                ->with('toast', ['message' => "That class no longer exists. Ask your teacher for a new link."]);
+            // Classless assignment: always visible to every student account.
+            return redirect()->route('student.assignments.show', $assignment);
         }
 
         // Already visible to the student (includes every audience member):
         // straight in.
-        if ($user !== null && $assignment->isVisibleTo($user)) {
+        if ($assignment->isVisibleTo($user)) {
             return redirect()->route('student.assignments.show', $assignment);
         }
 

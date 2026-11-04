@@ -21,10 +21,41 @@
             </form>
         </div>
 
-        {{-- Join code + description --}}
-        <div class="bg-white border border-[#E6DCCF] rounded-xl p-5 space-y-4">
+        {{-- HERO STRIP: how this class is doing overall --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+            <x-teacher.tile
+                label="Completion"
+                :value="$tiles['completion_pct'] !== null ? $tiles['completion_pct'].'%' : '—'"
+                :sub="$tiles['assignments_total'] > 0 ? 'across '.Str::plural('assignment', $tiles['assignments_total']) : 'no assignments yet'"
+                :ring="$tiles['completion_pct'] ?? 0"
+                tooltip="Average completion of this class's assignments."
+            />
+            <x-teacher.tile
+                label="Quiz score"
+                :value="$tiles['avg_score'] !== null ? $tiles['avg_score'].'%' : '—'"
+                :sub="$tiles['avg_score'] !== null ? 'latest attempt average' : 'no quizzes yet'"
+                :ring="$tiles['avg_score'] ?? 0"
+                tooltip="Average of each member's most recent quiz attempt."
+            />
+            <x-teacher.tile
+                label="Stories finished"
+                :value="$tiles['stories_finished']"
+                :sub="Str::plural('member story', $tiles['stories_finished']).' completed'"
+                :bar="min(100, $tiles['stories_finished'] * 10)"
+            />
+            <x-teacher.tile
+                label="Active today"
+                :value="$tiles['active_today'].' / '.$tiles['member_count']"
+                :sub="$tiles['active_today'] > 0 ? $tiles['active_today'].' of '.$tiles['member_count'].' members online' : 'nobody online yet today'"
+                :bar="$tiles['member_count'] > 0 ? (int) round(100 * $tiles['active_today'] / $tiles['member_count']) : 0"
+                :barColor="$tiles['active_today'] > 0 ? 'bg-amber-400' : 'bg-[#F3ECE0]'"
+            />
+        </div>
+
+        {{-- Meta card: join code + description side by side --}}
+        <div class="bg-white border border-[#E6DCCF] rounded-xl p-5 grid gap-5 lg:grid-cols-2">
             <div>
-                <p class="text-xs font-bold text-[#2D231E] uppercase tracking-wide mb-2">Join code</p>
+                <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#8C7B70] mb-1.5">Join code</p>
                 <div class="flex flex-wrap items-center gap-3">
                     <span class="text-2xl font-mono font-extrabold text-[#2D231E]">{{ $group->join_code }}</span>
                     <button
@@ -32,14 +63,16 @@
                         data-copy-code
                         data-code="{{ $group->join_code }}"
                         class="inline-flex items-center gap-1.5 min-h-[36px] text-xs font-bold px-3 py-1.5 rounded-lg bg-[#F3ECE0] border border-[#E6DCCF] text-[#2D231E] hover:border-amber-300 transition-colors cursor-pointer"
-                >
-                    Copy code
-                </button>
+                    >
+                        Copy code
+                    </button>
+                    <a href="{{ route('teacher.classes.members.create', $group) }}" class="inline-flex items-center gap-1.5 min-h-[36px] text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors">
+                        Invite students
+                    </a>
                 </div>
             </div>
-
-            <div class="border-t border-[#E6DCCF] pt-4">
-                <p class="text-xs font-bold text-[#2D231E] uppercase tracking-wide mb-2">Class description</p>
+            <div class="lg:border-l lg:border-[#E6DCCF] lg:pl-5">
+                <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#8C7B70] mb-1.5">Class notes</p>
                 <form method="POST" action="{{ route('teacher.classes.update', $group) }}" data-submit-guard class="space-y-2">
                     @csrf
                     @method('PATCH')
@@ -48,7 +81,7 @@
                         rows="3"
                         maxlength="2000"
                         placeholder="What is this class about? Students see this on the class page."
-                        class="w-full px-3 py-2.5 border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-sky-600"
+                        class="w-full px-3 py-2.5 border border-[#E6DCCF] rounded-lg text-sm font-semibold text-[#2D231E] focus:outline-none focus:border-amber-300"
                     >{{ old('description', $group->description) }}</textarea>
                     <div class="flex justify-end">
                         <button type="submit" class="inline-flex items-center min-h-[36px] text-xs font-bold px-4 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors cursor-pointer">
@@ -60,10 +93,10 @@
             </div>
         </div>
 
-        {{-- Assignments --}}
-        <div class="bg-white border border-[#E6DCCF] rounded-xl p-5">
-            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-                <h3 class="text-base font-extrabold text-[#2D231E]">Assignments</h3>
+        {{-- Assignments strip --}}
+        <div>
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+                <h2 class="font-pixel text-[11px] sm:text-xs font-bold text-[#2D231E] uppercase tracking-wider">Assignments</h2>
                 <div class="flex flex-wrap items-center gap-2">
                     <a
                         href="{{ route('teacher.assignments.index', ['class' => $group->id]) }}"
@@ -80,38 +113,35 @@
                 </div>
             </div>
 
-            @if ($group->assignments->isEmpty())
+            @if ($assignmentRows->isEmpty())
                 <div class="border border-[#E6DCCF] rounded-lg p-6 text-center">
                     <p class="text-sm font-bold text-[#2D231E]">Nothing assigned yet</p>
                     <p class="mt-1 text-sm font-semibold text-[#2D231E]">Assign a story to this class and it'll show up here for you to track.</p>
                     <a href="{{ route('teacher.assignments.create', ['class' => $group->id]) }}" class="mt-3 inline-flex items-center gap-1 text-sm font-bold text-sky-700 hover:text-sky-800">Assign a story →</a>
                 </div>
             @else
-                <div class="space-y-2">
-                    @foreach ($group->assignments->take(3) as $assignment)
-                        <a href="{{ route('teacher.assignments.show', $assignment) }}" class="block bg-white border border-[#E6DCCF] rounded-lg p-4 hover:border-sky-500 hover:shadow-[0_4px_12px_rgba(45,35,30,0.08)] transition-all">
+                <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                    @foreach ($assignmentRows as $row)
+                        <a href="{{ route('teacher.assignments.show', $row['assignment']) }}" class="block bg-white border border-[#E6DCCF] rounded-xl p-4 hover:border-amber-300 hover:shadow-[0_4px_14px_rgba(45,35,30,0.07)] transition-all">
                             <div class="flex items-start justify-between gap-2">
                                 <div class="min-w-0">
-                                    <span class="block text-sm font-extrabold text-[#2D231E] truncate">{{ $assignment->title }}</span>
-                                    <span class="block text-xs font-semibold text-[#2D231E] mt-0.5">{{ $assignment->story?->title ?? 'No story attached' }}</span>
+                                    <span class="block text-sm font-extrabold text-[#2D231E] truncate">{{ $row['assignment']->title }}</span>
+                                    <span class="block text-xs font-semibold text-[#2D231E] mt-0.5 truncate">{{ $row['assignment']->story?->title ?? 'No story' }}</span>
                                 </div>
-                                <span class="shrink-0 {{ $assignment->status === 'active' ? 'bg-emerald-100 text-emerald-700' : ($assignment->status === 'cancelled' ? 'bg-rose-100 text-rose-700' : ($assignment->status === 'archived' ? 'bg-stone-200 text-stone-700' : 'bg-amber-100 text-amber-700')) }} capitalize text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full">
-                                    {{ $assignment->status === 'archived' ? 'Finished' : $assignment->status }}
+                                <span class="shrink-0 {{ $row['assignment']->status === 'active' ? 'bg-emerald-100 text-emerald-700' : ($row['assignment']->status === 'cancelled' ? 'bg-rose-100 text-rose-700' : ($row['assignment']->status === 'archived' ? 'bg-stone-200 text-stone-700' : 'bg-amber-100 text-amber-700')) }} capitalize text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full">
+                                    {{ $row['assignment']->status === 'archived' ? 'Finished' : $row['assignment']->status }}
                                 </span>
                             </div>
-                            <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] font-bold">
-                                <span class="text-[#2D231E] whitespace-nowrap">
-                                    @if ($assignment->due_at)
-                                        Due {{ $assignment->due_at->format('M j, Y') }}
+                            <div class="mt-3 flex items-end justify-between gap-3">
+                                <div class="min-w-0 text-[11px] font-bold text-[#2D231E] space-y-0.5">
+                                    @if ($row['assignment']->due_at)
+                                        <p class="{{ $row['assignment']->isOverdue() ? 'text-rose-600' : '' }}">Due {{ $row['assignment']->due_at->format('M j, Y') }}</p>
                                     @else
-                                        No due date, assigned {{ optional($assignment->gateStartsAt())->format('M j') }}
+                                        <p class="text-[#8C7B70]">No due date</p>
                                     @endif
-                                </span>
-                                @if ($assignment->status === 'active')
-                                    <span class="{{ $assignment->isOverdue() ? 'text-rose-600' : 'text-emerald-700' }} whitespace-nowrap">
-                                        {{ $assignment->completedCount() }}/{{ $assignment->audienceCount() }} done
-                                    </span>
-                                @endif
+                                    <p class="text-[#8C7B70]">{{ $row['started'] }} started · {{ $row['completed'] }}/{{ $row['audience'] }} done</p>
+                                </div>
+                                <x-teacher.ring :percent="$row['pct']" />
                             </div>
                         </a>
                     @endforeach
@@ -119,75 +149,83 @@
             @endif
         </div>
 
-        {{-- Members --}}
-        <div class="bg-white border border-[#E6DCCF] rounded-xl p-5">
+        {{-- ROSTER: this class's own students, card grid + in-page drawer --}}
+        <div>
             <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                <h3 class="text-base font-extrabold text-[#2D231E]">Students in this class</h3>
-                <div class="flex items-center gap-2">
-                    <a href="{{ route('teacher.roster', ['class' => $group->id]) }}" class="inline-flex items-center gap-1.5 min-h-[36px] text-xs font-bold px-3 py-1.5 rounded-lg bg-[#F3ECE0] border border-[#E6DCCF] text-[#2D231E] hover:border-amber-300 transition-colors">
-                        View all
-                    </a>
-                    <a href="{{ route('teacher.classes.members.create', $group) }}" class="inline-flex items-center gap-1.5 min-h-[36px] text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors">
-                        Invite students
-                    </a>
-                </div>
+                <h2 class="font-pixel text-[11px] sm:text-xs font-bold text-[#2D231E] uppercase tracking-wider">
+                    Students <span class="text-[#8C7B70]">({{ $members->count() }})</span>
+                </h2>
             </div>
 
-            @if ($group->members->isEmpty())
-                <p class="text-sm font-semibold text-[#2D231E]">No students yet. Share the join code above or invite them.</p>
+            @php
+                $sortChip = fn ($key, $label) => 'href="'.route('teacher.classes.show', ['group' => $group, 'sort' => $key === 'name' ? null : $key]).'" class="inline-flex items-center gap-1 min-h-[30px] px-3 rounded-lg font-pixel text-[9px] font-bold uppercase tracking-wider transition-colors '.($sortParam === $key ? 'bg-amber-400 text-[#2D231E]' : 'bg-white text-[#8C7B70] border border-[#E6DCCF] hover:border-amber-300 hover:text-[#2D231E]').'"';
+            @endphp
+            <div class="flex flex-wrap items-center gap-1.5 mb-3">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#8C7B70] mr-1">Order</span>
+                <a {{ $sortChip('name', '') }}>{{ 'Name' }}</a>
+                <a {{ $sortChip('activity', '') }}>{{ 'Active' }}</a>
+                <a {{ $sortChip('stories', '') }}>{{ 'Stories' }}</a>
+                <a {{ $sortChip('score', '') }}>{{ 'Quiz score' }}</a>
+            </div>
+
+            @if ($members->isEmpty())
+                <div class="border border-[#E6DCCF] rounded-lg p-6 text-center">
+                    <p class="text-sm font-bold text-[#2D231E]">No students yet</p>
+                    <p class="mt-1 text-sm font-semibold text-[#2D231E]">Share the join code above or invite them, and they show up here.</p>
+                </div>
             @else
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead>
-                            <tr class="border-b border-[#E6DCCF] text-[11px] uppercase tracking-wider text-[#2D231E]">
-                                <th class="px-3 py-2.5 font-extrabold whitespace-nowrap">Student</th>
-                                <th class="px-3 py-2.5 font-extrabold hidden sm:table-cell whitespace-nowrap">Email</th>
-                                <th class="px-3 py-2.5 font-extrabold hidden md:table-cell whitespace-nowrap">Grade</th>
-                                <th class="px-3 py-2.5 font-extrabold whitespace-nowrap">Activity</th>
-                                <th class="px-3 py-2.5 font-extrabold whitespace-nowrap"></th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-[#F0E9DD]">
-                            @foreach ($group->members as $student)
-                                <tr class="hover:bg-[#FAF6EE] transition-colors">
-                                    <td class="px-3 py-2.5">
-                                        <div class="flex items-center gap-3 min-w-0">
-                                            <x-avatar :user="$student" :size="32" />
-                                            <div class="min-w-0">
-                                                <a href="{{ route('teacher.student', $student) }}" class="block text-sm font-bold text-sky-700 hover:text-sky-800 hover:underline underline-offset-2 truncate max-w-[160px]">
-                                                    {{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}
-                                                </a>
-                                                @if (filled(trim($student->first_name.' '.$student->last_name)))
-                                                    <span class="block text-[11px] font-semibold text-[#8C7B70] truncate max-w-[160px]">{{ $student->nickname ?? strtok($student->email, '@') }}</span>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-3 py-2.5 hidden sm:table-cell text-xs font-semibold text-[#2D231E]">
-                                        <span class="block truncate max-w-[200px]">{{ $student->email }}</span>
-                                    </td>
-                                    <td class="px-3 py-2.5 hidden md:table-cell whitespace-nowrap text-xs font-bold text-[#2D231E]">
-                                        {{ $student->grade_level ? 'Grade '.$student->effectiveGrade() : '—' }}
-                                    </td>
-                                    <td class="px-3 py-2.5 whitespace-nowrap">
-                                        <x-presence-dot :at="$student->lastActiveAt()" compact />
-                                    </td>
-                                    <td class="px-3 py-2.5 text-right whitespace-nowrap">
-                                        <form method="POST" action="{{ route('teacher.classes.remove-member', [$group, $student]) }}" data-submit-guard>
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" data-confirm-open="remove-member-{{ $student->id }}" class="text-xs font-bold text-rose-600 hover:text-rose-700 cursor-pointer min-h-[26px]">
-                                                <span data-submit-idle>Remove</span>
-                                                <span data-submit-active class="hidden"><x-spinner label="Removing..." /></span>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3">
+                    @foreach ($members as $student)
+                        @php
+                            $stat = $roster[$student->id];
+                            $score = $stat['score'];
+                        @endphp
+                        <button type="button" data-story-drawer-open="{{ $student->id }}" class="text-left bg-white border border-[#E6DCCF] rounded-xl p-4 hover:border-amber-300 hover:shadow-[0_4px_14px_rgba(45,35,30,0.07)] transition-all cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <x-avatar :user="$student" :size="40" />
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-bold text-[#2D231E] truncate">{{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}</p>
+                                    @if (filled(trim($student->first_name.' '.$student->last_name)))
+                                        <p class="text-[11px] font-semibold text-[#8C7B70] truncate">{{ $student->nickname ?? strtok($student->email, '@') }}</p>
+                                    @endif
+                                </div>
+                                <x-presence-dot :at="$roster[$student->id]['activity_at']" compact />
+                            </div>
+                            <div class="mt-3 grid grid-cols-3 gap-2 text-center">
+                                <div class="rounded-lg bg-[#FAF6EE] border border-[#E6DCCF] px-1.5 py-2">
+                                    <p class="text-sm font-extrabold tabular-nums text-[#2D231E]">{{ $stat['stories_finished'] }}</p>
+                                    <p class="text-[9px] font-bold uppercase tracking-wide text-[#8C7B70]">stories</p>
+                                </div>
+                                <div class="rounded-lg bg-[#FAF6EE] border border-[#E6DCCF] px-1.5 py-2">
+                                    <p class="text-sm font-extrabold tabular-nums {{ $score !== null ? ($stat['passed'] ? 'text-emerald-600' : 'text-rose-600') : 'text-[#B5A89C]' }}">{{ $score !== null ? $score.'%' : '—' }}</p>
+                                    <p class="text-[9px] font-bold uppercase tracking-wide text-[#8C7B70]">last quiz</p>
+                                </div>
+                                <div class="rounded-lg bg-[#FAF6EE] border border-[#E6DCCF] px-1.5 py-2">
+                                    @php $rp = $student->readingProgress; @endphp
+                                    <p class="text-[11px] font-extrabold leading-none pt-1 {{ ($rp && $rp->comprehension_level) ? 'text-[#2D231E]' : 'text-[#B5A89C]' }}">
+                                        {{ $rp && $rp->comprehension_level ? Str::limit($rp->comprehension_level->label(), 12) : '—' }}
+                                    </p>
+                                    <p class="text-[9px] font-bold uppercase tracking-wide text-[#8C7B70] mt-1">reading</p>
+                                </div>
+                            </div>
+                        </button>
+                    @endforeach
                 </div>
             @endif
+        </div>
+    </div>
+
+    {{-- Drawer shell: opens the clicked student without leaving the page --}}
+    <div data-story-drawer class="fixed inset-0 z-40 pointer-events-none">
+        <div data-story-drawer-backdrop class="absolute inset-0 bg-[#2D231E]/40 opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+        <div
+            data-story-drawer-panel
+            role="dialog"
+            aria-modal="true"
+            aria-label="Student details"
+            class="absolute inset-y-0 right-0 w-full max-w-md bg-[#FFFDF9] shadow-2xl transform translate-x-full transition-transform duration-300 pointer-events-auto overflow-y-auto"
+        >
+            <div data-story-drawer-body></div>
         </div>
     </div>
 
@@ -201,7 +239,8 @@
         </div>
     </x-modal>
 
-    @foreach ($group->members as $student)
+    @foreach ($members as $student)
+        @include('teacher.partials.member-drawer', ['markAssignment' => null, 'student' => $student, 'drawerRow' => $detail($student), 'drawerMarked' => null, 'drawerCompleted' => null, 'markable' => false, 'profileFrom' => 'class:'.$group->id])
         <x-modal id="remove-member-{{ $student->id }}" title="Remove {{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }} from this class?">
             <p class="text-xs font-semibold text-[#2D231E]">
                 {{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }} will lose access to this class's assignments. They can rejoin using the class code if needed.
