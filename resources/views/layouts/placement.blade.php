@@ -54,7 +54,7 @@
         }
     </style>
 </head>
-<body class="bg-[#FAF6EE] text-[#2D231E] min-h-screen flex flex-col antialiased selection:bg-amber-300" data-area="placement" style="background: radial-gradient(var(--c-ink) 0.75px, transparent 0.75px) 0 0 / 20px 20px, var(--c-page);">
+    <body class="bg-[#FAF6EE] text-[#2D231E] min-h-screen flex flex-col antialiased selection:bg-amber-300" data-area="placement" data-conn-toasts="1" style="background: radial-gradient(var(--c-ink) 0.75px, transparent 0.75px) 0 0 / 20px 20px, var(--c-page);">
 
     <!-- MAIN CONTENT (placement is a focused flow: no header or footer) -->
     <main class="flex-grow">

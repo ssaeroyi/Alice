@@ -53,6 +53,7 @@ import { initAdminNotifications } from './components/admin-notifications.js';
 import { initStudentNotifications } from './components/student-notifications.js';
 import { initSearchCombobox } from './components/search-combobox.js';
 import { initLibraryBrowse } from './components/library-browse.js';
+import { initConnectionToasts } from './components/connection-toasts.js';
 import { initReadingGoalSlider } from './pages/placement-step1.js';
 import { initVocabPager } from './pages/placement-step2.js';
 import { initComprehensionPager } from './pages/placement-step4.js';
@@ -158,6 +159,7 @@ ready(() => {
     // Library search combobox (only forms with input[data-combobox]).
     safe('searchCombobox', initSearchCombobox);
     safe('libraryBrowse', initLibraryBrowse);
+    safe('connectionToasts', initConnectionToasts);
 
     // Admin-only page modules (lazy-loaded to keep the global bundle lean).
     if (area === 'admin') {
