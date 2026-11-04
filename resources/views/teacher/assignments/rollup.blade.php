@@ -176,7 +176,7 @@
 
             @if ($tab === 'participants')
                 @include('teacher.partials.assignment-participants')
-            @            elseif ($tab === 'questions')
+            @elseif ($tab === 'questions')
                 {{-- QUESTIONS: per-question bars, hardest first --}}
                 <div class="space-y-2">
                     @php $qIndex = 0; @endphp
@@ -220,7 +220,7 @@
                                 <tr class="border-b border-[#F0E9DD] last:border-0 hover:bg-[#FAF6EE]/60 transition-colors">
                                     <td class="px-2 py-2 sticky left-0 bg-white">
                                         <button type="button" data-story-drawer-open="{{ $row['student']->id }}" class="flex items-center gap-2 text-left cursor-pointer group">
-                                            <x-avatar :user="$row['student']" :size="24" />
+                                            <x-teacher.student-chip :student="$row['student']" :size="24" />
                                             <span class="font-bold text-[#2D231E] group-hover:text-sky-700 truncate max-w-[140px]">{{ trim($row['student']->first_name.' '.$row['student']->last_name) ?: ($row['student']->nickname ?? strtok($row['student']->email, '@')) }}</span>
                                         </button>
                                     </td>

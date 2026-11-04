@@ -189,7 +189,7 @@
                         @endphp
                         <button type="button" data-story-drawer-open="{{ $student->id }}" class="text-left bg-white border border-[#E6DCCF] rounded-xl p-4 hover:border-amber-300 hover:shadow-[0_4px_14px_rgba(45,35,30,0.07)] transition-all cursor-pointer">
                             <div class="flex items-center gap-3">
-                                <x-avatar :user="$student" :size="40" />
+                                <x-teacher.student-chip :student="$student" :size="40" />
                                 <div class="min-w-0 flex-1">
                                     <p class="text-sm font-bold text-[#2D231E] truncate">{{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}</p>
                                     <p class="text-[11px] font-semibold text-[#8C7B70] truncate">{{ $student->email }}</p>

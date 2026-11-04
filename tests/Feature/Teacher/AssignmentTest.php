@@ -644,7 +644,7 @@ test('assignment search matches assignment and story titles across tabs', functi
         ->assertDontSee('Weekend Whitewater');
 });
 
-test('rollup shows the student nickname and avatar, not blank first/last names', function () {
+test('rollup shows the student nickname with a neutral chip, no sprite', function () {
     User::factory()->create([
         'role' => Role::Student,
         'first_name' => '',
@@ -669,7 +669,9 @@ test('rollup shows the student nickname and avatar, not blank first/last names',
         ->getContent();
 
     $this->assertStringContainsString('nickonly', $html);
-    $this->assertStringContainsString('image/avatar/sprout.png', $html);
+    // Student sprites stay student-side: neutral initial chips roll instead.
+    $this->assertStringContainsString('border-2 border-[#2D231E]', $html);
+    $this->assertStringNotContainsString('image/avatar/sprout.png', $html);
 });
 
 test('rollup search narrows the audience by nickname', function () {

@@ -353,8 +353,10 @@ class AssignmentController extends Controller
 
         // Per-question truth: stricter than the pass flag — a question counts
         // as correct only at FULL points (earned == worth), partial credit
-        // shows separately. No per-question time exists in stored data, so
-        // none is shown (the getter never fabricates).
+        // shows separately. The question set is the UNION of questions actually
+        // served inside the audience's attempts (the quiz draws 5 at random per
+        // session, so the bank is bigger than what any session showed). No
+        // per-question time exists in stored data, so none is shown.
         $questions = collect();
         $grid = [];
         $questionIds = [];
@@ -369,12 +371,21 @@ class AssignmentController extends Controller
 
             $latest = $allAttempts->mapWithKeys(fn ($rows, $userId) => [$userId => $rows->sortByDesc('created_at')->first()]);
 
-            $grid = $audience->keyBy('id')->map(function ($student) use ($latest, $questionIds) {
+            // The served set: every question id any attempt's audit carried.
+            $servedIds = $allAttempts
+                ->flatMap(fn ($rows) => collect($rows)->map(fn ($a) => collect($a->answers_json['items'] ?? [])))
+                ->filter(fn ($items) => $items->isNotEmpty())
+                ->flatMap(fn ($items) => $items->pluck('question_id'))
+                ->unique()
+                ->filter(fn ($id) => $questionIds->has($id))
+                ->values();
+
+            $grid = $audience->keyBy('id')->map(function ($student) use ($latest, $servedIds) {
                 $attempt = $latest->get($student->id);
                 $items = collect($attempt?->answers_json['items'] ?? [])->keyBy('question_id');
 
                 $cells = [];
-                foreach ($questionIds as $questionId => $text) {
+                foreach ($servedIds as $questionId) {
                     /** @var array|null $item */
                     $item = $items->get($questionId);
                     $worth = (int) ($item['worth'] ?? 0);
@@ -406,7 +417,10 @@ class AssignmentController extends Controller
                 ];
             });
 
-            $questionStats = $questionIds->mapWithKeys(function ($text, $questionId) use ($grid): array {
+            if ($servedIds->isEmpty()) {
+                $questionStats = [];
+            } else {
+            $questionStats = $questionIds->filter(fn ($text, $id) => $servedIds->contains($id))->mapWithKeys(function ($text, $questionId) use ($grid): array {
                 $correct = 0;
                 $partial = 0;
                 $wrong = 0;
@@ -430,6 +444,7 @@ class AssignmentController extends Controller
                         : 0,
                 ]];
             })->all();
+            }
         }
 
         return [
@@ -515,7 +530,7 @@ class AssignmentController extends Controller
         // question (C = correct, P = partial, X = wrong, - = no attempt) so
         // anyone opening the file sees the Overview grid in spreadsheet form.
         $questionStats = $data['questionStats'];
-        $gridIds = $data['grid'];
+        $gridIds = collect($data['grid'] ?? []);
         $questionIds = array_keys($questionStats);
 
         return response()->streamDownload(function () use ($audience, $quizSummaries, $markedIds, $completion, $questionIds, $gridIds) {

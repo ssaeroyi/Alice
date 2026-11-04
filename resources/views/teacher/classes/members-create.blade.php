@@ -36,7 +36,7 @@
                             data-search='{{ strtolower(trim(($student->nickname ?? '').' '.$student->first_name.' '.$student->last_name.' '.$student->email)) }}'
                         >
                             <input type="checkbox" name="student_ids[]" value="{{ $student->id }}" class="accent-sky-600">
-                            <x-avatar :user="$student" :size="32" />
+                            <x-teacher.student-chip :student="$student" :size="32" />
                             <span class="min-w-0">
                                 <span class="block text-sm font-bold text-[#2D231E] truncate">{{ $student->nickname ?? strtok($student->email, '@') }}</span>
                                 <span class="block text-xs font-semibold text-[#2D231E] truncate">{{ $student->email }}</span>

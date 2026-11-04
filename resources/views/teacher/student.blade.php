@@ -24,7 +24,7 @@
         <!-- HEADER -->
         <div class="bg-white border border-[#E6DCCF] rounded-xl p-5 sm:p-6">
             <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-                <x-avatar :user="$student" :alt="$displayName" :size="56" />
+                <x-teacher.student-chip :student="$student" :size="56" />
                 <div class="min-w-0 flex-1">
                     <div class="flex flex-wrap items-center gap-2">
                         <h1 class="text-base font-extrabold text-[#2D231E] truncate">

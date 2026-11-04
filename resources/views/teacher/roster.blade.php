@@ -112,7 +112,7 @@
             @forelse ($students as $student)
                 <a href="{{ route('teacher.student', $student) }}" class="block py-3 border-b border-[#F0E9DD] last:border-b-0 hover:bg-[#FAF6EE] transition-colors -mx-2 px-2 rounded-lg">
                     <div class="flex items-center gap-3 min-w-0">
-                        <x-avatar :user="$student" :size="40" />
+                        <x-teacher.student-chip :student="$student" :size="40" />
                         <div class="min-w-0 flex-1">
                             <p class="text-sm font-bold text-[#2D231E] truncate">
                                 {{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}
@@ -158,7 +158,7 @@
                             <tr class="odd:bg-[#FAF6EE] hover:bg-[#F3ECE0] transition-colors">
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-3 min-w-0">
-                                        <x-avatar :user="$student" :size="36" />
+                                        <x-teacher.student-chip :student="$student" :size="36" />
                                         <div class="min-w-0">
                                             <a href="{{ route('teacher.student', $student) }}" class="block font-bold text-sky-700 hover:text-sky-800 hover:underline underline-offset-2 truncate max-w-[220px]">
                                                 {{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}

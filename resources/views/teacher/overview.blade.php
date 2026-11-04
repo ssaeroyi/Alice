@@ -516,7 +516,7 @@
                                 @foreach ($recentActive as $student)
                                     <li class="py-2.5 flex items-center justify-between gap-3">
                                         <a href="{{ route('teacher.student', $student) }}" class="min-w-0 flex items-center gap-2.5 group">
-                                            <x-avatar :user="$student" :size="32" />
+                                            <x-teacher.student-chip :student="$student" :size="32" />
                                             <span class="text-xs font-bold text-[#2D231E] truncate group-hover:text-sky-600 transition-colors">
                                                 {{ $student->first_name ? trim($student->first_name.' '.$student->last_name) : ($student->nickname ?? strtok($student->email, '@')) }}
                                             </span>
@@ -539,7 +539,7 @@
                                 @foreach ($recentJoins as $student)
                                     <li class="py-2.5 flex items-center justify-between gap-3">
                                         <a href="{{ route('teacher.student', $student) }}" class="min-w-0 flex items-center gap-2.5 group">
-                                            <x-avatar :user="$student" :size="32" />
+                                            <x-teacher.student-chip :student="$student" :size="32" />
                                             <span class="text-xs font-bold text-[#2D231E] truncate group-hover:text-sky-600 transition-colors">
                                                 {{ $student->first_name ? trim($student->first_name.' '.$student->last_name) : ($student->nickname ?? strtok($student->email, '@')) }}
                                             </span>

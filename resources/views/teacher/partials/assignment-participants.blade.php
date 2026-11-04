@@ -81,7 +81,7 @@
                             <tr class="border-b border-[#E6DCCF]/60 last:border-0 hover:bg-[#FAF6EE]/60 transition-colors">
                                 <td class="px-5 py-2.5">
                                     <div class="flex items-center gap-3 min-w-0">
-                                        <x-avatar :user="$student" :alt="$student->nickname ?? strtok($student->email, '@')" :size="36" />
+                                        <x-teacher.student-chip :student="$student" :size="36" />
                                         <div class="min-w-0">
                                             <button type="button" data-story-drawer-open="{{ $student->id }}" class="block w-full text-left font-bold text-[#2D231E] hover:text-sky-700 truncate cursor-pointer">{{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}</button>
                                             <p class="text-[11px] font-semibold text-[#2D231E] truncate">{{ $student->email }}</p>
@@ -144,7 +144,7 @@
                 @endphp
                 <button type="button" data-story-drawer-open="{{ $student->id }}" class="text-left bg-white border border-[#E6DCCF] rounded-xl p-3.5 hover:border-amber-300 transition-all cursor-pointer">
                     <div class="flex items-center gap-3 min-w-0">
-                        <x-avatar :user="$student" :alt="$student->nickname ?? strtok($student->email, '@')" :size="36" />
+                        <x-teacher.student-chip :student="$student" :size="36" />
                         <div class="min-w-0 flex-1">
                             <p class="text-sm font-bold text-[#2D231E] truncate">{{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}</p>
                             <p class="text-[11px] font-semibold text-[#2D231E] truncate">{{ $student->email }}</p>
