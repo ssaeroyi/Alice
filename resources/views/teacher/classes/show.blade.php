@@ -21,38 +21,7 @@
             </form>
         </div>
 
-        {{-- HERO STRIP: how this class is doing overall --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
-            <x-teacher.tile
-                label="Completion"
-                :value="$tiles['completion_pct'] !== null ? $tiles['completion_pct'].'%' : '—'"
-                :sub="$tiles['assignments_total'] > 0 ? 'across '.Str::plural('assignment', $tiles['assignments_total']) : 'no assignments yet'"
-                :ring="$tiles['completion_pct'] ?? 0"
-                tooltip="Average completion of this class's assignments."
-            />
-            <x-teacher.tile
-                label="Quiz score"
-                :value="$tiles['avg_score'] !== null ? $tiles['avg_score'].'%' : '—'"
-                :sub="$tiles['avg_score'] !== null ? 'latest attempt average' : 'no quizzes yet'"
-                :ring="$tiles['avg_score'] ?? 0"
-                tooltip="Average of each member's most recent quiz attempt."
-            />
-            <x-teacher.tile
-                label="Stories finished"
-                :value="$tiles['stories_finished']"
-                :sub="Str::plural('member story', $tiles['stories_finished']).' completed'"
-                :bar="min(100, $tiles['stories_finished'] * 10)"
-            />
-            <x-teacher.tile
-                label="Active today"
-                :value="$tiles['active_today'].' / '.$tiles['member_count']"
-                :sub="$tiles['active_today'] > 0 ? $tiles['active_today'].' of '.$tiles['member_count'].' members online' : 'nobody online yet today'"
-                :bar="$tiles['member_count'] > 0 ? (int) round(100 * $tiles['active_today'] / $tiles['member_count']) : 0"
-                :barColor="$tiles['active_today'] > 0 ? 'bg-amber-400' : 'bg-[#F3ECE0]'"
-            />
-        </div>
-
-        {{-- Meta card: join code + description side by side --}}
+        {{-- JOIN CODE + CLASS NOTES: the class's own affordance, always first --}}
         <div class="bg-white border border-[#E6DCCF] rounded-xl p-5 grid gap-5 lg:grid-cols-2">
             <div>
                 <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#8C7B70] mb-1.5">Join code</p>
@@ -91,6 +60,37 @@
                     </div>
                 </form>
             </div>
+        </div>
+
+        {{-- HERO STRIP: how this class is doing overall --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+            <x-teacher.tile
+                label="Completion"
+                :value="$tiles['completion_pct'] !== null ? $tiles['completion_pct'].'%' : '—'"
+                :sub="$tiles['assignments_total'] > 0 ? 'across '.Str::plural('assignment', $tiles['assignments_total']) : 'no assignments yet'"
+                :ring="$tiles['completion_pct'] ?? 0"
+                tooltip="Average completion of this class's assignments."
+            />
+            <x-teacher.tile
+                label="Quiz score"
+                :value="$tiles['avg_score'] !== null ? $tiles['avg_score'].'%' : '—'"
+                :sub="$tiles['avg_score'] !== null ? 'latest attempt average' : 'no quizzes yet'"
+                :ring="$tiles['avg_score'] ?? 0"
+                tooltip="Average of each member's most recent quiz attempt."
+            />
+            <x-teacher.tile
+                label="Stories finished"
+                :value="$tiles['stories_finished']"
+                :sub="Str::plural('member story', $tiles['stories_finished']).' completed'"
+                :bar="min(100, $tiles['stories_finished'] * 10)"
+            />
+            <x-teacher.tile
+                label="Active today"
+                :value="$tiles['active_today'].' / '.$tiles['member_count']"
+                :sub="$tiles['active_today'] > 0 ? $tiles['active_today'].' of '.$tiles['member_count'].' members online' : 'nobody online yet today'"
+                :bar="$tiles['member_count'] > 0 ? (int) round(100 * $tiles['active_today'] / $tiles['member_count']) : 0"
+                :barColor="$tiles['active_today'] > 0 ? 'bg-amber-400' : 'bg-[#F3ECE0]'"
+            />
         </div>
 
         {{-- Assignments strip --}}
@@ -141,7 +141,10 @@
                                     @endif
                                     <p class="text-[#8C7B70]">{{ $row['started'] }} started · {{ $row['completed'] }}/{{ $row['audience'] }} done</p>
                                 </div>
-                                <x-teacher.ring :percent="$row['pct']" />
+                                <div class="shrink-0 flex items-center gap-1.5">
+                                    <span class="text-sm font-extrabold tabular-nums {{ $row['pct'] >= 70 ? 'text-emerald-600' : ($row['pct'] >= 40 ? 'text-amber-600' : 'text-rose-600') }}">{{ $row['pct'] }}%</span>
+                                    <x-teacher.ring :percent="$row['pct']" :size="7" />
+                                </div>
                             </div>
                         </a>
                     @endforeach
@@ -158,14 +161,18 @@
             </div>
 
             @php
-                $sortChip = fn ($key, $label) => 'href="'.route('teacher.classes.show', ['group' => $group, 'sort' => $key === 'name' ? null : $key]).'" class="inline-flex items-center gap-1 min-h-[30px] px-3 rounded-lg font-pixel text-[9px] font-bold uppercase tracking-wider transition-colors '.($sortParam === $key ? 'bg-amber-400 text-[#2D231E]' : 'bg-white text-[#8C7B70] border border-[#E6DCCF] hover:border-amber-300 hover:text-[#2D231E]').'"';
+                $sortUrls = collect(['name', 'activity', 'stories', 'score'])
+                    ->mapWithKeys(fn ($key) => [$key => route('teacher.classes.show', array_merge(
+                        ['group' => $group],
+                        $key === 'name' ? [] : ['sort' => $key],
+                    ))]);
+                $chipBase = 'inline-flex items-center gap-1 min-h-[30px] px-3 rounded-lg font-pixel text-[9px] font-bold uppercase tracking-wider transition-colors';
             @endphp
             <div class="flex flex-wrap items-center gap-1.5 mb-3">
                 <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#8C7B70] mr-1">Order</span>
-                <a {{ $sortChip('name', '') }}>{{ 'Name' }}</a>
-                <a {{ $sortChip('activity', '') }}>{{ 'Active' }}</a>
-                <a {{ $sortChip('stories', '') }}>{{ 'Stories' }}</a>
-                <a {{ $sortChip('score', '') }}>{{ 'Quiz score' }}</a>
+                @foreach (['name' => 'Name', 'activity' => 'Active', 'stories' => 'Stories', 'score' => 'Quiz score'] as $key => $label)
+                    <a href="{{ $sortUrls[$key] }}" class="{{ $chipBase }} {{ $sortParam === $key ? 'bg-amber-400 text-[#2D231E]' : 'bg-white text-[#8C7B70] border border-[#E6DCCF] hover:border-amber-300 hover:text-[#2D231E]' }}" @if ($sortParam === $key) aria-current="true" @endif>{{ $label }}</a>
+                @endforeach
             </div>
 
             @if ($members->isEmpty())
@@ -185,9 +192,7 @@
                                 <x-avatar :user="$student" :size="40" />
                                 <div class="min-w-0 flex-1">
                                     <p class="text-sm font-bold text-[#2D231E] truncate">{{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }}</p>
-                                    @if (filled(trim($student->first_name.' '.$student->last_name)))
-                                        <p class="text-[11px] font-semibold text-[#8C7B70] truncate">{{ $student->nickname ?? strtok($student->email, '@') }}</p>
-                                    @endif
+                                    <p class="text-[11px] font-semibold text-[#8C7B70] truncate">{{ $student->email }}</p>
                                 </div>
                                 <x-presence-dot :at="$roster[$student->id]['activity_at']" compact />
                             </div>
@@ -240,7 +245,7 @@
     </x-modal>
 
     @foreach ($members as $student)
-        @include('teacher.partials.member-drawer', ['markAssignment' => null, 'student' => $student, 'drawerRow' => $detail($student), 'drawerMarked' => null, 'drawerCompleted' => null, 'markable' => false, 'profileFrom' => 'class:'.$group->id])
+        @include('teacher.partials.member-drawer', ['markAssignment' => null, 'student' => $student, 'drawerRow' => $detail($student), 'markable' => false])
         <x-modal id="remove-member-{{ $student->id }}" title="Remove {{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }} from this class?">
             <p class="text-xs font-semibold text-[#2D231E]">
                 {{ trim($student->first_name.' '.$student->last_name) ?: ($student->nickname ?? strtok($student->email, '@')) }} will lose access to this class's assignments. They can rejoin using the class code if needed.

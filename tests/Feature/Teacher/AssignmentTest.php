@@ -367,7 +367,7 @@ test('quiz assignment requires reading AND a submitted attempt after the gate', 
     $this->assertSame(1, $assignment->completedCount());
 });
 
-test('teacher rollup renders student links with back-to-assignment context', function () {
+test('teacher rollup opens the in-page student drawer without profile links', function () {
     $assignment = Assignment::create([
         'teacher_id' => $this->teacher->id,
         'story_id' => $this->story->id,
@@ -378,14 +378,14 @@ test('teacher rollup renders student links with back-to-assignment context', fun
         'share_code' => 'ROLLUP',
     ]);
 
-    $response = $this->actingAs($this->teacher)
+    $html = $this->actingAs($this->teacher)
         ->get(route('teacher.assignments.show', $assignment))
-        ->assertOk();
+        ->assertOk()
+        ->getContent();
 
-    $response->assertSee(route('teacher.student', [
-        'user' => $this->student,
-        'from' => 'assignment:'.$assignment->id,
-    ]), false);
+    // The drawer carries the student in place; there is no outbound profile hop.
+    $this->assertStringContainsString('data-story-drawer-template', $html);
+    $this->assertStringNotContainsString('Open full profile', $html);
 });
 
 test('notify action dispatches a new-assignment notice to the audience and is idempotent', function () {

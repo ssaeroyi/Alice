@@ -29,18 +29,21 @@
     @endif
 
     @php
-        // Sort header behaves like a chip: the active order gets the amber dial.
-        $sortLink = fn ($key) => route('teacher.assignments.show', array_merge(['assignment' => $assignment, 'tab' => 'participants', 'sort' => $key], $keyword ? ['q' => $keyword] : []));
-        $sortChip = fn ($key, $label) => 'href="'.$sortLink($key).'" class="inline-flex items-center gap-1 min-h-[28px] px-2.5 rounded-lg font-pixel text-[9px] font-bold uppercase tracking-wider transition-colors '.($sort === $key ? 'bg-amber-400 text-[#2D231E]' : 'bg-white text-[#8C7B70] border border-[#E6DCCF] hover:border-amber-300 hover:text-[#2D231E]').'"';
+        // Sort urls precomputed so Chip hrefs stay plain {{ }} interpolations;
+        // raw attribute injection through escaped Blade once broke both chips.
+        $sortUrls = collect(['name', 'score', 'time'])
+            ->mapWithKeys(fn ($key) => [$key => route('teacher.assignments.show', array_merge(
+                ['assignment' => $assignment, 'tab' => 'participants'],
+                $key === 'name' ? [] : ['sort' => $key],
+                $keyword ? ['q' => $keyword] : [],
+            ))]);
     @endphp
 
     <div class="flex flex-wrap items-center gap-1.5">
         <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#8C7B70] mr-1">Order</span>
-        <a {{ $sortChip('name', '') }}>{{ 'Name' }}</a>
-        @if ($hasQuiz)
-            <a {{ $sortChip('score', '') }}>{{ 'Quiz score' }}</a>
-        @endif
-        <a {{ $sortChip('time', '') }}>{{ 'Completed' }}</a>
+        @foreach (['name' => 'Name', 'score' => 'Quiz score', 'time' => 'Completed'] as $key => $label)
+            <a href="{{ $sortUrls[$key] }}" class="inline-flex items-center gap-1 min-h-[28px] px-2.5 rounded-lg font-pixel text-[9px] font-bold uppercase tracking-wider transition-colors {{ $sort === $key ? 'bg-amber-400 text-[#2D231E]' : 'bg-white text-[#8C7B70] border border-[#E6DCCF] hover:border-amber-300 hover:text-[#2D231E]' }}" @if ($sort === $key) aria-current="true" @endif>{{ $label }}</a>
+        @endforeach
     </div>
 
     @if ($assignment->status === 'draft')
@@ -109,7 +112,15 @@
                                 <td class="px-5 py-2.5 whitespace-nowrap text-xs font-semibold text-[#2D231E] tabular-nums">
                                     {{ $completedAt?->format('M j, g:i A') ?? '—' }}
                                 </td>
-                                @include('teacher.partials.member-drawer', ['markAssignment' => $assignment, 'student' => $student, 'drawerRow' => $drawerRow, 'drawerMarked' => $marked, 'drawerCompleted' => $progress['completed'], 'markable' => $assignment->status === 'active', 'profileFrom' => 'assignment:'.$assignment->id])
+                                @include('teacher.partials.member-drawer', ['markAssignment' => $assignment, 'student' => $student, 'drawerRow' => ['rows' => [[
+                                    'title' => null,
+                                    'state' => $marked && ! $progress['completed'] ? 'marked' : $rowState,
+                                    'attempted' => (bool) ($summary['attempted'] ?? false),
+                                    'score' => $summary['score'] ?? null,
+                                    'passed' => (bool) ($summary['passed'] ?? false),
+                                    'raw' => $summary['raw'] ?? null,
+                                    'completedAt' => $completedAt,
+                                ]], 'mark' => $drawerRow['mark']], 'markable' => $assignment->status === 'active'])
                             </tr>
                         @empty
                             <tr>

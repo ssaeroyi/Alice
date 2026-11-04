@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Teacher;
 use App\Enums\Role;
 use App\Enums\StoryProgressStatus;
 use App\Http\Controllers\Controller;
+use App\Models\AssignmentMark;
 use App\Models\Group;
 use App\Models\StoryProgress;
 use App\Models\TestAttempt;
 use App\Models\User;
 use App\Support\Audit;
-use App\Support\IntegritySignals;
 use App\Support\NotificationService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
@@ -79,46 +79,6 @@ class ClassController extends Controller
 
         $rosterStats = $this->rosterStats($group, $members);
 
-        // Drawer payloads, bulk-loaded once: each member's last five attempts
-        // across any story (attempt ids are pre-sorted by recency per member).
-        $attemptGroups = TestAttempt::query()
-            ->whereIn('user_id', $members->pluck('id')->all())
-            ->with('story')
-            ->orderByDesc('created_at')
-            ->limit(max(count($members) * 5, 100))
-            ->get()
-            ->groupBy('user_id')
-            ->map(fn ($rows) => $rows->take(5));
-
-        $detail = function (User $student) use ($rosterStats, $attemptGroups) {
-            $rows = ($attemptGroups->get($student->id) ?? collect())->map(function ($attempt) {
-                return [
-                    'attempt' => $attempt,
-                    'story' => $attempt->story?->title,
-                    'score' => $attempt->score_pct,
-                    'passed' => (bool) $attempt->passed,
-                    'correct' => (int) ($attempt->correct_count ?? 0),
-                    'wrong' => (int) ($attempt->wrong_count ?? 0),
-                    'total' => (int) ($attempt->correct_count ?? 0) + (int) ($attempt->wrong_count ?? 0),
-                    'time' => (int) ($attempt->time_spent_seconds ?? 0),
-                    'hints' => (int) ($attempt->hint_tokens_used ?? 0),
-                    'xp' => (int) ($attempt->xp_awarded ?? 0),
-                    'at' => $attempt->created_at,
-                    'notes' => IntegritySignals::hasFlags($attempt->attempt_flags ?? [])
-                        ? IntegritySignals::reviewNotes($attempt->attempt_flags ?? [])
-                        : [],
-                ];
-            })->values();
-
-            return [
-                'progress' => null,
-                'finished_count' => $rosterStats[$student->id]['stories_finished'] ?? 0,
-                'activity_at' => $rosterStats[$student->id]['activity_at'] ?? null,
-                'attempts' => $rows,
-                'mark' => null,
-            ];
-        };
-
         $sort = $request->query('sort');
 
         if ($sort !== null && $sort !== 'name') {
@@ -166,9 +126,78 @@ class ClassController extends Controller
             // list lives under Class & Assignments with its tabs.
             'assignmentRows' => $assignmentRows->take(3),
             'tiles' => $this->classTiles($group, $members, $rosterStats, $assignmentRows),
-            'detail' => $detail,
+            'detail' => $this->classDrawer($group, $members),
             'sortParam' => in_array($sort, ['name', 'score', 'stories', 'activity'], true) ? $sort : 'name',
         ]);
+    }
+
+    /**
+     * The class drawer payloads, built once for the roster: one factual card
+     * per assigned story (status, quiz score, correct count, completed at) —
+     * assignments-only by definition, never platform-wide results.
+     */
+    private function classDrawer(Group $group, Collection $members)
+    {
+        $assigned = $group->assignments->take(3)->values();
+        $storyIds = $assigned->pluck('story_id')->filter()->unique()->all();
+        $memberIds = $members->pluck('id')->all();
+
+        $latestByStory = $storyIds === []
+            ? collect()
+            : TestAttempt::query()
+                ->whereIn('user_id', $memberIds)
+                ->whereIn('story_id', $storyIds)
+                ->orderByDesc('created_at')
+                ->get()
+                ->unique(fn ($r) => $r->user_id.'_'.$r->story_id)
+                ->keyBy(fn ($r) => $r->user_id.'_'.$r->story_id);
+
+        $progressByStory = $storyIds === []
+            ? collect()
+            : StoryProgress::query()
+                ->whereIn('user_id', $memberIds)
+                ->whereIn('story_id', $storyIds)
+                ->get()
+                ->keyBy(fn ($r) => $r->user_id.'_'.$r->story_id);
+
+        $marksByStory = $storyIds === []
+            ? collect()
+            : AssignmentMark::query()
+                ->whereIn('assignment_id', $assigned->pluck('id')->all())
+                ->get()
+                ->keyBy(fn ($m) => $m->assignment_id.'_'.$m->user_id);
+
+        // Per-assignment completion maps (read/quiz/marked), computed once so
+        // every drawer card reports the same state the assignment cards show.
+        $maps = $assigned->mapWithKeys(fn ($a) => [
+            $a->id => $a->story_id !== null ? $a->completionMapFor($members) : [],
+        ]);
+
+        return function (User $student) use ($assigned, $maps, $latestByStory, $progressByStory, $marksByStory) {
+            $rows = $assigned->map(function ($assignment) use ($student, $maps, $latestByStory, $progressByStory, $marksByStory) {
+                $pair = $student->id.'_'.$assignment->story_id;
+                $completion = ($maps[$assignment->id] ?? [])[$student->id]
+                    ?? ['read' => false, 'quiz' => false, 'marked' => false, 'completed' => false, 'done' => false];
+                $progress = $progressByStory->get($pair);
+                $mark = $marksByStory->get($assignment->id.'_'.$student->id);
+                $attempt = $latestByStory->get($pair);
+
+                $state = $completion['done'] ? 'done' : (($completion['read'] || $completion['quiz']) ? 'in_progress' : 'not_started');
+                $total = (int) ($attempt?->correct_count ?? 0) + (int) ($attempt?->wrong_count ?? 0);
+
+                return [
+                    'title' => $assignment->story?->title ?? $assignment->title,
+                    'state' => $state,
+                    'attempted' => $attempt !== null,
+                    'score' => $attempt?->score_pct,
+                    'passed' => (bool) ($attempt?->passed ?? false),
+                    'raw' => $total > 0 ? $attempt->correct_count.' of '.$total : null,
+                    'completedAt' => ($mark?->created_at) ?? ($progress?->completed_at ?? null),
+                ];
+            })->values()->all();
+
+            return ['rows' => $rows, 'mark' => null];
+        };
     }
 
     /**

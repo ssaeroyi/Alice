@@ -28,6 +28,7 @@ class Assignment extends Model
      */
     public const STATUS_META = [
         'done' => ['label' => 'Done', 'classes' => 'bg-emerald-100 text-emerald-700'],
+        'marked' => ['label' => 'Done (teacher)', 'classes' => 'bg-emerald-100 text-emerald-700'],
         'in_progress' => ['label' => 'In progress', 'classes' => 'bg-amber-100 text-amber-700'],
         'missed' => ['label' => 'Missed', 'classes' => 'bg-rose-100 text-rose-700'],
         'not_started' => ['label' => 'Not started', 'classes' => 'bg-[#F3ECE0] text-[#2D231E]'],
