@@ -43,7 +43,7 @@
 
                 <!-- Speech Content -->
                 <p class="text-xs sm:text-sm font-bold text-[#2D231E] leading-relaxed text-left">
-                    Hey there! This short reading test finds your level and only takes about 5 minutes. No pass or fail, and when it's done I'll pick a shelf of books that fit you just right.
+                    Hey there! This short reading test assesses your current reading level and only takes about 5 minutes. No pass or fail.
                 </p>
             </div>
 
@@ -55,11 +55,11 @@
             <div class="grid grid-cols-3 gap-2">
                 <div class="min-h-[44px] flex flex-col items-center justify-center bg-white border-2 border-[#2D231E] rounded-xl shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] px-1">
                     <span class="font-pixel text-xs font-bold text-[#2D231E]">10</span>
-                    <span class="text-[9px] font-bold text-[#8C7B70] uppercase tracking-wide leading-tight text-center">word meanings</span>
+                    <span class="text-[9px] font-bold text-[#8C7B70] uppercase tracking-wide leading-tight text-center">vocabulary</span>
                 </div>
                 <div class="min-h-[44px] flex flex-col items-center justify-center bg-white border-2 border-[#2D231E] rounded-xl shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] px-1">
                     <span class="font-pixel text-xs font-bold text-[#2D231E]">10</span>
-                    <span class="text-[9px] font-bold text-[#8C7B70] uppercase tracking-wide leading-tight text-center">missing words</span>
+                    <span class="text-[9px] font-bold text-[#8C7B70] uppercase tracking-wide leading-tight text-center">cloze</span>
                 </div>
                 <div class="min-h-[44px] flex flex-col items-center justify-center bg-white border-2 border-[#2D231E] rounded-xl shadow-[2px_2px_0px_0px_rgba(45,35,30,1)] px-1">
                     <span class="font-pixel text-xs font-bold text-[#2D231E]">5</span>

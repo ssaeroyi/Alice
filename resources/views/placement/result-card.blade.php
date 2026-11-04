@@ -82,7 +82,7 @@
         <span class="text-sm font-extrabold text-[#2D231E] tabular-nums">{{ $result['cloze']['correct'] }}/{{ $result['cloze']['total'] }}</span>
     </div>
     <div class="min-h-[64px] flex flex-col min-w-0 items-center justify-center gap-1 bg-[#FAF6EE] border-2 border-[#2D231E] rounded-xl px-2 py-3">
-        <span class="font-pixel text-[8px] font-bold text-[#8C7B70] uppercase leading-tight text-center break-words" title="Story questions">Comprehension</span>
+        <span class="font-pixel text-[8px] font-bold text-[#8C7B70] uppercase leading-tight text-center break-words" title="Comprehension">Comprehension</span>
         <span class="text-sm font-extrabold text-[#2D231E] tabular-nums">{{ $result['comprehension']['correct'] }}/{{ $result['comprehension']['total'] }}</span>
     </div>
 </div>
@@ -96,7 +96,7 @@
     </summary>
 
     <div class="px-4 py-4 space-y-5">
-        @foreach (['vocab' => 'Word Meanings', 'cloze' => 'Missing Words', 'comprehension' => 'Story Questions'] as $section => $label)
+        @foreach (['vocab' => 'Vocabulary', 'cloze' => 'Cloze', 'comprehension' => 'Comprehension'] as $section => $label)
             <div>
                 <span class="font-pixel text-[9px] font-bold text-[#8C7B70] uppercase tracking-wider">{{ $label }}</span>
                 <ul class="mt-2 space-y-2">
