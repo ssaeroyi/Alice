@@ -79,5 +79,34 @@ export function initConnectionToasts() {
         }
         announce('offline', OFFLINE_COPY);
         event.preventDefault();
+        releaseBlocked(form);
     });
+}
+
+/**
+ * A submit-guard form locked itself (dataset + button + label swap) the same
+ * event the gate just refused. Nobody navigated, so undo exactly that lock:
+ * the page must read "no connection" and stay usable, not dead.
+ */
+function releaseBlocked(form) {
+    delete form.dataset.submitting;
+    form.querySelectorAll('button[type="submit"]').forEach((button) => {
+        button.disabled = false;
+        button.removeAttribute('aria-busy');
+
+        const idle = button.querySelector('[data-submit-idle]');
+        const active = button.querySelector('[data-submit-active]');
+
+        if (idle) {
+            idle.hidden = false;
+        }
+        if (active) {
+            active.hidden = true;
+            active.classList.add('hidden');
+        }
+    });
+
+    // Any generic busy overlay raised for this attempt comes down too.
+    document.querySelector('[data-busy-overlay]')?.remove();
+    document.body.removeAttribute('aria-busy');
 }
